@@ -1,0 +1,1 @@
+ALTER TABLE `players` ADD `crafting_blueprints` VARCHAR(50) NOT NULL DEFAULT '[]';
