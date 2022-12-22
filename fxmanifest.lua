@@ -12,6 +12,7 @@ lua54 'yes'
 
 files {
 	'html/*',
+    'html/recipieImages/*'
 }
 
 client_scripts{

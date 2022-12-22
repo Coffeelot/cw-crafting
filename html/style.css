@@ -35,6 +35,13 @@ body {
     flex-direction: column;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+    align-items: center;
+}
+
 .outer-container {
     display: flex;
     flex-direction: column;
@@ -99,6 +106,8 @@ body {
     padding: 15px;
     margin-bottom: 10px;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
 }
 
 .card:hover {
@@ -118,13 +127,22 @@ body {
     font-size: smaller;
 }
 
+.card-icon {
+}
+
+.card-img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
+
 .chip-list {
     display: flex;
     gap: 10px
 }
 
 .chip {
-    background: var(--background);
+    background: var(--background-color-lighter);
     border-radius: 20px;
     width: fit-content;
     padding: 5px;
@@ -166,6 +184,7 @@ h1 {
     margin-bottom: 10px;
     font-weight: 500;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .confirm-button:hover {
@@ -176,10 +195,13 @@ h1 {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2px;
+    border-bottom: 1px solid var(--background-color-dark);
+    padding-bottom: 2px;
 }
 
 .material-list-row:last-child {
     margin-bottom: 0;
+    border-bottom: 0;
 }
 
 .recipie-confirmation-container {

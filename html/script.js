@@ -50,10 +50,19 @@ function handleClickRecipie(recipieName) {
     if(recipieName) {
         currentRecipie = recipieName;
         $(".recipie-confirmation-container").show();
-        let recipie = Recipies[recipieName];
-        console.log('recipie ', JSON.stringify(recipie))
-        $("#title").html(recipie.data.label)
         $(".recipie-info").html('');
+        $(".confirmation-subtitle").html('');
+        let recipie = Recipies[recipieName];
+        let amount = recipie.amount? recipie.amount : 1;
+        let hasBlueprint = recipie.blueprint? true: false;
+        let hasJob = recipie.jobs ? true: false;
+        $("#title").html(recipie.data.label)
+        $(".header-icon").html(`<div class="card-icon"><img src="./recipieImages/${recipie.data.image}" class="card-img"/></div>`)
+        $(".confirmation-subtitle").append(`<div class="chip"> Amount: ${amount} </div>`)
+        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${recipie.craftTime/1000}s </div>`)
+        if(hasBlueprint) $(".confirmation-subtitle").append(`<div class="chip"> Blueprint </div>`)
+        if(hasJob) $(".confirmation-subtitle").append(`<div class="chip"> Job </div>`)
+
         $.each(recipie.materials, function(material, amount){
             console.log(material, amount)
             let row = `
@@ -79,23 +88,23 @@ let filterByCategory = function(category) {
         $(".category-container").hide();
         $(".recipie-container").show();
         $(".recipie-list").html("");
-
+        console.log('RECIPIES', JSON.stringify(Recipies))
         $.each(Recipies, function(i,recipie) {
             if(recipie.category === category) {
                 let amount = recipie.amount? recipie.amount : 1;
-                console.log('image', 'recipie.data.image')
+                console.log('image for '+i, recipie.data.image)
                 let element = `
-                <div id="${recipie.name}${i}" class="card" onclick="handleClickRecipie('${recipie.name}')">
+                <div id="${recipie.name}${i}" class="card" onclick="handleClickRecipie('${i}')">
                     <div class="card-icon">
-                        <img src="/recipieImages/${recipie.data.image}" />
+                        <img src="./recipieImages/${recipie.data.image}" class="card-img"/>
                     </div>
                     <div class="card-content"> 
                         <div class="card-header">
                             ${recipie.data.label}
                         </div>
                         <div class="chip-list">
-                        <div class="chip"> x${amount} </div>
-                        <div class="chip"> ${recipie.craftTime/1000}s </div>
+                            <div class="chip"> x${amount} </div>
+                            <div class="chip"> ${recipie.craftTime/1000}s </div>
                         </div>
                     </div>
                 </div>
