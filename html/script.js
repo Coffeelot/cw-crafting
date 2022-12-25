@@ -5,7 +5,7 @@ let currentRecipie = {}
 let currentAdId = -1
 
 $(document).ready(function(){
-    console.log('lol crafting')
+    /* console.log('lol crafting') */
     $('.crafting-container').hide();
 
     window.addEventListener('message', function(event){
@@ -21,7 +21,7 @@ $(document).ready(function(){
 });
 
 function handleConfirm() {
-    console.log('confirmed', currentAd.title)
+    /* console.log('confirmed', currentAd.title) */
     if(currentAd){
         $.post('https://cw-darkweb/confirmPurchase', JSON.stringify(currentAd), function(wentThrough){
             console.log('aaa', wentThrough)
@@ -37,7 +37,7 @@ function handleConfirm() {
 }
 
 function handleCraft() {
-    console.log('current recipie', JSON.stringify(currentRecipie))
+    /* console.log('current recipie', JSON.stringify(currentRecipie)) */
     $.post('https://cw-crafting/attemptCrafting', JSON.stringify(currentRecipie), function(success){
         if (success) {
             console.log('successfully crafted an item')
@@ -46,7 +46,7 @@ function handleCraft() {
 }
 
 function handleClickRecipie(recipieName) {
-    console.log('click', JSON.stringify(recipieName))
+    /* console.log('click', JSON.stringify(recipieName)) */
     if(recipieName) {
         currentRecipie = recipieName;
         $(".recipie-confirmation-container").show();
@@ -57,14 +57,21 @@ function handleClickRecipie(recipieName) {
         let hasBlueprint = recipie.blueprint? true: false;
         let hasJob = recipie.jobs ? true: false;
         $("#title").html(recipie.data.label)
-        $(".header-icon").html(`<div class="card-icon"><img src="./recipieImages/${recipie.data.image}" class="card-img"/></div>`)
+        
+        let inv = 'qb';
+        let imageLink = '';
+        if ( inv == 'qb' ) {
+            imageLink = `nui://qb-inventory/html/images/${recipie.data.image}`
+        } else {
+            imageLink= `nui://ox_inventory/web/images/${recipieName}.png`
+        }
         $(".confirmation-subtitle").append(`<div class="chip"> Amount: ${amount} </div>`)
         $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${recipie.craftTime/1000}s </div>`)
+        $(".header-icon").html(`<div class="card-icon"><img src=${imageLink} class="card-img"/></div>`)
         if(hasBlueprint) $(".confirmation-subtitle").append(`<div class="chip"> Blueprint </div>`)
         if(hasJob) $(".confirmation-subtitle").append(`<div class="chip"> Job </div>`)
 
         $.each(recipie.materials, function(material, amount){
-            console.log(material, amount)
             let row = `
             <div id="${material}-row" class="material-list-row">
                 <div class="left"> ${material} </div>
@@ -81,24 +88,30 @@ function handleClickRecipie(recipieName) {
 }
 
 let filterByCategory = function(category) {
-    console.log('filtering by', category)
+/*     console.log('filtering by', category) */
     if(Categories === null) {
         return
     } else {
         $(".category-container").hide();
         $(".recipie-container").show();
         $(".recipie-list").html("");
-        console.log('RECIPIES', JSON.stringify(Recipies))
-        $.each(Recipies, function(i,recipie) {
+        $.each(Recipies, function(i, recipie) {
             if(recipie.category === category) {
                 let amount = recipie.amount? recipie.amount : 1;
-                console.log('image for '+i, recipie.data.image)
+                console.log(JSON.stringify(i))
+                let inv = 'qb'
+                let imageLink = ''
+                if ( inv == 'qb' ) {
+                    imageLink = `nui://qb-inventory/html/images/${recipie.data.image}`
+                } else {
+                    imageLink= `nui://ox_inventory/web/images/${recipieName}.png`
+                }
                 let element = `
-                <div id="${recipie.name}${i}" class="card" onclick="handleClickRecipie('${i}')">
+                <div id="${i.label}" class="card" onclick="handleClickRecipie('${i}')">
                     <div class="card-icon">
-                        <img src="./recipieImages/${recipie.data.image}" class="card-img"/>
+                        <img src=${imageLink} class="card-img"/>
                     </div>
-                    <div class="card-content"> 
+                    <div class="card-content">
                         <div class="card-header">
                             ${recipie.data.label}
                         </div>
@@ -120,9 +133,9 @@ let filterByCategory = function(category) {
 let SetCategories = function () {
     Categories = []
     $.each(Recipies, function(i,recipie) {
-        console.log('checking', JSON.stringify(recipie))
+        /* console.log('checking', JSON.stringify(recipie)) */
         if( Categories.includes(recipie.category) ) {
-            console.log(recipie.category, ' already existed')
+            /* console.log(recipie.category, ' already existed') */
         } else {
             Categories.push(recipie.category)
         }
@@ -130,7 +143,7 @@ let SetCategories = function () {
 }
 
 let LoadCategoryList = function() {
-    console.log('Loading categories')
+    /* console.log('Loading categories') */
     $(".recipie-container").hide();
     $(".category-container").show();
     $(".category-list").html("");
@@ -146,7 +159,7 @@ let LoadCategoryList = function() {
             `;
         $(".category-list").append(element);
     });
-    console.log('Categories', JSON.stringify(Categories))
+    /* console.log('Categories', JSON.stringify(Categories)) */
 }
 
 let goBack = function() {
@@ -154,7 +167,7 @@ let goBack = function() {
 }
 
 cwCrafting.Open = function() {
-    console.log('opening crafting')
+    /* console.log('opening crafting') */
     $.post('https://cw-crafting/getRecipies', function(recipies){
         if (recipies) {
             console.log('recipies', JSON.stringify(recipies))

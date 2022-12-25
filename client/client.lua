@@ -2,6 +2,19 @@ QBCore =  exports['qb-core']:GetCoreObject()
 local Recipies = {}
 local Blueprints = {}
 local currentTableType = nil
+if Config.Inventory == 'ox' then
+    local ox_inventory = exports.ox_inventory
+end
+ItemNames = {}
+
+local function callitems()
+    if Config.Inventory == 'ox' then
+        for items, datas in pairs(ox_inventory:Items()) do
+            ItemNames[items] = datas
+            print(ItemNames[items])
+        end
+    end
+end
 
 function dump(o)
    if type(o) == 'table' then
@@ -19,17 +32,17 @@ end
 local function validateJob(item)
     if item.jobs then
         local Player = QBCore.Functions.GetPlayerData()
-        
+
         local jobName = Player.job.name
         local jobLevel = Player.job.grade.level
-        
+
         local playerHasJob = false
         local levelRequirement = nil
         for i, job in pairs(item.jobs) do
             if job.name == jobName then
                 playerHasJob = true
                 levelRequirement = job.level
-            end 
+            end
         end
 
         if playerHasJob then
@@ -56,7 +69,6 @@ end
 local function validateBlueprints(item)
     if item.blueprint then
         for i, blueprint in pairs(Blueprints) do
-            print(blueprint, item.blueprint, blueprint == item.blueprint)
             if blueprint == item.blueprint then return true end
         end
         return false
@@ -69,20 +81,19 @@ end
 local function validateAccess(item)
     local playerPassesJobReq = validateJob(item)
     local playerPassesBlueprintReq = validateBlueprints(item)
-    if playerPassesBlueprintReq then
-        return true
-    end
-    if playerPassesJobReq == nil and playerPassesBlueprintReq == nil then
-        print('the recipie is base')
-        return true
-    elseif playerPassesJobReq == nil then
-        print('the recipie does not require job')
+
+    if item.blueprint ~= nil and item.jobs ~= nil then
+        print(item.name.. ' can use either job or blueprint', playerPassesJobReq, playerPassesBlueprintReq)
+        return playerPassesJobReq or playerPassesBlueprintReq
+    elseif item.blueprint ~= nil then
+        print(item.name.. ' requires blueprint', playerPassesBlueprintReq)
         return playerPassesBlueprintReq
-    elseif playerPassesBlueprintReq == nil then
-        print('the recipie does not require Blueprints')
+    elseif item.jobs ~= nil then
+        print(item.name.. ' requires job', playerPassesJobReq)
         return playerPassesJobReq
     end
-    return playerPassesJobReq and playerPassesBlueprintReq
+    print(item.name..' has no requirements')
+    return true
 end
 
 local function validateRights(item)
@@ -90,18 +101,20 @@ local function validateRights(item)
     if item.tables ~= nil then
         for i, table in pairs(item.tables) do
             tables[table] = table
-        end        
+        end
     else
         tables = { ['basic'] = 'basic' }
     end
-    print(dump(tables), currentTableType)
 
     if (tables == nil or tables[currentTableType]) and tables[currentTableType] then -- no table reqirement and this is a basic table
-        print('is basic table')
+        if Config.Debugcraft then
+            print('is basic table')
+        end
         return validateAccess(item)
     end
-    
-    print('recipie did not match this table')
+    if Config.Debugcraft then
+        print('recipie did not match this table')
+    end
     return false
 end
 
@@ -109,21 +122,29 @@ local function canCraftItem(item)
     print('checking job')
     if Config.Inventory == 'qb' then
         for material, amount in pairs(item.materials) do
-            -- print(amount, material)
+            print(amount, material)
             local hasItem = QBCore.Functions.HasItem(material, amount)
-            -- print('hasitem', hasItem)
+            print('hasitem', hasItem)
             if not hasItem then
                 return false
             end
+            return true
         end
-    else 
-        -- ADD ox inv here
+    elseif Config.Inventory == 'ox' then
+        for material, amount in pairs(item.materials) do
+            -- print(amount, material)
+            local hasItem = exports.ox_inventory:Search("count", material)
+             --print('hasitem', hasItem, 'amount', amount)
+            if hasItem >= amount then print("True") return true else
+                return false
+            end
+        end
     end
-    return true        
 end
 
 local function craftItem(item)
     if canCraftItem(item) then
+        callitems()
         -- do emote here
         local craftTime = Config.DefaultCraftingTime
         if item.craftingTime then
@@ -140,9 +161,13 @@ local function craftItem(item)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function()
-            TriggerServerEvent('cw-crafting:server:craftItem', item)
-            print('item name', item.name)
-            QBCore.Functions.Notify('You have crafted '..amount..' '.. QBCore.Shared.Items[item.name].label, "success")
+            TriggerServerEvent('cw-crafting:server:craftItem', PlayerPedId(), item)
+           --[[  print('item name', item.name) ]]
+            if Config.Inventory == 'qb' then
+                QBCore.Functions.Notify('You have crafted '..amount..' '.. QBCore.Shared.Items[item.name].label, "success")
+            else
+                QBCore.Functions.Notify('You have crafted '..amount..' '.. ItemNames[item.name].label, "success")
+            end
             TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         end, function() -- Cancel
             TriggerEvent('animations:client:EmoteCommandStart', {"c"})
@@ -158,31 +183,38 @@ end
 local function getRecipies()
     print('generating recipies for table', currentTableType)
     Recipies = {}
-    if Config.Debug then
+    callitems()
+    if Config.Debugcraft then
        print('Amount of recipies: ',#Config.Recipies)
     end
 
     for recipie, item in pairs(Config.Recipies) do
-        if Config.Debug then
+--[[         if Config.Debugcraft then
            print('checking recpie', recipie)
         end
-        print('validating', item.name)
+        print('validating', item.name) ]]
         local canCraft = validateRights(item)
         if canCraft then
             if Config.Inventory == 'qb' then
                 item.data = QBCore.Shared.Items[item.name]
-            else
-                -- ADD ox inv here
+            elseif Config.Inventory == 'ox' then
+                item.data = ItemNames[item.name]
             end
             Recipies[recipie] = item
             if item.craftTime == nil then
                 Recipies[recipie].craftTime = Config.DefaultCraftingTime
             end
-            print('Has access to', item.name)
+            if Config.Debugcraft then
+                print('Has access to', item.name)
+            end
         else
-            print('Did not have access to', item.name)
+            if Config.Debugcraft then
+                print('Did not have access to', item.name)
+            end
         end
-        print("====================")
+        if Config.Debugcraft then
+            print("====================")
+        end
 
     end
     return Recipies
@@ -190,10 +222,12 @@ end
 
 local function setCraftingOpen(bool, i)
     local citizenId = QBCore.Functions.GetPlayerData().citizenid
-    print('hhiehiehei', i)
+    if Config.Debugcraft then
+        print('hhiehiehei', i)
+    end
     QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
         Blueprints = bps
-        if Config.Debug then
+        if Config.Debugcraft then
             print('Crafting was opened')
         end
         SetNuiFocus(bool, bool)
@@ -214,7 +248,9 @@ end
 RegisterNUICallback('attemptCrafting', function(recipie, cb)
     local Player = QBCore.Functions.GetPlayerData()
     local currentRecipie = Config.Recipies[recipie]
-    print(recipie, dump(currentRecipie))
+    if Config.Debugcraft then
+        print(recipie, dump(currentRecipie))
+    end
     local success = craftItem(currentRecipie)
     cb(success)
 end)
@@ -227,14 +263,18 @@ end)
 
 
 RegisterNUICallback('closeCrafting', function(_, cb)
-    print('Closing crafting')
+    if Config.Debugcraft then
+        print('Closing crafting')
+    end
     setCraftingOpen(false)
     cb('ok')
 end)
 
 
 RegisterCommand('openCrafting', function(source)
-    print('Open crafting')
+    if Config.Debugcraft then
+        print('Open crafting')
+    end
     setCraftingOpen(true)
 end)
 
@@ -245,7 +285,7 @@ CreateThread(function()
         options[1] = {
             type = 'client',
             label = benchType.title,
-            action = function() 
+            action = function()
                 setCraftingOpen(true, i)
             end,
         }
