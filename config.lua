@@ -22,7 +22,8 @@ Config.Recipies = {
 		name = 'aluminumoxide',
 		category = "Materials", 
 		materials = { aluminum = 1 }, 
-	},
+		amount = 10
+	},	
 	['repairkit'] = { 
 		name = 'repairkit', 
 		craftTime= 4000, 
@@ -52,6 +53,8 @@ Config.Recipies = {
 		jobs = { 
 			{ name = 'mechanic', level = 2 } 
 	 	},
+		blueprint = 'coolthing',
+		requireBlueprintAndJob = true,
 		tables = {'mechanic'} -- can be made on only mechanic tables
 	},
 	['lockpick'] = { 

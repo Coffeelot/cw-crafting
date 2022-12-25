@@ -42,18 +42,44 @@ body {
     align-items: center;
 }
 
+.spaceBetween {
+    justify-content: space-between;
+}
+
 .outer-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     height: 90vh;
+    width: 100%;
 }
 
 .crafting-container {
     display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    width: 50vw;
+    height: 40vh;
+}
+
+.app-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: fit-content;
+    margin-left: 10px;
+    margin-right: 10px;
+    position: relative;
     justify-content: center;
-    align-items: center;
+    display: flex;
+    gap: 20px;
+}
+
+.right-column {
+}
+
+.left-column {
+    width: 330px;
 }
 
 .inline {
@@ -76,27 +102,27 @@ body {
     margin-top: -4px;
 }
 
+.recipie-container {
+    overflow: hidden;
+    height: 40vh;
+}
+
 .recipie-list {
     display: flex;
     justify-content: center;
     flex-direction: column;
 }
 
-.app-container {
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 95%;
-    width: 99%;
-    margin-left: 10px;
-    margin-right: 10px;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
+.list-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;
+    max-height: 30vh;
+    overflow: auto;
 }
-.darkweb-container {
-    color: var(--text-color);
-    height: fit-content;
+.list-container::-webkit-scrollbar {
+    display: none;
 }
+
 
 .card {
     background: var(--background);
@@ -165,7 +191,6 @@ h1 {
     color: var(--text-color);
     background-color: var(--background-color-dark);
     border-radius: var(--border-radius);
-    width: 200px;
     padding: 15px;
 }
 

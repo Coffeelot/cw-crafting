@@ -13,26 +13,27 @@ function dump(o)
    end
 end
 
-RegisterNetEvent('cw-crafting:server:craftItem', function(player, item)
+RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, craftingAmount)
+    print(craftingAmount)
     local src = source
     if Config.Inventory == 'qb' then
         local Player = QBCore.Functions.GetPlayer(src)
         for material, amount in pairs(item.materials) do
-            Player.Functions.RemoveItem(material, amount)
+            Player.Functions.RemoveItem(material, amount*craftingAmount)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.material], "remove")
         end
-        Player.Functions.AddItem(item.name, item.amount)
+        Player.Functions.AddItem(item.name, item.amount*craftingAmount)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
     elseif Config.Inventory == 'ox' then
         local pped = GetPlayerPed(src)
         local coords = GetEntityCoords(pped)
         for material, amount in pairs(item.materials) do
-            exports.ox_inventory:RemoveItem(src, material, amount)
+            exports.ox_inventory:RemoveItem(src, material, amount*craftingAmount)
         end
-        if exports.ox_inventory:CanCarryItem(src, item.name, item.amount or 1) then
-            exports.ox_inventory:AddItem(src, item.name, item.amount or 1 )
+        if exports.ox_inventory:CanCarryItem(src, item.name, item.amount*craftingAmount or 1) then
+            exports.ox_inventory:AddItem(src, item.name, item.amount*craftingAmount or 1 )
         else
-            exports.ox_inventory:CustomDrop("craft", {{item.name, item.amount or 1, durability = 100}}, coords)
+            exports.ox_inventory:CustomDrop("craft", {{item.name, item.amount*craftingAmount or 1, durability = 100}}, coords)
         end
     end
 end)

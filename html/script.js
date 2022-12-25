@@ -3,6 +3,10 @@ let Recipies = []
 let Categories = []
 let currentRecipie = {}
 let currentAdId = -1
+let craftingAmount = 1
+
+let inv = 'qb'
+
 
 $(document).ready(function(){
     /* console.log('lol crafting') */
@@ -10,7 +14,6 @@ $(document).ready(function(){
 
     window.addEventListener('message', function(event){
         var eventData = event.data;
-        console.log(eventData.action)
 
         if (eventData.action == "cwCrafting") {
             if (eventData.toggle) {
@@ -20,29 +23,20 @@ $(document).ready(function(){
     });
 });
 
-function handleConfirm() {
-    /* console.log('confirmed', currentAd.title) */
-    if(currentAd){
-        $.post('https://cw-darkweb/confirmPurchase', JSON.stringify(currentAd), function(wentThrough){
-            console.log('aaa', wentThrough)
-
-            if (wentThrough) {
-                console.log(currentAd.name)
-                $.post('https://cw-darkweb/removeAd', JSON.stringify(currentAd.name));
-                $(".confirmation-box").hide('')
-                $(`#${currentAd.name}${currentAdId}`).hide('')
-            }
-        });
-    }
-}
-
 function handleCraft() {
-    /* console.log('current recipie', JSON.stringify(currentRecipie)) */
-    $.post('https://cw-crafting/attemptCrafting', JSON.stringify(currentRecipie), function(success){
+    console.log('current recipie', JSON.stringify(currentRecipie), craftingAmount)
+    $.post('https://cw-crafting/attemptCrafting', JSON.stringify({currentRecipie, craftingAmount}), function(success){
         if (success) {
             console.log('successfully crafted an item')
         }
     })
+}
+
+
+let handleUpdateAmount = function(selected) {
+    craftingAmount = selected.value
+    console.log('craft amunt', craftingAmount, currentRecipie)
+    handleClickRecipie(currentRecipie)
 }
 
 function handleClickRecipie(recipieName) {
@@ -53,21 +47,20 @@ function handleClickRecipie(recipieName) {
         $(".recipie-info").html('');
         $(".confirmation-subtitle").html('');
         let recipie = Recipies[recipieName];
-        let amount = recipie.amount? recipie.amount : 1;
+        let resultAmount = recipie.amount? recipie.amount : 1;
         let hasBlueprint = recipie.blueprint? true: false;
         let hasJob = recipie.jobs ? true: false;
         $("#title").html(recipie.data.label)
-        
-        let inv = 'qb';
+
         let imageLink = '';
         if ( inv == 'qb' ) {
             imageLink = `nui://qb-inventory/html/images/${recipie.data.image}`
         } else {
-            imageLink= `nui://ox_inventory/web/images/${recipieName}.png`
+            imageLink= `nui://ox_inventory/web/images/${recipie.name}.png`
         }
-        $(".confirmation-subtitle").append(`<div class="chip"> Amount: ${amount} </div>`)
-        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${recipie.craftTime/1000}s </div>`)
         $(".header-icon").html(`<div class="card-icon"><img src=${imageLink} class="card-img"/></div>`)
+        $(".confirmation-subtitle").append(`<div class="chip"> Amount: ${resultAmount*craftingAmount} </div>`)
+        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${(craftingAmount*recipie.craftTime)/1000}s </div>`)
         if(hasBlueprint) $(".confirmation-subtitle").append(`<div class="chip"> Blueprint </div>`)
         if(hasJob) $(".confirmation-subtitle").append(`<div class="chip"> Job </div>`)
 
@@ -75,7 +68,7 @@ function handleClickRecipie(recipieName) {
             let row = `
             <div id="${material}-row" class="material-list-row">
                 <div class="left"> ${material} </div>
-                <div class="right"> ${amount} </div>
+                <div class="right"> ${amount*craftingAmount} </div>
             </div>
             `
             $(".recipie-info").append(row);
@@ -99,12 +92,11 @@ let filterByCategory = function(category) {
             if(recipie.category === category) {
                 let amount = recipie.amount? recipie.amount : 1;
                 console.log(JSON.stringify(i))
-                let inv = 'qb'
                 let imageLink = ''
                 if ( inv == 'qb' ) {
                     imageLink = `nui://qb-inventory/html/images/${recipie.data.image}`
                 } else {
-                    imageLink= `nui://ox_inventory/web/images/${recipieName}.png`
+                    imageLink= `nui://ox_inventory/web/images/${recipie.name}.png`
                 }
                 let element = `
                 <div id="${i.label}" class="card" onclick="handleClickRecipie('${i}')">

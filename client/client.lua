@@ -1,6 +1,7 @@
 QBCore =  exports['qb-core']:GetCoreObject()
 local Recipies = {}
 local Blueprints = {}
+local CurrentAmount = 1
 local currentTableType = nil
 if Config.Inventory == 'ox' then
     local ox_inventory = exports.ox_inventory
@@ -82,7 +83,10 @@ local function validateAccess(item)
     local playerPassesJobReq = validateJob(item)
     local playerPassesBlueprintReq = validateBlueprints(item)
 
-    if item.blueprint ~= nil and item.jobs ~= nil then
+    if item.requireBlueprintAndJob == true then
+        print(item.name.. ' requires both job and blueprint', playerPassesJobReq, playerPassesBlueprintReq)
+        return playerPassesJobReq and playerPassesBlueprintReq
+    elseif item.blueprint ~= nil and item.jobs ~= nil then
         print(item.name.. ' can use either job or blueprint', playerPassesJobReq, playerPassesBlueprintReq)
         return playerPassesJobReq or playerPassesBlueprintReq
     elseif item.blueprint ~= nil then
@@ -122,8 +126,8 @@ local function canCraftItem(item)
     print('checking job')
     if Config.Inventory == 'qb' then
         for material, amount in pairs(item.materials) do
-            print(amount, material)
-            local hasItem = QBCore.Functions.HasItem(material, amount)
+            print(amount*CurrentAmount, material)
+            local hasItem = QBCore.Functions.HasItem(material, amount*CurrentAmount)
             print('hasitem', hasItem)
             if not hasItem then
                 return false
@@ -131,14 +135,28 @@ local function canCraftItem(item)
             return true
         end
     elseif Config.Inventory == 'ox' then
+        print(QBCore.Debug(item))
+        local craft = true
         for material, amount in pairs(item.materials) do
-            -- print(amount, material)
-            local hasItem = exports.ox_inventory:Search("count", material)
-             --print('hasitem', hasItem, 'amount', amount)
-            if hasItem >= amount then print("True") return true else
-                return false
-            end
+            local count = 0
+
+            print(material)
+            local recipe = exports.ox_inventory:Search('slots', material)
+                for k, ingredients in pairs(recipe) do
+                    print(ingredients.metadata.degrade)
+                    if ingredients.metadata.degrade > 99 then
+                        count = count + ingredients.count
+                        print(count)
+                    else
+                        QBCore.Functions.Notify("Items are Bad Quality", 'error', 5000)
+                    end
+                end
+                if count < amount*CurrentAmount then
+                    craft = false
+                end
         end
+        if not craft then return false end
+        return true
     end
 end
 
@@ -146,13 +164,13 @@ local function craftItem(item)
     if canCraftItem(item) then
         callitems()
         -- do emote here
-        local craftTime = Config.DefaultCraftingTime
+        local craftTime = Config.DefaultCraftingTime*CurrentAmount
         if item.craftingTime then
-            craftTime = item.craftingTime
+            craftTime = item.craftingTime*CurrentAmount
         end
         local amount = 1
         if item.amount then
-            amount = item.amount
+            amount = item.amount*CurrentAmount
         end
         TriggerEvent('animations:client:EmoteCommandStart', {"mechanic"})
         QBCore.Functions.Progressbar("crafting", "Crafting", craftTime , false, true, {
@@ -161,7 +179,7 @@ local function craftItem(item)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function()
-            TriggerServerEvent('cw-crafting:server:craftItem', PlayerPedId(), item)
+            TriggerServerEvent('cw-crafting:server:craftItem', PlayerPedId(), item, CurrentAmount)
            --[[  print('item name', item.name) ]]
             if Config.Inventory == 'qb' then
                 QBCore.Functions.Notify('You have crafted '..amount..' '.. QBCore.Shared.Items[item.name].label, "success")
@@ -246,10 +264,12 @@ end
 
 
 RegisterNUICallback('attemptCrafting', function(recipie, cb)
+    print('hello?', dump(recipie) )
     local Player = QBCore.Functions.GetPlayerData()
-    local currentRecipie = Config.Recipies[recipie]
+    local currentRecipie = Config.Recipies[recipie.currentRecipie]
+    CurrentAmount = recipie.craftingAmount
     if Config.Debugcraft then
-        print(recipie, dump(currentRecipie))
+        print(recipie.currentRecipie, dump(currentRecipie))
     end
     local success = craftItem(currentRecipie)
     cb(success)
