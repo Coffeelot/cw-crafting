@@ -1,5 +1,5 @@
 QBCore =  exports['qb-core']:GetCoreObject()
-
+local useDebug = Config.Debug
 function dump(o)
    if type(o) == 'table' then
    local s = '{ '
@@ -208,4 +208,10 @@ end, 'admin')
 
 QBCore.Commands.Add('giveblueprint', 'Give blueprint item to player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
     giveBlueprintItem(tonumber(args[1]), args[2])
+end, 'admin')
+
+QBCore.Commands.Add('cwdebugcrafting', 'toggle debug for crafting', {}, true, function(source, args)
+    useDebug = not useDebug
+    print('debug is now:', useDebug)
+    TriggerClientEvent('cw-crafting:client:toggleDebug',source, useDebug)
 end, 'admin')

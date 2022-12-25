@@ -1,4 +1,5 @@
 Config = {}
+Config.Debug = false
 
 Config.Inventory = 'qb'
 Config.Blueprints = {
