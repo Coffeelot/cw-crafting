@@ -4,6 +4,7 @@ Config.Inventory = 'qb'
 Config.Blueprints = {
 	['lockpicks'] = { },
 	['aluminumoxide_pro'] = { },
+	['repairkit'] = { },
 }
 
 Config.DefaultCraftingTime = 1000
@@ -35,6 +36,7 @@ Config.Recipies = {
 		jobs = { 
 			{ name = 'mechanic', level = 2 }
 	 	},
+		blueprint = 'repairkit',
 		tables = {'mechanic', 'basic'} -- can be made on both mechanic and basic tables
 	},
 	['advancedrepairkit'] = {

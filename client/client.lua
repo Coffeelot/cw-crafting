@@ -55,8 +55,6 @@ end
 
 local function validateBlueprints(item)
     if item.blueprint then
-        local Player = QBCore.Functions.GetPlayerData()
-        
         for i, blueprint in pairs(Blueprints) do
             print(blueprint, item.blueprint, blueprint == item.blueprint)
             if blueprint == item.blueprint then return true end
@@ -71,6 +69,9 @@ end
 local function validateAccess(item)
     local playerPassesJobReq = validateJob(item)
     local playerPassesBlueprintReq = validateBlueprints(item)
+    if playerPassesBlueprintReq then
+        return true
+    end
     if playerPassesJobReq == nil and playerPassesBlueprintReq == nil then
         print('the recipie is base')
         return true
