@@ -183,3 +183,11 @@ $(document).on('keydown', function(event) {
             break;
     }
 });
+
+$(document).click(function(event) { 
+    var $target = $(event.target);
+    if(!$target.closest('.app-container').length && 
+    $('.app-container').is(":visible")) {
+      cwCrafting.Close()
+    }        
+  });
