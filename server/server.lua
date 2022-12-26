@@ -206,8 +206,8 @@ local function giveRandomBlueprint(source ,maxRarity, failChance)
             end
         end
         if foundItem ~= nil then
-            print('giving '.. foundItem)
-            -- giveBlueprintItem(source, foundItem)
+            print('giving '.. foundItem.. ' to ', source)
+            giveBlueprintItem(source, foundItem)
         end
     else
         print('Roll Failed', failChance, chance)
@@ -219,8 +219,8 @@ RegisterNetEvent('cw-crafting:server:giveBlueprint', function(value)
     giveBlueprintItem(source, value)
 end)
 
-RegisterNetEvent('cw-crafting:server:giveRandomBlueprint', function(maxRarity, failChance)
-    print(source)
+RegisterNetEvent('cw-crafting:server:giveRandomBlueprint', function(source, maxRarity, failChance)
+    print('srs', source)
     giveRandomBlueprint(source, maxRarity, failChance)
 end)
 
@@ -268,4 +268,8 @@ QBCore.Commands.Add('cwdebugcrafting', 'toggle debug for crafting', {}, true, fu
     useDebug = not useDebug
     print('debug is now:', useDebug)
     TriggerClientEvent('cw-crafting:client:toggleDebug',source, useDebug)
+end, 'admin')
+
+QBCore.Commands.Add('testbp', 'test bps. (Admin Only)',{}, true, function(source)
+    TriggerEvent('cw-crafting:server:giveRandomBlueprint',source, 1, 0)
 end, 'admin')
