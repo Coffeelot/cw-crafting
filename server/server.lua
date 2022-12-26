@@ -165,9 +165,63 @@ local function giveBlueprintItem(source, blueprintValue)
     end
 end
 
+local function GenerateRandomIndex()
+    local Array = {}
+ 
+    for index, bp in pairs(Config.Blueprints) do
+        local chance = math.random(0,100)
+        local chanceToGetItem = bp.chance
+        if chanceToGetItem == nil then
+            chanceToGetItem = 100
+        end
+        print('chance to get', chance, chanceToGetItem)
+        if chance <= chanceToGetItem then
+            print('adding ', index)
+            table.insert(Array, index)
+        end
+    end
+ 
+    local RandomNumber = math.random(1, #Array)
+ 
+    return Array[RandomNumber], Config.Blueprints[Array[RandomNumber]].rarity or 1
+end
+
+local function giveRandomBlueprint(source ,maxRarity, failChance)
+    local foundItem = nil
+    local chance = math.random(0,100)
+    if failChance == nil then
+        failChance = Config.DefaultFailChance
+    end
+
+    if maxRarity == nil then
+        maxRarity = 5
+    end
+
+    if failChance <= chance then
+        while foundItem == nil do
+            local blueprint, rarity = GenerateRandomIndex()
+            print('res', blueprint,rarity)
+            if rarity <= maxRarity then
+                foundItem = blueprint
+            end
+        end
+        if foundItem ~= nil then
+            print('giving '.. foundItem)
+            -- giveBlueprintItem(source, foundItem)
+        end
+    else
+        print('Roll Failed', failChance, chance)
+    end
+end
+
 -- Use this to give blueprints from random loot
-RegisterNetEvent('cw-crafting:server:giveBlueprint', function(values)
-    giveBlueprintItem(source, values)
+RegisterNetEvent('cw-crafting:server:giveBlueprint', function(value)
+    giveBlueprintItem(source, value)
+end)
+
+RegisterNetEvent('cw-crafting:server:giveRandomBlueprint', function(maxRarity, failChance)
+    print(source)
+    giveRandomBlueprint(source, maxRarity, failChance)
 end)
 
 RegisterNetEvent('cw-crafting:server:removeBlueprint', function(citizenId,blueprint)
