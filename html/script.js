@@ -13,7 +13,7 @@ $(document).ready(function(){
     $('.crafting-container').hide();
     $.post('https://cw-crafting/getInventory', function(inventory){
         if (inventory) {
-            console.log('Setting inv to', inventory)
+            console.log('cw-crafting: Setting inv to', inventory)
             inv = inventory
         }
     })
