@@ -305,6 +305,9 @@ RegisterNUICallback('closeCrafting', function(_, cb)
     cb('ok')
 end)
 
+RegisterNUICallback('getInventory', function(_, cb)
+    cb(Config.Inventory)
+end)
 
 RegisterCommand('openCrafting', function(source)
     if useDebug then

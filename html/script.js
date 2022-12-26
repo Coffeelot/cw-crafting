@@ -11,7 +11,12 @@ let inv = 'qb'
 $(document).ready(function(){
     /* console.log('lol crafting') */
     $('.crafting-container').hide();
-
+    $.post('https://cw-crafting/getInventory', function(inventory){
+        if (inventory) {
+            console.log('Setting inv to', inventory)
+            inv = inventory
+        }
+    })
     window.addEventListener('message', function(event){
         var eventData = event.data;
 
