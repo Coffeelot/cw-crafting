@@ -196,7 +196,7 @@ local function giveRandomBlueprint(source ,maxRarity, failChance)
     if maxRarity == nil then
         maxRarity = 5
     end
-
+    print('fail chance:', failChance, 'roll', chance)
     if failChance <= chance then
         while foundItem == nil do
             local blueprint, rarity = GenerateRandomIndex()
@@ -271,5 +271,6 @@ QBCore.Commands.Add('cwdebugcrafting', 'toggle debug for crafting', {}, true, fu
 end, 'admin')
 
 QBCore.Commands.Add('testbp', 'test bps. (Admin Only)',{}, true, function(source)
-    TriggerEvent('cw-crafting:server:giveRandomBlueprint',source, 1, 0)
+    TriggerEvent('cw-crafting:server:giveRandomBlueprint',source)
+    --TriggerEvent('cw-crafting:server:giveRandomBlueprint',source, 3, 50)
 end, 'admin')
