@@ -1,16 +1,46 @@
 # Crafting 🔧
-This script does things. 
+We hated the idea of the crafting grind, so we made a crafting script that's focused on blueprints that can be aquired from loot or by having the correct job.
+
+Blueprints are items that have a unique value tied to them. You can use them to learn the blueprint. Reciepies can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipies, crafting benches and blueprints!
+
+READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
+
+# Youtube Preview 📽
+[![YOUTUBE VIDEO](http://img.youtube.com/vi/NVUlgIOcvbU/0.jpg)](https://youtu.be/NVUlgIOcvbU)
+
+# Features
+- Blueprint based crafting
+- Easy addition of new recipies
+- Exports to give blueprints (through loot for example)
+- All base QB recipies
+- A very sexy UI if I do say so myself
+- Support for OX inventory
 
 # Developed by Coffeelot and Wuggie
-[More scripts by us](https://github.com/stars/Coffeelot/lists/cw-scripts)  👈\
-[Support, updates and script previews](https://discord.gg/FJY4mtjaKr) 👈
+[More scripts by us](https://github.com/stars/Coffeelot/lists/cw-scripts)  👈
 
+**Support, updates and script previews**:
 
-# Add to qb-core ❗
+[![Join The discord!](https://cdn.discordapp.com/attachments/977876510620909579/1013102122985857064/discordJoin.png)](https://discord.gg/FJY4mtjaKr )
+
+**All our scripts are and will remain free**. If you want to support that endeavour, you can buy us a coffee here:
+
+[![Buy Us a Coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg)](https://www.buymeacoffee.com/cwscriptbois )
+# Setup 🔧
+## Add to qb-core ❗
 Items to add to qb-core>shared>items.lua 
 ```
 	-- CW crafting
 	["blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 1, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
 ```
- 
 Also make sure the images are in qb-inventory>html>images
+
+## Make your recipie values show in qb inventory (optional)
+To make it show item value in qb-inventory add this in app.js somewhere in the `FormatItemInfo` function (look for similar `else if` statements)
+```
+        else if (itemData.name == "blueprint") {
+            $(".item-info-title").html("<p>" + itemData.label + "</p>");
+            $(".item-info-description").html("<p> Recipie for: "+ itemData.info.value + "</p>");
+        }
+```
+ 
