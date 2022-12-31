@@ -164,6 +164,8 @@ local function giveBlueprintItem(source, blueprintValue)
         end
     end
 end
+exports("giveBlueprintItem", giveBlueprintItem)
+
 
 local function GenerateRandomIndex()
     local Array = {}
@@ -213,7 +215,7 @@ local function giveRandomBlueprint(source ,maxRarity, failChance)
         print('Roll Failed', failChance, chance)
     end
 end
-
+exports("giveRandomBlueprint", giveRandomBlueprint)
 -- Use this to give blueprints from random loot
 RegisterNetEvent('cw-crafting:server:giveBlueprint', function(value)
     giveBlueprintItem(source, value)

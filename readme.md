@@ -43,4 +43,15 @@ To make it show item value in qb-inventory add this in app.js somewhere in the `
             $(".item-info-description").html("<p> Recipie for: "+ itemData.info.value + "</p>");
         }
 ```
- 
+
+## Adding Blueprints to loot
+There are two exports for this script. You can either randomize the blueprints (chance is based of what's in the config):
+
+```
+exports['cw-crafting']:giveRandomBlueprint(source, maxRarity, failChance)
+```
+
+Or you can give a specific blueprint:
+```
+exports['cw-crafting']:giveBlueprintItem(source, blueprintValue)
+```
