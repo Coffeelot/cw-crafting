@@ -55,3 +55,5 @@ Or you can give a specific blueprint:
 ```
 exports['cw-crafting']:giveBlueprintItem(source, blueprintValue)
 ```
+
+You'll want to add these to server side loot distribution of any script you think could benefit from having a chance to give out blueprints.
