@@ -164,21 +164,100 @@ Config.Recipies = {
 		blueprint = 'armor',
 		tables = {'guns'}
     },
+	-- I got lazy here so these wont have blueprints by defaultlmao sorry deal with it
+	["pistol_extendedclip"] = {
+		name = "pistol_extendedclip",
+		materials = {
+			["metalscrap"] = 140,
+			["steel"] = 250,
+			["rubber"] = 60,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["pistol_suppressor"] = {
+		name = "pistol_suppressor",
+		materials = {
+			["metalscrap"] = 165,
+			["steel"] = 285,
+			["rubber"] = 75,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["smg_extendedclip"] = {
+		name = "smg_extendedclip",
+		materials = {
+			["metalscrap"] = 190,
+			["steel"] = 305,
+			["rubber"] = 85,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["microsmg_extendedclip"] = {
+		name = "microsmg_extendedclip",
+		materials = {
+			["metalscrap"] = 205,
+			["steel"] = 340,
+			["rubber"] = 110,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["smg_drum"] = {
+		name = "smg_drum",
+		materials = {
+			["metalscrap"] = 230,
+			["steel"] = 365,
+			["rubber"] = 130,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["smg_scope"] = {
+		name = "smg_scope",
+		materials = {
+			["metalscrap"] = 255,
+			["steel"] = 390,
+			["rubber"] = 145,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["assaultrifle_extendedclip"] = {
+		name = "assaultrifle_extendedclip",
+		materials = {
+			["metalscrap"] = 270,
+			["steel"] = 435,
+			["rubber"] = 155,
+			["smg_extendedclip"] = 1,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
+	["assaultrifle_drum"] = {
+		name = "assaultrifle_drum",
+		materials = {
+			["metalscrap"] = 300,
+			["steel"] = 469,
+			["rubber"] = 170,
+			["smg_extendedclip"] = 2,
+		},
+		category = 'Weapon Attachments',
+		tables = {'guns'}
+	},
 }
 
-Config.CraftingTables = {
-	basic = { 'ex_prop_ex_toolchest_01', 'gr_prop_gr_tool_chest_01a', 'gr_prop_gr_tool_draw_01a', 'gr_prop_gr_tool_draw_01b', 'prop_toolchest_04'},
-	illegal = { 'gr_prop_gr_bench_04a' }
-}
-
+-- Search for more tables here, for example: https://gta-objects.xyz/objects
 Config.CraftingTables = {
 	basic = { 
 		title = "Open crafting",
-		objects = { 'ex_prop_ex_toolchest_01', 'gr_prop_gr_tool_chest_01a', 'gr_prop_gr_tool_draw_01a', 'gr_prop_gr_tool_draw_01b', 'prop_toolchest_04' }
+		objects = { 'ex_prop_ex_toolchest_01', 'prop_toolchest_04' }
 	},
 	mechanic = {
 		title = "Open mechanic crafting",
-		objects = { 'gr_prop_gr_bench_04a' }
+		objects = { 'imp_prop_impexp_mechbench' }
 	},
 	guns = {
 		title = "Open gun crafting",

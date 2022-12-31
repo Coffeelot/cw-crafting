@@ -276,7 +276,6 @@ local function setCraftingOpen(bool, i)
     end)
 end
 
-
 RegisterNUICallback('attemptCrafting', function(recipie, cb)
     local Player = QBCore.Functions.GetPlayerData()
     local currentRecipie = Config.Recipies[recipie.currentRecipie]

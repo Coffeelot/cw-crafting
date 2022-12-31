@@ -26,9 +26,13 @@ server_scripts{
     'server/*.lua',
 }
 
-
 shared_scripts {
     'config.lua',
+}
+
+exports {
+    'giveRandomBlueprint',
+    'giveBlueprintItem',
 }
 
 dependency 'oxmysql'
