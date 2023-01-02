@@ -58,6 +58,8 @@ exports['cw-crafting']:giveBlueprintItem(source, blueprintValue)
 
 You'll want to add these to server side loot distribution of any script you think could benefit from having a chance to give out blueprints.
 
+‼ Only blueprints that have been added to `Config.Blueprints` in the `Config.Lua` file will be randomized from!
+
 ## Creating new crafting tables
 All you gotta do is go into the `Config.Lua`, head to the bottom and you'll find the Tables. You can add a table her,  in the same style as the existing ones. So say you wanted to add a "kitchen" table, it'd look like this:
 ```    
