@@ -102,12 +102,12 @@ body {
     margin-top: -4px;
 }
 
-.recipie-container {
+.recipe-container {
     overflow: hidden;
     height: 40vh;
 }
 
-.recipie-list {
+.recipe-list {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -229,7 +229,7 @@ h1 {
     border-bottom: 0;
 }
 
-.recipie-confirmation-container {
+.recipe-confirmation-container {
     width: 30vh;
     background: var(--background);
     border-radius: var(--border-radius);

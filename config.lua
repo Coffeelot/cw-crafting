@@ -19,16 +19,16 @@ Config.DefaultFailChance = 80
 
 Config.DefaultCraftingTime = 1000 -- in milliseconds
 
-Config.Recipies = {
-	['aluminumoxide'] = { -- example of a very basic recipie. 
+Config.Recipes = {
+	['aluminumoxide'] = { -- example of a very basic recipe. 
 		name = 'aluminumoxide', -- this needs to correlate to an item
-		category = "Materials", -- this will be the category the recipie is under
+		category = "Materials", -- this will be the category the recipe is under
 		materials = { -- materials used to craft
 			["aluminum"] = 60,
 			["glass"] = 30,
 		}, 
 	},
-	['aluminumoxide_pro'] = { -- example of a recipie that is a "pro" version, unlockable through blueprints
+	['aluminumoxide_pro'] = { -- example of a recipe that is a "pro" version, unlockable through blueprints
 		name = 'aluminumoxide',
 		category = "Materials",
 		materials = { 
@@ -39,7 +39,7 @@ Config.Recipies = {
 		craftTime = 5000, 
 		blueprint = 'aluminumoxide_pro'
 	},
-	['repairkit'] = { -- example of a recipie that can be aquired by having the correct job OR the blueprint 
+	['repairkit'] = { -- example of a recipe that can be aquired by having the correct job OR the blueprint 
 		name = 'repairkit', 
 		craftTime= 4000, 
 		category = "Mechanic", 
@@ -54,7 +54,7 @@ Config.Recipies = {
 		blueprint = 'repairkit',
 		tables = {'mechanic', 'basic'} -- can be made on both mechanic and basic tables
 	},
-	['advancedrepairkit'] = { -- example of a recipie that requires BOTH job and blueprint to access
+	['advancedrepairkit'] = { -- example of a recipe that requires BOTH job and blueprint to access
 		name = 'advancedrepairkit', 
 		craftTime= 7000, 
 		category = "Mechanic", 
@@ -143,7 +143,7 @@ Config.Recipies = {
 			{ name = 'police', level = 2 } 
 	 	},
     },
-	['ironoxide'] = { -- example of a very basic recipie. 
+	['ironoxide'] = { -- example of a very basic recipe. 
 		name = 'ironoxide',
 		category = "Materials", 
 		materials = {

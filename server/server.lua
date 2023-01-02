@@ -131,7 +131,7 @@ local function handleAddBlueprintFromItem(source, item)
             end
         end
     else
-        TriggerClientEvent('QBCore:Notify', source, "You already know this recipie", "error")
+        TriggerClientEvent('QBCore:Notify', source, "You already know this recipe", "error")
     end
 end
 

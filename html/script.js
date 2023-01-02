@@ -1,7 +1,7 @@
 let cwCrafting = {}
-let Recipies = []
+let Recipes = []
 let Categories = []
-let currentRecipie = {}
+let currentRecipe = {}
 let currentAdId = -1
 let craftingAmount = 1
 
@@ -29,8 +29,8 @@ $(document).ready(function(){
 });
 
 function handleCraft() {
-    console.log('current recipie', JSON.stringify(currentRecipie), craftingAmount)
-    $.post('https://cw-crafting/attemptCrafting', JSON.stringify({currentRecipie, craftingAmount}), function(success){
+    console.log('current recipe', JSON.stringify(currentRecipe), craftingAmount)
+    $.post('https://cw-crafting/attemptCrafting', JSON.stringify({currentRecipe, craftingAmount}), function(success){
         if (success) {
             console.log('successfully crafted an item')
         }
@@ -40,43 +40,43 @@ function handleCraft() {
 
 let handleUpdateAmount = function(selected) {
     craftingAmount = selected.value
-    console.log('craft amunt', craftingAmount, currentRecipie)
-    handleClickRecipie(currentRecipie)
+    console.log('craft amunt', craftingAmount, currentRecipe)
+    handleClickRecipe(currentRecipe)
 }
 
-function handleClickRecipie(recipieName) {
-    /* console.log('click', JSON.stringify(recipieName)) */
-    if(recipieName) {
-        currentRecipie = recipieName;
-        $(".recipie-confirmation-container").show();
-        $(".recipie-info").html('');
+function handleClickRecipe(recipeName) {
+    /* console.log('click', JSON.stringify(recipeName)) */
+    if(recipeName) {
+        currentRecipe = recipeName;
+        $(".recipe-confirmation-container").show();
+        $(".recipe-info").html('');
         $(".confirmation-subtitle").html('');
-        let recipie = Recipies[recipieName];
-        let resultAmount = recipie.amount? recipie.amount : 1;
-        let hasBlueprint = recipie.blueprint? true: false;
-        let hasJob = recipie.jobs ? true: false;
-        $("#title").html(recipie.data.label)
+        let recipe = Recipes[recipeName];
+        let resultAmount = recipe.amount? recipe.amount : 1;
+        let hasBlueprint = recipe.blueprint? true: false;
+        let hasJob = recipe.jobs ? true: false;
+        $("#title").html(recipe.data.label)
 
         let imageLink = '';
         if ( inv == 'qb' ) {
-            imageLink = `nui://qb-inventory/html/images/${recipie.data.image}`
+            imageLink = `nui://qb-inventory/html/images/${recipe.data.image}`
         } else {
-            imageLink= `nui://ox_inventory/web/images/${recipie.name}.png`
+            imageLink= `nui://ox_inventory/web/images/${recipe.name}.png`
         }
         $(".header-icon").html(`<div class="card-icon"><img src=${imageLink} class="card-img"/></div>`)
         $(".confirmation-subtitle").append(`<div class="chip"> Amount: ${resultAmount*craftingAmount} </div>`)
-        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${(craftingAmount*recipie.craftTime)/1000}s </div>`)
+        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${(craftingAmount*recipe.craftTime)/1000}s </div>`)
         if(hasBlueprint) $(".confirmation-subtitle").append(`<div class="chip"> Blueprint </div>`)
         if(hasJob) $(".confirmation-subtitle").append(`<div class="chip"> Job </div>`)
 
-        $.each(recipie.materials, function(material, amount){
+        $.each(recipe.materials, function(material, amount){
             let row = `
             <div id="${material}-row" class="material-list-row">
                 <div class="left"> ${material} </div>
                 <div class="right"> ${amount*craftingAmount} </div>
             </div>
             `
-            $(".recipie-info").append(row);
+            $(".recipe-info").append(row);
         })
 
     } else {
@@ -91,60 +91,60 @@ let filterByCategory = function(category) {
         return
     } else {
         $(".category-container").hide();
-        $(".recipie-container").show();
-        $(".recipie-list").html("");
-        $.each(Recipies, function(i, recipie) {
-            if(recipie.category === category) {
-                let amount = recipie.amount? recipie.amount : 1;
+        $(".recipe-container").show();
+        $(".recipe-list").html("");
+        $.each(Recipes, function(i, recipe) {
+            if(recipe.category === category) {
+                let amount = recipe.amount? recipe.amount : 1;
                 console.log(JSON.stringify(i))
                 let imageLink = ''
                 if ( inv == 'qb' ) {
-                    imageLink = `nui://qb-inventory/html/images/${recipie.data.image}`
+                    imageLink = `nui://qb-inventory/html/images/${recipe.data.image}`
                 } else {
-                    imageLink= `nui://ox_inventory/web/images/${recipie.name}.png`
+                    imageLink= `nui://ox_inventory/web/images/${recipe.name}.png`
                 }
                 let element = `
-                <div id="${i.label}" class="card" onclick="handleClickRecipie('${i}')">
+                <div id="${i.label}" class="card" onclick="handleClickRecipe('${i}')">
                     <div class="card-icon">
                         <img src=${imageLink} class="card-img"/>
                     </div>
                     <div class="card-content">
                         <div class="card-header">
-                            ${recipie.data.label}
+                            ${recipe.data.label}
                         </div>
                         <div class="chip-list">
                             <div class="chip"> x${amount} </div>
-                            <div class="chip"> ${recipie.craftTime/1000}s </div>
+                            <div class="chip"> ${recipe.craftTime/1000}s </div>
                         </div>
                     </div>
                 </div>
                 `;
-            $(".recipie-list").append(element);
+            $(".recipe-list").append(element);
             }
         })
     }
 }
 // qb-inventory/html/images/
-//<img src="../../../[qb]/qb-inventory/html/images/${recipie.data.image}"/>
+//<img src="../../../[qb]/qb-inventory/html/images/${recipe.data.image}"/>
 
 let SetCategories = function () {
     Categories = []
-    $.each(Recipies, function(i,recipie) {
-        /* console.log('checking', JSON.stringify(recipie)) */
-        if( Categories.includes(recipie.category) ) {
-            /* console.log(recipie.category, ' already existed') */
+    $.each(Recipes, function(i,recipe) {
+        /* console.log('checking', JSON.stringify(recipe)) */
+        if( Categories.includes(recipe.category) ) {
+            /* console.log(recipe.category, ' already existed') */
         } else {
-            Categories.push(recipie.category)
+            Categories.push(recipe.category)
         }
     })
 }
 
 let LoadCategoryList = function() {
     /* console.log('Loading categories') */
-    $(".recipie-container").hide();
+    $(".recipe-container").hide();
     $(".category-container").show();
     $(".category-list").html("");
-    $(".recipie-confirmation-container").hide();
+    $(".recipe-confirmation-container").hide();
 
     $.each(Categories, function(i, category) {
         let element = `
@@ -165,10 +165,10 @@ let goBack = function() {
 
 cwCrafting.Open = function() {
     /* console.log('opening crafting') */
-    $.post('https://cw-crafting/getRecipies', function(recipies){
-        if (recipies) {
-            console.log('recipies', JSON.stringify(recipies))
-            Recipies = recipies;
+    $.post('https://cw-crafting/getRecipes', function(recipes){
+        if (recipes) {
+            console.log('recipes', JSON.stringify(recipes))
+            Recipes = recipes;
             $('.crafting-container').fadeIn(950);
             SetCategories();
             LoadCategoryList();

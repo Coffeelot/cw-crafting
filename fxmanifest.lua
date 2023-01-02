@@ -12,7 +12,7 @@ lua54 'yes'
 
 files {
 	'html/*',
-    'html/recipieImages/*'
+    'html/recipeImages/*'
 }
 
 client_scripts{

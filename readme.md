@@ -1,7 +1,7 @@
 # Crafting 🔧
 We hated the idea of the crafting grind, so we made a crafting script that's focused on blueprints that can be aquired from loot or by having the correct job.
 
-Blueprints are items that have a unique value tied to them. You can use them to learn the blueprint. Reciepies can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipies, crafting benches and blueprints!
+Blueprints are items that have a unique value tied to them. You can use them to learn the blueprint. Reciepes can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipes, crafting benches and blueprints!
 
 READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 
@@ -10,9 +10,9 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 
 # Features
 - Blueprint based crafting
-- Easy addition of new recipies
+- Easy addition of new recipes
 - Exports to give blueprints (through loot for example)
-- All base QB recipies
+- All base QB recipes
 - A very sexy UI if I do say so myself
 - Support for OX inventory
 
@@ -35,12 +35,12 @@ Items to add to qb-core>shared>items.lua
 ```
 Also make sure the images are in qb-inventory>html>images
 
-## Make your recipie values show in qb inventory (optional)
+## Make your recipe values show in qb inventory (optional)
 To make it show item value in qb-inventory add this in app.js somewhere in the `FormatItemInfo` function (look for similar `else if` statements)
 ```
         else if (itemData.name == "blueprint") {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
-            $(".item-info-description").html("<p> Recipie for: "+ itemData.info.value + "</p>");
+            $(".item-info-description").html("<p> Recipe for: "+ itemData.info.value + "</p>");
         }
 ```
 

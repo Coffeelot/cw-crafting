@@ -1,5 +1,5 @@
 QBCore =  exports['qb-core']:GetCoreObject()
-local Recipies = {}
+local Recipes = {}
 local Blueprints = {}
 local CurrentAmount = 1
 local currentTableType = nil
@@ -125,7 +125,7 @@ local function validateRights(item)
         return validateAccess(item)
     end
     if useDebug then
-        print('recipie did not match this table')
+        print('recipe did not match this table')
     end
     return false
 end
@@ -210,19 +210,19 @@ local function craftItem(item)
     return false
 end
 
-local function getRecipies()
+local function getRecipes()
     if useDebug then
-       print('generating recipies for table', currentTableType)
+       print('generating recipes for table', currentTableType)
     end
-    Recipies = {}
+    Recipes = {}
     callitems()
     if useDebug then
-       print('Amount of recipies: ',#Config.Recipies)
+       print('Amount of recipes: ',#Config.Recipes)
     end
 
-    for recipie, item in pairs(Config.Recipies) do
+    for recipe, item in pairs(Config.Recipes) do
 --[[         if useDebug then
-           print('checking recpie', recipie)
+           print('checking recpie', recipe)
         end
         print('validating', item.name) ]]
         local canCraft = validateRights(item)
@@ -232,9 +232,9 @@ local function getRecipies()
             elseif Config.Inventory == 'ox' then
                 item.data = ItemNames[item.name]
             end
-            Recipies[recipie] = item
+            Recipes[recipe] = item
             if item.craftTime == nil then
-                Recipies[recipie].craftTime = Config.DefaultCraftingTime
+                Recipes[recipe].craftTime = Config.DefaultCraftingTime
             end
             if useDebug then
                 print('Has access to', item.name)
@@ -249,7 +249,7 @@ local function getRecipies()
         end
 
     end
-    return Recipies
+    return Recipes
 end
 
 local function setCraftingOpen(bool, i)
@@ -276,23 +276,23 @@ local function setCraftingOpen(bool, i)
     end)
 end
 
-RegisterNUICallback('attemptCrafting', function(recipie, cb)
+RegisterNUICallback('attemptCrafting', function(recipe, cb)
     local Player = QBCore.Functions.GetPlayerData()
-    local currentRecipie = Config.Recipies[recipie.currentRecipie]
-    CurrentAmount = recipie.craftingAmount
+    local currentRecipe = Config.Recipes[recipe.currentRecipe]
+    CurrentAmount = recipe.craftingAmount
     if useDebug then
-        print(recipie.currentRecipie, dump(currentRecipie))
+        print(recipe.currentRecipe, dump(currentRecipe))
     end
-    local success = craftItem(currentRecipie)
+    local success = craftItem(currentRecipe)
     cb(success)
 end)
 
-RegisterNUICallback('getRecipies', function(data, cb)
+RegisterNUICallback('getRecipes', function(data, cb)
     if useDebug then
-       print('Fetching recipies')
+       print('Fetching recipes')
     end
-    getRecipies()
-    cb(Recipies)
+    getRecipes()
+    cb(Recipes)
 end)
 
 
@@ -338,7 +338,7 @@ CreateThread(function()
 end)
 
 RegisterCommand('testcraft', function(_, args)
-	craftItem(Config.Recipies[args[1]])
+	craftItem(Config.Recipes[args[1]])
 end)
 
 
