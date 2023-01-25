@@ -152,12 +152,13 @@ local function giveBlueprintItem(source, blueprintValue)
         Player.Functions.AddItem('blueprint', 1, nil, info)
         TriggerClientEvent('inventory:client:ItemBox', source, getQBItem('blueprint'), "add")
     elseif Config.Inventory == 'ox' then
-        print("called")
         local carry = exports.ox_inventory:CanCarryItem(source, 'blueprint', 1)
         if carry then
             exports.ox_inventory:AddItem(source, 'blueprint', 1, {value = blueprintValue})
         else
-            print("FAILED")
+            if useDebug then
+               print("Can not carry. Dropping on ground")
+            end
             local pped = GetPlayerPed(source)
             local coords = GetEntityCoords(pped)
             exports.ox_inventory:CustomDrop("drop-"..math.random(1,9999), {{'blueprint', 1, {value = blueprintValue}}}, coords)
@@ -166,64 +167,74 @@ local function giveBlueprintItem(source, blueprintValue)
 end
 exports("giveBlueprintItem", giveBlueprintItem)
 
-
-local function GenerateRandomIndex()
-    local Array = {}
- 
+local function filterByRarity(min, max)
+    local tempBlueprints = {}
     for index, bp in pairs(Config.Blueprints) do
-        local chance = math.random(0,100)
-        local chanceToGetItem = bp.chance
-        if chanceToGetItem == nil then
-            chanceToGetItem = 100
+        local rarity = bp.rarity
+        if rarity == nil then
+           rarity = 1 
         end
-        print('chance to get', chance, chanceToGetItem)
-        if chance <= chanceToGetItem then
-            print('adding ', index)
-            table.insert(Array, index)
+        if rarity >= min and rarity <= max then
+            local i = #tempBlueprints+1
+            tempBlueprints[i] = bp
+            tempBlueprints[i].value = index
         end
     end
- 
-    local RandomNumber = math.random(1, #Array)
- 
-    return Array[RandomNumber], Config.Blueprints[Array[RandomNumber]].rarity or 1
+    if useDebug then
+       print('sorted BPS', min, max)
+       print(QBCore.Debug(tempBlueprints))
+    end
+    return tempBlueprints
 end
 
-local function giveRandomBlueprint(source ,maxRarity, failChance)
+local function randomizeBlueprint(blueprints)
+    return blueprints[math.random(1, #blueprints)]
+end
+
+local function giveRandomBlueprint(source , rarity, failChance)
     local foundItem = nil
-    local chance = math.random(0,100)
-    if failChance == nil then
-        failChance = Config.DefaultFailChance
+    local minRarity = 1
+    local maxRarity = 1
+    if type(rarity) == 'table' then
+        if useDebug then
+           print('table')
+        end
+        minRarity = rarity.min
+        maxRarity = rarity.max
+    else
+        if useDebug then
+           print('not table')
+        end
+        maxRarity = rarity
     end
 
-    if maxRarity == nil then
-        maxRarity = 5
+    local chance = math.random(0,100)
+
+    if useDebug then
+        print('Roll:', chance)
+        print('failChance:', failChance)
     end
-    print('fail chance:', failChance, 'roll', chance)
     if failChance <= chance then
-        while foundItem == nil do
-            local blueprint, rarity = GenerateRandomIndex()
-            print('res', blueprint,rarity)
-            if rarity <= maxRarity then
-                foundItem = blueprint
-            end
-        end
-        if foundItem ~= nil then
-            print('giving '.. foundItem.. ' to ', source)
-            giveBlueprintItem(source, foundItem)
-        end
+        local blueprints = filterByRarity(minRarity,maxRarity)
+        giveBlueprintItem(source, randomizeBlueprint(blueprints).value)
     else
-        print('Roll Failed', failChance, chance)
+        if useDebug then
+           print('Roll Failed', failChance, chance)
+        end
     end
 end
-exports("giveRandomBlueprint", giveRandomBlueprint)
--- Use this to give blueprints from random loot
+exports("giveRandomBlueprint", giveRandomBlueprint) -- Use this to give blueprints from random loot
+
 RegisterNetEvent('cw-crafting:server:giveBlueprint', function(value)
     giveBlueprintItem(source, value)
 end)
 
-RegisterNetEvent('cw-crafting:server:giveRandomBlueprint', function(source, maxRarity, failChance)
-    print('srs', source)
-    giveRandomBlueprint(source, maxRarity, failChance)
+RegisterNetEvent('cw-crafting:server:giveRandomBlueprint', function(source, rarity, failChance)
+    if useDebug then
+       print('srs', source)
+    end
+
+    giveRandomBlueprint(source, rarity , failChance)
 end)
 
 RegisterNetEvent('cw-crafting:server:removeBlueprint', function(citizenId,blueprint)
@@ -242,7 +253,9 @@ QBCore.Functions.CreateCallback('cw-crafting:server:getBlueprints', function(sou
 
 
 QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
-    print('used blueprint')
+    if useDebug then
+       print('used blueprint')
+    end
     handleAddBlueprintFromItem(source, item)
 end)
 

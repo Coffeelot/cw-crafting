@@ -217,7 +217,7 @@ local function getRecipes()
     Recipes = {}
     callitems()
     if useDebug then
-       print('Amount of recipes: ',#Config.Recipes)
+       print('Amount of recipes: ', #Config.Recipes)
     end
 
     for recipe, item in pairs(Config.Recipes) do
