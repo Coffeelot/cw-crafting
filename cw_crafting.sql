@@ -1,1 +1,1 @@
-ALTER TABLE `players` ADD `crafting_blueprints` TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE `players` ADD `crafting_blueprints` LONGTEXT NOT NULL DEFAULT '[]';
