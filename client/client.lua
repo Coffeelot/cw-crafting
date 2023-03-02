@@ -135,6 +135,7 @@ local function canCraftItem(item)
        print('checking job')
     end
     if Config.Inventory == 'qb' then
+        local craft = true
         for material, amount in pairs(item.materials) do
             if useDebug then
                print(amount*CurrentAmount, material)
@@ -144,10 +145,10 @@ local function canCraftItem(item)
                print('hasitem', hasItem)
             end
             if not hasItem then
-                return false
+                craft = false
             end
-            return true
         end
+        return craft
     elseif Config.Inventory == 'ox' then
         if useDebug then
            print(QBCore.Debug(item))
