@@ -16,11 +16,17 @@ end
 RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, craftingAmount)
     print(craftingAmount)
     local src = source
+    local total = 0
     if Config.Inventory == 'qb' then
         local Player = QBCore.Functions.GetPlayer(src)
         for material, amount in pairs(item.materials) do
             Player.Functions.RemoveItem(material, amount*craftingAmount)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.material], "remove")
+        end
+        if item.amount ~= nil then
+            total = item.amount * craftingAmount or craftingAmount
+        else
+            total = craftingAmount
         end
         Player.Functions.AddItem(item.name, item.amount*craftingAmount)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
@@ -28,12 +34,18 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
         local pped = GetPlayerPed(src)
         local coords = GetEntityCoords(pped)
         for material, amount in pairs(item.materials) do
-            exports.ox_inventory:RemoveItem(src, material, amount*craftingAmount)
+            exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount)
         end
-        if exports.ox_inventory:CanCarryItem(src, item.name, item.amount*craftingAmount or 1) then
-            exports.ox_inventory:AddItem(src, item.name, item.amount*craftingAmount or 1 )
+        if item.amount ~= nil then
+            total = item.amount * craftingAmount or craftingAmount
         else
-            exports.ox_inventory:CustomDrop("craft", {{item.name, item.amount*craftingAmount or 1, durability = 100}}, coords)
+            total = craftingAmount
+        end
+
+        if exports.ox_inventory:CanCarryItem(src, item.name, total) then
+            exports.ox_inventory:AddItem(src, item.name, total )
+        else
+            exports.ox_inventory:CustomDrop("craft", {{item.name, total, durability = 100}}, coords)
         end
     end
 end)
@@ -172,7 +184,7 @@ local function filterByRarity(min, max)
     for index, bp in pairs(Config.Blueprints) do
         local rarity = bp.rarity
         if rarity == nil then
-           rarity = 1 
+           rarity = 1
         end
         if rarity >= min and rarity <= max then
             local i = #tempBlueprints+1
@@ -208,7 +220,7 @@ local function giveRandomBlueprint(source , rarity, failChance)
         maxRarity = rarity
     end
 
-    local chance = math.random(0,100)
+    local chance = math.random(0,1000)
 
     if useDebug then
         print('Roll:', chance)
@@ -256,6 +268,7 @@ QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
     if useDebug then
        print('used blueprint')
     end
+    TriggerClientEvent('cw-crafting:client:progressbar', source, cb)
     handleAddBlueprintFromItem(source, item)
 end)
 

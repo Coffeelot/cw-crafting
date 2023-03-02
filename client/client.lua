@@ -6,14 +6,26 @@ local currentTableType = nil
 local ItemNames = {}
 local useDebug = Config.Debug
 
-local function callitems()
+local function getOxItems()
     if Config.Inventory == 'ox' then
         for items, datas in pairs(exports.ox_inventory:Items()) do
             ItemNames[items] = datas
-            print(ItemNames[items])
         end
     end
 end
+
+AddEventHandler('onResourceStart', function(resource)
+   if resource == GetCurrentResourceName() then
+        getOxItems()
+   end
+end)
+
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+    getOxItems()
+    if Config.Inventory == 'ox' then
+        exports.ox_inventory:displayMetadata("value", "Blueprint")
+    end
+end)
 
 function dump(o)
    if type(o) == 'table' then
@@ -46,7 +58,7 @@ local function validateJob(item)
 
         if playerHasJob then
             if levelRequirement ~= nil then
-                if Player.job.grade.level >= levelRequirement then
+                if jobLevel >= levelRequirement then
                     return true
                 else
                     -- print('Does not have the correct level')
@@ -150,18 +162,19 @@ local function canCraftItem(item)
         end
         return craft
     elseif Config.Inventory == 'ox' then
-        if useDebug then
-           print(QBCore.Debug(item))
-        end
         local craft = true
         for material, amount in pairs(item.materials) do
             local count = 0
             local recipe = exports.ox_inventory:Search('slots', material)
                 for k, ingredients in pairs(recipe) do
-                    if ingredients.metadata.degrade >= 1 then
-                        count = count + ingredients.count
+                    if ingredients.metadata.degrade ~= nil then
+                        if ingredients.metadata.degrade >= 1 then
+                            count = count + ingredients.count
+                        else
+                            QBCore.Functions.Notify("Items are Bad Quality", 'error', 5000)
+                        end
                     else
-                        QBCore.Functions.Notify("Items are Bad Quality", 'error', 5000)
+                        count = count + ingredients.count
                     end
                 end
                 if count < amount*CurrentAmount then
@@ -175,7 +188,6 @@ end
 
 local function craftItem(item)
     if canCraftItem(item) then
-        callitems()
         -- do emote here
         local craftTime = Config.DefaultCraftingTime*CurrentAmount
         if item.craftingTime then
@@ -216,23 +228,28 @@ local function getRecipes()
        print('generating recipes for table', currentTableType)
     end
     Recipes = {}
-    callitems()
     if useDebug then
        print('Amount of recipes: ', #Config.Recipes)
     end
 
     for recipe, item in pairs(Config.Recipes) do
---[[         if useDebug then
-           print('checking recpie', recipe)
-        end
-        print('validating', item.name) ]]
         local canCraft = validateRights(item)
         if canCraft then
+            local materialsNameMap = {}
             if Config.Inventory == 'qb' then
                 item.data = QBCore.Shared.Items[item.name]
+                for mat, amount in pairs(item.materials) do
+                    materialsNameMap[mat] = QBCore.Shared.Items[mat] 
+                end
             elseif Config.Inventory == 'ox' then
+                print('name', item.materials)
                 item.data = ItemNames[item.name]
+                for mat, amount in pairs(item.materials) do
+                    materialsNameMap[mat] = ItemNames[mat].label
+                end
             end
+            item.materialsNameMap = materialsNameMap
+
             Recipes[recipe] = item
             if item.craftTime == nil then
                 Recipes[recipe].craftTime = Config.DefaultCraftingTime
@@ -275,6 +292,11 @@ local function setCraftingOpen(bool, i)
             toggle = bool
         })
     end)
+end
+
+local function benchpermissions(jobname)
+    local Player = QBCore.Functions.GetPlayerData()
+    if Player.job.name == jobname then return true else return false end
 end
 
 RegisterNUICallback('attemptCrafting', function(recipe, cb)
@@ -323,8 +345,16 @@ CreateThread(function()
         options[1] = {
             type = 'client',
             label = benchType.title,
+            icon = "fas fa-wrench",
             action = function()
                 setCraftingOpen(true, i)
+            end,
+            canInteract = function()
+                if benchType.job ~= nil and benchType.job then
+                    benchpermissions(benchType.job)
+                else
+                    return true
+                end
             end,
         }
 
@@ -346,4 +376,16 @@ end)
 RegisterNetEvent('cw-crafting:client:toggleDebug', function(debug)
    print('Setting debug to',debug)
    useDebug = debug
+end)
+
+RegisterNetEvent('cw-crafting:client:progressbar', function()
+    QBCore.Functions.Progressbar('learnbp', 'Studying text on blueprint', 2500, false, false, {
+        disableMovement = true,
+        disableCarMovement = true,
+        disableMouse = false,
+        disableCombat = true,
+    }, {}, {}, {}, function()
+       return true
+        --Stuff goes here
+    end,{})
 end)
