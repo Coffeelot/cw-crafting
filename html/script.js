@@ -29,7 +29,7 @@ $(document).ready(function(){
 });
 
 function handleCraft() {
-    console.log('current recipe', JSON.stringify(currentRecipe), craftingAmount)
+    // console.log('current recipe', JSON.stringify(currentRecipe), craftingAmount)
     $.post('https://cw-crafting/attemptCrafting', JSON.stringify({currentRecipe, craftingAmount}), function(success){
         if (success) {
             console.log('successfully crafted an item')
@@ -40,7 +40,7 @@ function handleCraft() {
 
 let handleUpdateAmount = function(selected) {
     craftingAmount = selected.value
-    console.log('craft amunt', craftingAmount, currentRecipe)
+    // console.log('craft amunt', craftingAmount, currentRecipe)
     handleClickRecipe(currentRecipe)
 }
 
@@ -72,7 +72,7 @@ function handleClickRecipe(recipeName) {
         $.each(recipe.materials, function(material, amount){
             let row = `
             <div id="${material}-row" class="material-list-row">
-                <div class="left"> ${material} </div>
+                <div class="left"> ${recipe.materialsNameMap[material]} </div>
                 <div class="right"> ${amount*craftingAmount} </div>
             </div>
             `
@@ -96,7 +96,7 @@ let filterByCategory = function(category) {
         $.each(Recipes, function(i, recipe) {
             if(recipe.category === category) {
                 let amount = recipe.amount? recipe.amount : 1;
-                console.log(JSON.stringify(i))
+                // console.log(JSON.stringify(i))
                 let imageLink = ''
                 if ( inv == 'qb' ) {
                     imageLink = `nui://qb-inventory/html/images/${recipe.data.image}`
@@ -167,7 +167,7 @@ cwCrafting.Open = function() {
     /* console.log('opening crafting') */
     $.post('https://cw-crafting/getRecipes', function(recipes){
         if (recipes) {
-            console.log('recipes', JSON.stringify(recipes))
+            // console.log('recipes', JSON.stringify(recipes))
             Recipes = recipes;
             $('.crafting-container').fadeIn(950);
             SetCategories();
