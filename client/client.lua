@@ -242,7 +242,9 @@ local function getRecipes()
                     materialsNameMap[mat] = QBCore.Shared.Items[mat] 
                 end
             elseif Config.Inventory == 'ox' then
-                print('name', item.materials)
+                if useDebug then
+                   print('name', item.materials)
+                end
                 item.data = ItemNames[item.name]
                 for mat, amount in pairs(item.materials) do
                     materialsNameMap[mat] = ItemNames[mat].label
@@ -294,9 +296,10 @@ local function setCraftingOpen(bool, i)
     end)
 end
 
-local function benchpermissions(jobname)
+local function benchpermissions(jobTypes)
     local Player = QBCore.Functions.GetPlayerData()
-    if Player.job.name == jobname then return true else return false end
+    print(Player.job.name, jobTypes[Player.job.type])
+    if jobTypes[Player.job.name] then return true else return false end
 end
 
 RegisterNUICallback('attemptCrafting', function(recipe, cb)
@@ -350,19 +353,33 @@ CreateThread(function()
                 setCraftingOpen(true, i)
             end,
             canInteract = function()
-                if benchType.job ~= nil and benchType.job then
-                    benchpermissions(benchType.job)
+                if benchType.job ~= nil then
+                    benchpermissions(benchType.jobType)
                 else
                     return true
                 end
             end,
         }
 
-        for j, benchProp in pairs(benchType) do
+        for j, benchProp in pairs(benchType.objects) do
             exports['qb-target']:AddTargetModel(benchProp, {
                 options = options,
                 distance = 2.0
             })
+        end
+        if benchType.locations then
+            for j, benchLoc in pairs(benchType.locations) do
+                exports['qb-target']:AddBoxZone('crafting-'..benchType.title..'-'..j, benchLoc, 1.5, 1.5, {
+                    name = 'crafting-'..benchType.title..'-'..j,
+                    heading = 0,
+                    debugPoly = useDebug,
+                    minZ = benchLoc.z - 0.5,
+                    maxZ = benchLoc.z + 0.5,
+                }, {
+                    options = options,
+                    distance = 2.0
+                })
+            end
         end
 
     end

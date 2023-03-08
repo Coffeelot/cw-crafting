@@ -249,18 +249,23 @@ Config.Recipes = {
 	},
 }
 
+
 -- Search for more tables here, for example: https://gta-objects.xyz/objects
 Config.CraftingTables = {
-	basic = { 
-		title = "Open crafting",
-		objects = { 'ex_prop_ex_toolchest_01', 'prop_toolchest_04' }
+	['basic'] = {
+		title = "Crafting",
+		objects = { 'ex_prop_ex_toolchest_01', 'prop_toolchest_04', 'prop_toolchest_05'}, 
+		locations = {  vector3(939.4, -1554.36, 30.58), }
 	},
-	mechanic = {
-		title = "Open mechanic crafting",
-		objects = { 'imp_prop_impexp_mechbench' }
+	['mechanic'] = {
+		title = "Mechanic Crafting",
+		objects = { 'prop_toolchest_05' },
+		jobType = { ['mechanic'] = 1 }, -- NOTE: This checks TYPES not name. A new qb thing. It's good. Use it.
+		locations = { vector3(948.81, -1552.64, 30.59), } -- If you add one of these objects (locations = ...) it will spawn boxzones
 	},
-	guns = {
-		title = "Open gun crafting",
-		objects = { 'gr_prop_gr_bench_04a' }
+	['guns'] = {
+		title = "Weapon Crafting",
+		objects = { 'gr_prop_gr_bench_01a' }
 	},
 }
+
