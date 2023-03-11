@@ -239,7 +239,7 @@ local function getRecipes()
             if Config.Inventory == 'qb' then
                 item.data = QBCore.Shared.Items[item.name]
                 for mat, amount in pairs(item.materials) do
-                    materialsNameMap[mat] = QBCore.Shared.Items[mat] 
+                    materialsNameMap[mat] = QBCore.Shared.Items[mat].label
                 end
             elseif Config.Inventory == 'ox' then
                 if useDebug then
