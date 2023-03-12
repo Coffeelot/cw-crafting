@@ -21,7 +21,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
         local Player = QBCore.Functions.GetPlayer(src)
         for material, amount in pairs(item.materials) do
             Player.Functions.RemoveItem(material, amount*craftingAmount)
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.material], "remove")
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
         end
         if item.amount ~= nil then
             total = item.amount * craftingAmount or craftingAmount
