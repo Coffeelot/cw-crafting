@@ -353,7 +353,7 @@ CreateThread(function()
                 setCraftingOpen(true, i)
             end,
             canInteract = function()
-                if benchType.job ~= nil then
+                if benchType.jobType ~= nil then
                     benchpermissions(benchType.jobType)
                 else
                     return true
