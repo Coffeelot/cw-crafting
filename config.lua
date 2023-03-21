@@ -269,3 +269,17 @@ Config.CraftingTables = {
 	},
 }
 
+Config.UseSundownUtils = true
+
+Config.BlueprintDudes = { -- SET THIS TO Config.BlueprintDudes = nil TO DISABLE
+	{
+		model = 'cs_nigel',
+		coords = vector4(-1647.53, 248.17, 61.97, 118.29),
+		animation = 'WORLD_HUMAN_SEAT_LEDGE_EATING',
+	},
+	{
+		model = 'u_m_m_blane',
+		coords = vector4(1641.73, 3731.21, 35.07, 6.15),
+		animation = 'WORLD_HUMAN_DRINKING',
+	}
+}

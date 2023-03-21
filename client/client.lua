@@ -1,4 +1,4 @@
-QBCore =  exports['qb-core']:GetCoreObject()
+local QBCore = exports['qb-core']:GetCoreObject()
 local Recipes = {}
 local Blueprints = {}
 local CurrentAmount = 1
@@ -405,3 +405,81 @@ RegisterNetEvent('cw-crafting:client:progressbar', function()
         --Stuff goes here
     end,{})
 end)
+
+local function getAllBlueprints()
+    local blueprints = {}
+    local blueprintItem = 'blueprint'
+    local PlayerData = QBCore.Functions.GetPlayerData()
+    for i,item in pairs(PlayerData.items) do
+        if item.name == blueprintItem then
+            blueprints[item.info.value] = item
+        end
+    end
+    return blueprints
+end
+
+local function hasBlueprint(input)
+    if Config.Inventory == 'qb' then
+        local bps = getAllBlueprints()
+        for i,bp in pairs(bps) do
+            if bp.info.value == input then
+                return true
+            end
+        end
+        return false
+    elseif Config.Inventory == 'ox' then
+        print(input)
+        local blueprintItem = 'blueprint'
+
+        local items = exports.ox_inventory:Search('count', blueprintItem, { value = input } )
+        return items > 0
+    end
+end
+
+local function generateBlueprintOptions(dude)
+    local options = {}
+    for name, blueprint in pairs(Config.Blueprints) do
+        options[#options+1] = {
+            type = "server",
+            event = "cw-crafting:server:addBlueprintFromLearning",
+            bpName = name,
+            icon = "fas fa-graduation-cap",
+            gang = dude.gang,
+            label = "Learn "..name,
+            canInteract = function()
+                return hasBlueprint(name)
+            end
+        }
+    end
+    return options
+end
+
+if Config.BlueprintDudes then
+    CreateThread(function()
+        for i, dude in pairs(Config.BlueprintDudes) do
+            local animation
+            if dude.animation then
+                animation = dude.animation
+            else
+                animation = "WORLD_HUMAN_STAND_IMPATIENT"
+            end
+    
+            QBCore.Functions.LoadModel(dude.model)
+            local currentDude = CreatePed(0, dude.model, dude.coords.x, dude.coords.y, dude.coords.z-1.0, dude.coords.w, false, false)
+            TaskStartScenarioInPlace(currentDude,  animation)
+            FreezeEntityPosition(currentDude, true)
+            SetEntityInvincible(currentDude, true)
+            SetBlockingOfNonTemporaryEvents(currentDude, true)
+            
+            if Config.UseSundownUtils then
+                exports['sundown-utils']:addPedToBanlist(currentDude)
+            end
+    
+            local options = generateBlueprintOptions(dude)
+            exports['qb-target']:AddTargetEntity(currentDude, {
+                options = options,
+                distance = 2.0
+            })
+        end
+    end)
+end

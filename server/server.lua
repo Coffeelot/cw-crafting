@@ -97,15 +97,7 @@ local function addBlueprint(citizenId, blueprint)
     end
 end
 
-local function handleAddBlueprintFromItem(source, item)
-    local blueprint = nil
-    print('item', dump(item))
-    if Config.Inventory == 'qb' then
-        blueprint = item.info.value
-    else
-        blueprint = item.metadata.value
-    end
-    print('adding', blueprint)
+local function handleAddBlueprintFromItem(source, blueprint)
     local Player = QBCore.Functions.GetPlayer(source)
     local citizenId = Player.PlayerData.citizenid
     local success = addBlueprint(citizenId, blueprint)
@@ -265,11 +257,30 @@ QBCore.Functions.CreateCallback('cw-crafting:server:getBlueprints', function(sou
 
 
 QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
-    if useDebug then
-       print('used blueprint')
+    if Config.BlueprintDudes then
+        print('CW crafting is set up to use crafting learning dudes')
+    else        
+        if useDebug then
+           print('used blueprint')
+        end
+        TriggerClientEvent('cw-crafting:client:progressbar', source)
+        local blueprint = nil
+        if Config.Inventory == 'ox' then
+            blueprint = item.metadata.value
+        else
+            blueprint = item.info.value
+        end
+        handleAddBlueprintFromItem(source, blueprint)
     end
-    TriggerClientEvent('cw-crafting:client:progressbar', source, cb)
-    handleAddBlueprintFromItem(source, item)
+end)
+
+RegisterNetEvent('cw-crafting:server:addBlueprintFromLearning', function(blueprint)
+    local src = source
+    if useDebug then
+        print('used blueprint')
+    end
+    TriggerClientEvent('cw-crafting:client:progressbar', src)
+    handleAddBlueprintFromItem(src, blueprint.bpName)
 end)
 
 QBCore.Commands.Add('addblueprint', 'Give blueprint knowledge to player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
