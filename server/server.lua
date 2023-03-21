@@ -28,7 +28,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
         else
             total = craftingAmount
         end
-        Player.Functions.AddItem(item.name, item.amount*craftingAmount)
+        Player.Functions.AddItem(item.name, total)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
     elseif Config.Inventory == 'ox' then
         local pped = GetPlayerPed(src)

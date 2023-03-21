@@ -287,7 +287,6 @@ local function setCraftingOpen(bool, i)
             currentTableType = i;
         else
             currentTableType = nil;
-            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         end
         SendNUIMessage({
             action = "cwCrafting",
@@ -334,13 +333,13 @@ RegisterNUICallback('getInventory', function(_, cb)
     cb(Config.Inventory)
 end)
 
-RegisterCommand('openCrafting', function(source)
+--[[ RegisterCommand('openCrafting', function(source)
     if useDebug then
         print('Open crafting')
     end
     setCraftingOpen(true)
 end)
-
+ ]]
 
 CreateThread(function()
     for i, benchType in pairs(Config.CraftingTables) do
@@ -385,9 +384,9 @@ CreateThread(function()
     end
 end)
 
-RegisterCommand('testcraft', function(_, args)
-	craftItem(Config.Recipes[args[1]])
-end)
+-- RegisterCommand('testcraft', function(_, args)
+-- 	craftItem(Config.Recipes[args[1]])
+-- end)
 
 
 RegisterNetEvent('cw-crafting:client:toggleDebug', function(debug)
