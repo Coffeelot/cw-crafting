@@ -1,7 +1,8 @@
 # Crafting 🔧
 We hated the idea of the crafting grind, so we made a crafting script that's focused on blueprints that can be aquired from loot or by having the correct job.
 
-Blueprints are items that have a unique value tied to them. You can use them to learn the blueprint. Reciepes can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipes, crafting benches and blueprints!
+Blueprints are items that have a unique value tied to them. By default you have to find one of the blueprint trainers to teach you a blueprint. These are found at the bottom of the Config file. You can disable them to make blueprints usable to learn the reciepe instead. Reciepes can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipes, crafting benches and blueprints!
+
 
 READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 
@@ -48,8 +49,10 @@ To make it show item value in qb-inventory add this in app.js somewhere in the `
 There are two exports for this script. You can either randomize the blueprints (chance is based of what's in the config):
 
 ```
-exports['cw-crafting']:giveRandomBlueprint(source, maxRarity, failChance)
+exports['cw-crafting']:giveRandomBlueprint(source, rarity, failChance)
 ```
+`rarity` can either be a max (ei just a number) or a table holding a span (`{ min: 2, max: 4}`)
+`failChance` is a number between 1-1000 with the chance to fail. For example, if you set this to 900 it's a 90% chance you do NOT get the blueprint
 
 Or you can give a specific blueprint:
 ```
