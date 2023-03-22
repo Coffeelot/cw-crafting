@@ -258,7 +258,7 @@ QBCore.Functions.CreateCallback('cw-crafting:server:getBlueprints', function(sou
 
 QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
     if Config.BlueprintDudes then
-        print('CW crafting is set up to use crafting learning dudes')
+        TriggerClientEvent('QBCore:Notify', source, "You need to find someone who can teach you this...", "error")
     else        
         if useDebug then
            print('used blueprint')
