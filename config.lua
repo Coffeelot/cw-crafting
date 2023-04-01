@@ -269,7 +269,7 @@ Config.CraftingTables = {
 	},
 }
 
-Config.UseSundownUtils = true
+Config.UseSundownUtils = false
 
 Config.BlueprintDudes = { -- SET THIS TO Config.BlueprintDudes = nil TO DISABLE
 	{
