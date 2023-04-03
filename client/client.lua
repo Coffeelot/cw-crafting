@@ -297,8 +297,7 @@ end
 
 local function benchpermissions(jobTypes)
     local Player = QBCore.Functions.GetPlayerData()
-    print(Player.job.name, jobTypes[Player.job.type])
-    if jobTypes[Player.job.name] then return true else return false end
+    if jobTypes[Player.job.type] then return true else return false end
 end
 
 RegisterNUICallback('attemptCrafting', function(recipe, cb)
@@ -353,7 +352,7 @@ CreateThread(function()
             end,
             canInteract = function()
                 if benchType.jobType ~= nil then
-                    benchpermissions(benchType.jobType)
+                    return benchpermissions(benchType.jobType)
                 else
                     return true
                 end
