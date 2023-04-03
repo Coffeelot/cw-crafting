@@ -44,15 +44,25 @@ local function validateJob(item)
     if item.jobs then
         local Player = QBCore.Functions.GetPlayerData()
 
-        local jobName = Player.job.name
-        local jobLevel = Player.job.grade.level
-
         local playerHasJob = false
         local levelRequirement = nil
+        local jobLevel = Player.job.grade.level
+        local jobName = Player.job.name
+        local jobType = Player.job.type
+    
         for i, job in pairs(item.jobs) do
-            if job.name == jobName then
-                playerHasJob = true
-                levelRequirement = job.level
+            if job.type and jobType then
+                if job.type == jobType then
+                    playerHasJob = true
+                    levelRequirement = job.level
+                    break;
+                end
+            else
+                if job.name == jobName then
+                    playerHasJob = true
+                    levelRequirement = job.level
+                    break;
+                end
             end
         end
 
@@ -297,7 +307,7 @@ end
 
 local function benchpermissions(jobTypes)
     local Player = QBCore.Functions.GetPlayerData()
-    if jobTypes[Player.job.type] then return true else return false end
+    if jobTypes[Player.job.type] ~= nil then return true else return false end
 end
 
 RegisterNUICallback('attemptCrafting', function(recipe, cb)
@@ -427,7 +437,6 @@ local function hasBlueprint(input)
         end
         return false
     elseif Config.Inventory == 'ox' then
-        print(input)
         local blueprintItem = 'blueprint'
 
         local items = exports.ox_inventory:Search('count', blueprintItem, { value = input } )
@@ -438,17 +447,23 @@ end
 local function generateBlueprintOptions(dude)
     local options = {}
     for name, blueprint in pairs(Config.Blueprints) do
-        options[#options+1] = {
-            type = "server",
-            event = "cw-crafting:server:addBlueprintFromLearning",
-            bpName = name,
-            icon = "fas fa-graduation-cap",
-            gang = dude.gang,
-            label = "Learn "..name,
-            canInteract = function()
-                return hasBlueprint(name)
-            end
-        }
+        local dudeHasBlueprint = true
+        if blueprint.type and dude.type and blueprint.type ~= dude.type then
+            dudeHasBlueprint = false
+        end
+        if dudeHasBlueprint then
+            options[#options+1] = {
+                type = "server",
+                event = "cw-crafting:server:addBlueprintFromLearning",
+                bpName = name,
+                icon = "fas fa-graduation-cap",
+                gang = dude.gang,
+                label = "Learn "..name,
+                canInteract = function()
+                    return hasBlueprint(name)
+                end
+            }
+        end
     end
     return options
 end

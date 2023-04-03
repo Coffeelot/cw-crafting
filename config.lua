@@ -65,7 +65,7 @@ Config.Recipes = {
 			rubber = 2 
 		}, 
 		jobs = { 
-			{ name = 'mechanic', level = 2 } 
+			{ type = 'mechanic', level = 2 } -- Example of using job type instead of name
 	 	},
 		blueprint = 'coolthing',
 		requireBlueprintAndJob = true, -- this is needed to say BOTH are required
