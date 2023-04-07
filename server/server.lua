@@ -23,29 +23,45 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
             Player.Functions.RemoveItem(material, amount*craftingAmount)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
         end
-        if item.amount ~= nil then
-            total = item.amount * craftingAmount or craftingAmount
+        if item.toMaterials ~= nil then
+            for material, amount in pairs(item.toMaterials) do
+                Player.Functions.RemoveItem(material, amount*craftingAmount)
+                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
+            end
         else
-            total = craftingAmount
+            if item.amount ~= nil then
+                total = item.amount * craftingAmount or craftingAmount
+            else
+                total = craftingAmount
+            end
+            Player.Functions.AddItem(item.name, total)
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
         end
-        Player.Functions.AddItem(item.name, total)
-        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
     elseif Config.Inventory == 'ox' then
         local pped = GetPlayerPed(src)
         local coords = GetEntityCoords(pped)
         for material, amount in pairs(item.materials) do
             exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount)
         end
-        if item.amount ~= nil then
-            total = item.amount * craftingAmount or craftingAmount
+        if item.toMaterials ~= nil then
+            for material, amount in pairs(item.toMaterials) do
+                if exports.ox_inventory:CanCarryItem(src, material, amount*craftingAmount) then
+                    exports.ox_inventory:AddItem(src, material, amount*craftingAmount )
+                else
+                    exports.ox_inventory:CustomDrop("craft", {{material, amount*craftingAmount, durability = 100}}, coords)
+                end            end
         else
-            total = craftingAmount
-        end
-
-        if exports.ox_inventory:CanCarryItem(src, item.name, total) then
-            exports.ox_inventory:AddItem(src, item.name, total )
-        else
-            exports.ox_inventory:CustomDrop("craft", {{item.name, total, durability = 100}}, coords)
+            if item.amount ~= nil then
+                total = item.amount * craftingAmount or craftingAmount
+            else
+                total = craftingAmount
+            end
+    
+            if exports.ox_inventory:CanCarryItem(src, item.name, total) then
+                exports.ox_inventory:AddItem(src, item.name, total )
+            else
+                exports.ox_inventory:CustomDrop("craft", {{item.name, total, durability = 100}}, coords)
+            end
         end
     end
 end)
@@ -258,7 +274,7 @@ QBCore.Functions.CreateCallback('cw-crafting:server:getBlueprints', function(sou
 
 QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
     if Config.BlueprintDudes then
-        TriggerClientEvent('QBCore:Notify', source, "You need to find someone who can teach you this...", "error")
+        TriggerClientEvent('QBCore:Notify', source, "You need to find someone who can teach you this..", "error")
     else        
         if useDebug then
            print('used blueprint')

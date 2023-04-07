@@ -246,22 +246,55 @@ local function getRecipes()
         local canCraft = validateRights(item)
         if canCraft then
             local materialsNameMap = {}
+            local toMaterialsNameMap = {}
             if Config.Inventory == 'qb' then
                 item.data = QBCore.Shared.Items[item.name]
-                for mat, amount in pairs(item.materials) do
-                    materialsNameMap[mat] = QBCore.Shared.Items[mat].label
+                if item.materials then
+                    if useDebug then
+                        print('Material used:')
+                    end
+                    for mat, amount in pairs(item.materials) do
+                        if useDebug then
+                            print(mat, amount)
+                        end
+                        materialsNameMap[mat] = QBCore.Shared.Items[mat].label
+                    end
+                end
+                if item.toMaterials ~= nil then
+                    if useDebug then
+                       print('Materials given')
+                    end
+                    for mat, amount in pairs(item.toMaterials) do
+                        if useDebug then
+                            print(mat, amount)
+                        end
+                        toMaterialsNameMap[mat] = QBCore.Shared.Items[mat].label
+                    end
+                end
+                if useDebug then
+                    print('===============')
                 end
             elseif Config.Inventory == 'ox' then
                 if useDebug then
                    print('name', item.materials)
                 end
                 item.data = ItemNames[item.name]
-                for mat, amount in pairs(item.materials) do
-                    materialsNameMap[mat] = ItemNames[mat].label
+                if item.materials then
+                    for mat, amount in pairs(item.materials) do
+                        materialsNameMap[mat] = ItemNames[mat].label
+                    end
                 end
+                if item.toMaterials ~= nil then
+                    for mat, amount in pairs(item.toMaterials) do
+                        toMaterialsNameMap[mat] = ItemNames[mat].label
+                    end
+                end
+
             end
             item.materialsNameMap = materialsNameMap
-
+            item.toMaterialsNameMap = toMaterialsNameMap
+            item.type = item.type
+            
             Recipes[recipe] = item
             if item.craftTime == nil then
                 Recipes[recipe].craftTime = Config.DefaultCraftingTime

@@ -247,6 +247,20 @@ Config.Recipes = {
 		category = 'Weapon Attachments',
 		tables = {'guns'}
 	},
+	['breakdown_phone'] = {
+		name = "phone",
+		type = "breakdown",
+		materials = {
+			phone = 1
+		},
+		toMaterials = {
+			aluminum = 14,
+			glass = 21,
+			plastic = 10
+		},
+		category = 'Breakdown',
+		craftingTime= 4000,
+	},
 }
 
 

@@ -50,6 +50,7 @@ function handleClickRecipe(recipeName) {
         currentRecipe = recipeName;
         $(".recipe-confirmation-container").show();
         $(".recipe-info").html('');
+        $(".bd-recipe-info").html('');
         $(".confirmation-subtitle").html('');
         let recipe = Recipes[recipeName];
         let resultAmount = recipe.amount? recipe.amount : 1;
@@ -68,7 +69,7 @@ function handleClickRecipe(recipeName) {
         $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${(craftingAmount*recipe.craftTime)/1000}s </div>`)
         if(hasBlueprint) $(".confirmation-subtitle").append(`<div class="chip"> Blueprint </div>`)
         if(hasJob) $(".confirmation-subtitle").append(`<div class="chip"> Job </div>`)
-
+        $("#components-title").html("Components needed:")
         $.each(recipe.materials, function(material, amount){
             let row = `
             <div id="${material}-row" class="material-list-row">
@@ -78,6 +79,18 @@ function handleClickRecipe(recipeName) {
             `
             $(".recipe-info").append(row);
         })
+        if(recipe.type == 'breakdown') {
+            $("#bd-components-title").html("Components recieved:")
+            $.each(recipe.toMaterials, function(material, amount){
+                let row = `
+                <div id="${material}-row" class="material-list-row">
+                    <div class="left"> ${recipe.toMaterialsNameMap[material]} </div>
+                    <div class="right"> ${amount*craftingAmount} </div>
+                </div>
+                `
+                $(".bd-recipe-info").append(row);
+            })
+        }
 
     } else {
         console.log('something went wrong')
@@ -119,7 +132,7 @@ let filterByCategory = function(category) {
                     </div>
                 </div>
                 `;
-            $(".recipe-list").append(element);
+                $(".recipe-list").append(element);
             }
         })
     }
