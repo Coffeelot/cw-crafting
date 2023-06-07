@@ -56,7 +56,11 @@ function handleClickRecipe(recipeName) {
         let resultAmount = recipe.amount? recipe.amount : 1;
         let hasBlueprint = recipe.blueprint? true: false;
         let hasJob = recipe.jobs ? true: false;
-        $("#title").html(recipe.data.label)
+        if(recipe.type == 'breakdown') {
+            $("#title").html("Breakdown " + recipe.data.label)
+        } else {
+            $("#title").html(recipe.data.label)
+        }        
 
         let imageLink = '';
         if ( inv == 'qb' ) {
@@ -66,7 +70,7 @@ function handleClickRecipe(recipeName) {
         }
         $(".header-icon").html(`<div class="card-icon"><img src=${imageLink} class="card-img"/></div>`)
         $(".confirmation-subtitle").append(`<div class="chip"> Amount: ${resultAmount*craftingAmount} </div>`)
-        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${(craftingAmount*recipe.craftTime)/1000}s </div>`)
+        $(".confirmation-subtitle").append(`<div class="chip"> Crafting Time: ${(craftingAmount*recipe.craftingTime)/1000}s </div>`)
         if(hasBlueprint) $(".confirmation-subtitle").append(`<div class="chip"> Blueprint </div>`)
         if(hasJob) $(".confirmation-subtitle").append(`<div class="chip"> Job </div>`)
         $("#components-title").html("Components needed:")
@@ -90,6 +94,8 @@ function handleClickRecipe(recipeName) {
                 `
                 $(".bd-recipe-info").append(row);
             })
+        } else {
+            $("#bd-components-title").html("")
         }
 
     } else {
@@ -123,11 +129,11 @@ let filterByCategory = function(category) {
                     </div>
                     <div class="card-content">
                         <div class="card-header">
-                            ${recipe.data.label}
+                            ${recipe.type == 'breakdown' ? 'Breakdown ' + recipe.data.label : recipe.data.label}
                         </div>
                         <div class="chip-list">
                             <div class="chip"> x${amount} </div>
-                            <div class="chip"> ${recipe.craftTime/1000}s </div>
+                            <div class="chip"> ${recipe.craftingTime/1000}s </div>
                         </div>
                     </div>
                 </div>
