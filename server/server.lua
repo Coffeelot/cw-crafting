@@ -25,8 +25,8 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
         end
         if item.toMaterials ~= nil then
             for material, amount in pairs(item.toMaterials) do
-                Player.Functions.RemoveItem(material, amount*craftingAmount)
-                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
+                Player.Functions.AddItem(material, amount*craftingAmount)
+                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "add")
             end
         else
             if item.amount ~= nil then
