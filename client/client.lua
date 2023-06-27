@@ -422,6 +422,19 @@ CreateThread(function()
                 })
             end
         end
+        if benchType.spawnTable then
+            for j, bench in pairs(benchType.spawnTable) do
+                local benchEntity = CreateObject(bench.prop, bench.coords.x, bench.coords.y, bench.coords.z, false,  false, true)
+                SetEntityHeading(benchEntity, bench.coords.w)
+                FreezeEntityPosition(benchEntity, true)
+                PlaceObjectOnGroundProperly(benchEntity)
+
+                exports['qb-target']:AddTargetEntity(benchEntity, {
+                    options = options,
+                    distance = 2.0
+                })
+            end
+        end
 
     end
 end)

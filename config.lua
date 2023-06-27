@@ -275,7 +275,8 @@ Config.CraftingTables = {
 		title = "Mechanic Crafting",
 		objects = { 'prop_toolchest_05' },
 		jobType = { ['mechanic'] = 1 }, -- NOTE: This checks TYPES not name. A new qb thing. It's good. Use it.
-		locations = { vector3(948.81, -1552.64, 30.59), } -- If you add one of these objects (locations = ...) it will spawn boxzones
+		locations = { vector3(948.81, -1552.64, 30.59), }, -- BOXZONE: If you add one of these objects (locations = ...) it will spawn boxzones
+		spawnTable = { { coords = vector4(794.49, -2613.63, 87.97, 2.4), prop = 'ex_prop_ex_toolchest_01' } } -- SPAWNS TABLE: the spawnTable field holds a list of several tables with prop and location. If these are added it will SPAWN a table that's interactable
 	},
 	['guns'] = {
 		title = "Weapon Crafting",
