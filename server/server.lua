@@ -307,7 +307,7 @@ QBCore.Commands.Add('addblueprint', 'Give blueprint knowledge to player. (Admin 
     addBlueprint(citizenId, args[2])
 end, 'admin')
 
-QBCore.Commands.Add('removeblueprint', 'Remove blueprint to player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
+QBCore.Commands.Add('removeblueprint', 'Remove blueprint knowledge from player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
     print(args[1])
     local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
     local citizenId = Player.PlayerData.citizenid
@@ -323,9 +323,4 @@ QBCore.Commands.Add('cwdebugcrafting', 'toggle debug for crafting', {}, true, fu
     useDebug = not useDebug
     print('debug is now:', useDebug)
     TriggerClientEvent('cw-crafting:client:toggleDebug',source, useDebug)
-end, 'admin')
-
-QBCore.Commands.Add('testbp', 'test bps. (Admin Only)',{}, true, function(source)
-    TriggerEvent('cw-crafting:server:giveRandomBlueprint',source)
-    --TriggerEvent('cw-crafting:server:giveRandomBlueprint',source, 3, 50)
 end, 'admin')

@@ -3,6 +3,8 @@ We hated the idea of the crafting grind, so we made a crafting script that's foc
 
 Blueprints are items that have a unique value tied to them. By default you have to find one of the blueprint trainers to teach you a blueprint. These are found at the bottom of the Config file. You can disable them to make blueprints usable to learn the reciepe instead. Reciepes can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipes, crafting benches and blueprints!
 
+### ❗❗ YOU CAN NOT SPAWN BLUEPRINT ITEMS WITH /giveitem OR ANY MENU! SEE COMMANDS ❗❗
+
 
 READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 
@@ -16,6 +18,14 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 - All base QB recipes
 - A very sexy UI if I do say so myself
 - Support for OX inventory
+
+## Commands
+`/addblueprint <source> <blueprint name>` adds a blueprint to database for player
+
+`/removeblueprint <source> <blueprint name>` removes a blueprint to database for player
+
+`/giveblueprint <source> <blueprint name>` gives the player a blueprint item
+
 
 # Developed by Coffeelot and Wuggie
 [More scripts by us](https://github.com/stars/Coffeelot/lists/cw-scripts)  👈
@@ -53,6 +63,8 @@ exports['cw-crafting']:giveRandomBlueprint(source, rarity, failChance)
 ```
 `rarity` can either be a max (ei just a number) or a table holding a span (`{ min: 2, max: 4}`)
 `failChance` is a number between 1-1000 with the chance to fail. For example, if you set this to 900 it's a 90% chance you do NOT get the blueprint
+
+Example use: `exports['cw-crafting']:giveRandomBlueprint(source, {min = 1, max = 2}, 990)`, this will give the player a blueprint of rarity 1-2, with a 99% fail chance
 
 Or you can give a specific blueprint:
 ```
