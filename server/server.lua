@@ -34,7 +34,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
             else
                 total = craftingAmount
             end
-            Player.Functions.AddItem(item.name, total)
+            Player.Functions.AddItem(item.name, total, item.metadata)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
         end
     elseif Config.Inventory == 'ox' then
@@ -48,17 +48,18 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
                 if exports.ox_inventory:CanCarryItem(src, material, amount*craftingAmount) then
                     exports.ox_inventory:AddItem(src, material, amount*craftingAmount )
                 else
-                    exports.ox_inventory:CustomDrop("craft", {{material, amount*craftingAmount, durability = 100}}, coords)
-                end            end
+                    exports.ox_inventory:CustomDrop("craft", {{material, amount*craftingAmount, {durability = 100 }}}, coords)
+                end
+            end
         else
             if item.amount ~= nil then
                 total = item.amount * craftingAmount or craftingAmount
             else
                 total = craftingAmount
             end
-    
+
             if exports.ox_inventory:CanCarryItem(src, item.name, total) then
-                exports.ox_inventory:AddItem(src, item.name, total )
+                exports.ox_inventory:AddItem(src, item.name, total, item.metadata)
             else
                 exports.ox_inventory:CustomDrop("craft", {{item.name, total, durability = 100}}, coords)
             end
@@ -275,7 +276,7 @@ QBCore.Functions.CreateCallback('cw-crafting:server:getBlueprints', function(sou
 QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
     if Config.BlueprintDudes then
         TriggerClientEvent('QBCore:Notify', source, "You need to find someone who can teach you this..", "error")
-    else        
+    else
         if useDebug then
            print('used blueprint')
         end
@@ -307,7 +308,7 @@ QBCore.Commands.Add('addblueprint', 'Give blueprint knowledge to player. (Admin 
     addBlueprint(citizenId, args[2])
 end, 'admin')
 
-QBCore.Commands.Add('removeblueprint', 'Remove blueprint knowledge from player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
+QBCore.Commands.Add('removeblueprint', 'Remove blueprint to player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
     print(args[1])
     local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
     local citizenId = Player.PlayerData.citizenid
@@ -323,4 +324,9 @@ QBCore.Commands.Add('cwdebugcrafting', 'toggle debug for crafting', {}, true, fu
     useDebug = not useDebug
     print('debug is now:', useDebug)
     TriggerClientEvent('cw-crafting:client:toggleDebug',source, useDebug)
+end, 'admin')
+
+QBCore.Commands.Add('testbp', 'test bps. (Admin Only)',{}, true, function(source)
+    TriggerEvent('cw-crafting:server:giveRandomBlueprint',source)
+    --TriggerEvent('cw-crafting:server:giveRandomBlueprint',source, 3, 50)
 end, 'admin')

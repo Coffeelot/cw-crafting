@@ -36,12 +36,12 @@ Config.Recipes = {
 			["glass"] = 90,
 		}, 
 		amount = 5, 
-		craftTime = 5000, 
+		craftingTime = 5000, 
 		blueprint = 'aluminumoxide_pro'
 	},
 	['repairkit'] = { -- example of a recipe that can be aquired by having the correct job OR the blueprint 
 		name = 'repairkit', 
-		craftTime= 4000, 
+		craftingTime= 4000, 
 		category = "Mechanic", 
 		materials = { 
             ["metalscrap"] = 32,
@@ -56,7 +56,7 @@ Config.Recipes = {
 	},
 	['advancedrepairkit'] = { -- example of a recipe that requires BOTH job and blueprint to access
 		name = 'advancedrepairkit', 
-		craftTime= 7000, 
+		craftingTime= 7000, 
 		category = "Mechanic", 
 		materials = { 
 			aluminum = 10, 
@@ -127,7 +127,7 @@ Config.Recipes = {
             ["screwdriverset"] = 3,
             ["advancedlockpick"] = 2
         },
-		craftTime= 4000,
+		craftingTime= 4000,
 		blueprint = 'drill',
     },
 	["handcuffs"] = {
@@ -160,7 +160,7 @@ Config.Recipes = {
             ["plastic"] = 55,
             ["aluminum"] = 22,
         },
-		craftTime= 4000,
+		craftingTime= 4000,
 		blueprint = 'armor',
 		tables = {'guns'}
     },
@@ -246,6 +246,19 @@ Config.Recipes = {
 		},
 		category = 'Weapon Attachments',
 		tables = {'guns'}
+	},
+	["weapon_pistol_mk2"] = {
+		name = "weapon_pistol_mk2",
+		materials = {
+			["weapon_pistol"] = 1,
+			["steel"] = 169,
+			["metalscrap"] = 100,
+		},
+		category = 'Pistol Mk2 upgrade',
+		tables = {'guns'},
+		metadata = {registered= false}, -- If set, will write info/metadata on item
+		craftingTime= 15000,
+
 	},
 	['breakdown_phone'] = {
 		name = "phone",

@@ -13,12 +13,12 @@
 	--background-color: #1C1C21;
 	--background-color-lighter: #36363e;
 	--background-color-dark: #1f1f24;
-    --background: linear-gradient(131deg, var(--background-color) 0%, var(--background-color-lighter) 100%);
+    --background: #1f1f24;
     --shadow: hsl(0, 3%, 6%);
 	--text-color: #ffffff;
 	--text-color-disabled: #d2d2d2cf;
     --accent-color: #c0392b;
-	--border-radius: 3px;
+	--border-radius: 0px;
     --border: 1px solid;
 }
 
@@ -64,7 +64,7 @@ body {
 }
 
 .app-container {
-    overflow-y: auto;
+    overflow-y: clip;
     overflow-x: hidden;
     width: fit-content;
     margin-left: 10px;
@@ -137,7 +137,7 @@ body {
 }
 
 .card:hover {
-    background: var(--primary);
+    background: var(--primary-color);
 }
 
 .card-header {
@@ -184,7 +184,7 @@ body {
 }
 
 h1 {
-    text-decoration: underline;
+
 }
 
 .confirmation-card {
@@ -202,13 +202,13 @@ h1 {
 .confirm-button {
     cursor: pointer;
     background-color: var(--primary-color);
-    border-radius: 10px;
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
     margin-bottom: 10px;
     font-weight: 500;
     text-align: center;
+    font-weight: 800;
     margin-bottom: 20px;
 }
 
@@ -239,4 +239,5 @@ h1 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-top: 2px solid var(--primary-color);
 }
