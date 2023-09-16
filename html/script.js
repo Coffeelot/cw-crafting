@@ -60,7 +60,10 @@ function handleClickRecipe(recipeName) {
             $("#title").html("Breakdown " + recipe.data.label)
         } else {
             $("#title").html(recipe.data.label)
-        }        
+        }
+        if(!recipe.craftingTime) {
+            recipe.craftingTime = 1000
+        }
 
         let imageLink = '';
         if ( inv == 'qb' ) {
@@ -114,6 +117,9 @@ let filterByCategory = function(category) {
         $(".recipe-list").html("");
         $.each(Recipes, function(i, recipe) {
             if(recipe.category === category) {
+                if(!recipe.craftingTime) {
+                    recipe.craftingTime = 1000
+                }
                 let amount = recipe.amount? recipe.amount : 1;
                 // console.log(JSON.stringify(i))
                 let imageLink = ''
