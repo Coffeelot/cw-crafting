@@ -291,6 +291,10 @@ local function getRecipes()
                 end
 
             end
+            if item.data == nil then
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Item is probably missing from your items.lua: ', item.name)
+            end
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
             item.type = item.type
@@ -317,9 +321,6 @@ end
 
 local function setCraftingOpen(bool, i)
     local citizenId = QBCore.Functions.GetPlayerData().citizenid
-    if useDebug then
-        print('hhiehiehei', i)
-    end
     QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
         Blueprints = bps
         if useDebug then
