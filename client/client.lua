@@ -5,6 +5,7 @@ local CurrentAmount = 1
 local currentTableType = nil
 local ItemNames = {}
 local useDebug = Config.Debug
+local isCrafting = false
 
 local function getOxItems()
     if Config.Inventory == 'ox' then
@@ -207,6 +208,7 @@ local function craftItem(item)
         if item.amount then
             amount = item.amount*CurrentAmount
         end
+        isCrafting = true
         TriggerEvent('animations:client:EmoteCommandStart', {"mechanic"})
         QBCore.Functions.Progressbar("crafting", "Crafting", craftTime , false, true, {
             disableMovement = true,
@@ -222,8 +224,10 @@ local function craftItem(item)
                 QBCore.Functions.Notify('You have crafted '..amount..' '.. ItemNames[item.name].label, "success")
             end
             TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+            isCrafting = false
         end, function() -- Cancel
             TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+            isCrafting = false
             QBCore.Functions.Notify(Lang:t('error.canceled'), "error")
         end)
         return true
@@ -345,14 +349,19 @@ local function benchpermissions(jobTypes)
 end
 
 RegisterNUICallback('attemptCrafting', function(recipe, cb)
-    local Player = QBCore.Functions.GetPlayerData()
-    local currentRecipe = Config.Recipes[recipe.currentRecipe]
-    CurrentAmount = recipe.craftingAmount
-    if useDebug then
-        print(recipe.currentRecipe, dump(currentRecipe))
+    if isCrafting then
+        QBCore.Functions.Notify("You're already crafting something", "error")
+    else
+        local Player = QBCore.Functions.GetPlayerData()
+        local currentRecipe = Config.Recipes[recipe.currentRecipe]
+        CurrentAmount = recipe.craftingAmount
+        if useDebug then
+            print(recipe.currentRecipe, dump(currentRecipe))
+        end
+        local success = craftItem(currentRecipe)
+        cb(success)
     end
-    local success = craftItem(currentRecipe)
-    cb(success)
+    cb(false)
 end)
 
 RegisterNUICallback('getRecipes', function(data, cb)
