@@ -341,7 +341,7 @@ local function setCraftingOpen(bool, i)
             toggle = bool
         })
     end)
-end
+end exports('setCraftingOpen', setCraftingOpen)
 
 local function benchpermissions(jobTypes)
     local Player = QBCore.Functions.GetPlayerData()
@@ -393,59 +393,62 @@ end)
 end)
  ]]
 
-CreateThread(function()
-    for i, benchType in pairs(Config.CraftingTables) do
-        local options = {}
-        options[1] = {
-            type = 'client',
-            label = benchType.title,
-            icon = "fas fa-wrench",
-            action = function()
-                setCraftingOpen(true, i)
-            end,
-            canInteract = function()
-                if benchType.jobType ~= nil then
-                    return benchpermissions(benchType.jobType)
-                else
-                    return true
-                end
-            end,
-        }
+local function createTable(type, benchType)
+    local options = {}
+    options[1] = {
+        type = 'client',
+        label = benchType.title,
+        icon = "fas fa-wrench",
+        action = function()
+            setCraftingOpen(true, type)
+        end,
+        canInteract = function()
+            if benchType.jobType ~= nil then
+                return benchpermissions(benchType.jobType)
+            else
+                return true
+            end
+        end,
+    }
 
-        for j, benchProp in pairs(benchType.objects) do
-            exports['qb-target']:AddTargetModel(benchProp, {
+    for j, benchProp in pairs(benchType.objects) do
+        exports['qb-target']:AddTargetModel(benchProp, {
+            options = options,
+            distance = 2.0
+        })
+    end
+    if benchType.locations then
+        for j, benchLoc in pairs(benchType.locations) do
+            exports['qb-target']:AddBoxZone('crafting-'..benchType.title..'-'..j, benchLoc, 1.5, 1.5, {
+                name = 'crafting-'..benchType.title..'-'..j,
+                heading = 0,
+                debugPoly = useDebug,
+                minZ = benchLoc.z - 0.5,
+                maxZ = benchLoc.z + 0.5,
+            }, {
                 options = options,
                 distance = 2.0
             })
         end
-        if benchType.locations then
-            for j, benchLoc in pairs(benchType.locations) do
-                exports['qb-target']:AddBoxZone('crafting-'..benchType.title..'-'..j, benchLoc, 1.5, 1.5, {
-                    name = 'crafting-'..benchType.title..'-'..j,
-                    heading = 0,
-                    debugPoly = useDebug,
-                    minZ = benchLoc.z - 0.5,
-                    maxZ = benchLoc.z + 0.5,
-                }, {
-                    options = options,
-                    distance = 2.0
-                })
-            end
-        end
-        if benchType.spawnTable then
-            for j, bench in pairs(benchType.spawnTable) do
-                local benchEntity = CreateObject(bench.prop, bench.coords.x, bench.coords.y, bench.coords.z, false,  false, true)
-                SetEntityHeading(benchEntity, bench.coords.w)
-                FreezeEntityPosition(benchEntity, true)
-                PlaceObjectOnGroundProperly(benchEntity)
+    end
+    if benchType.spawnTable then
+        for j, bench in pairs(benchType.spawnTable) do
+            local benchEntity = CreateObject(bench.prop, bench.coords.x, bench.coords.y, bench.coords.z, false,  false, true)
+            SetEntityHeading(benchEntity, bench.coords.w)
+            FreezeEntityPosition(benchEntity, true)
+            PlaceObjectOnGroundProperly(benchEntity)
 
-                exports['qb-target']:AddTargetEntity(benchEntity, {
-                    options = options,
-                    distance = 2.0
-                })
-            end
+            exports['qb-target']:AddTargetEntity(benchEntity, {
+                options = options,
+                distance = 2.0
+            })
         end
+    end
+end exports("createTable", createTable)
 
+CreateThread(function()
+    for i, benchType in pairs(Config.CraftingTables) do
+        createTable(i, benchType)
     end
 end)
 
