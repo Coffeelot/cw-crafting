@@ -107,7 +107,8 @@ Example recipe:
 			{ type = 'mechanic', level = 2 }, -- example of a job using TYPE rather than name
 			{ name = 'police', level = 2 } -- example of a job using specific names
 	 	},
-		tables = {'mechanic', 'police'} -- specific tables this recipe can be made at
+		tables = {'mechanic', 'police'}, -- specific tables this recipe can be made at
+        metadata = { color = 'orange'} -- metadata of item (optional)
 	}
 ```
 
