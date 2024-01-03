@@ -410,7 +410,7 @@ RegisterNUICallback('closeCrafting', function(_, cb)
 end)
 
 RegisterNUICallback('getInventory', function(_, cb)
-    cb(Config.Inventory)
+    cb(Config.oxInv)
 end)
 
 --[[ RegisterCommand('openCrafting', function(source)

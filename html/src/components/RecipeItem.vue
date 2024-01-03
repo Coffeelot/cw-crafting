@@ -7,8 +7,13 @@
     link
     @click="selectRecipe()"
     :width="globalStore.selectedRecipe ? '100%' : 'fit-content'"
+    :title="recipeLabel" 
   >
-    <v-card-title v-text="recipeLabel"></v-card-title>
+    <template v-if="isSingleItem()" v-slot:prepend>
+      <v-avatar >
+        <v-img :src="imageLink"></v-img>
+    </v-avatar>
+      </template>
     <v-card-text class="text">
       <v-chip v-for="(itemAmount, item) in recipe.materials"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
@@ -30,13 +35,21 @@ const props = defineProps<{
 const globalStore = useGlobalStore();
 const reveal = ref(false);
 
+const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
+
+const imageLink = computed(() => {
+    const key = Object.keys(props.recipe.toMaterialsNameMap)[0];
+    if (globalStore.oxInventory) {
+      return `nui://ox_inventory/web/images/${key}.png`
+    } else {
+      return `nui://qb-inventory/html/images/${key}`
+    }
+})
+
 const recipeLabel = computed(() => {
   if (props.recipe.label) {
     return props.recipe.label;
-  } else if (
-    props.recipe.toMaterialsNameMap &&
-    Object.keys(props.recipe.toMaterialsNameMap).length === 1
-  ) {
+  } else if (isSingleItem()) {
     const key = Object.keys(props.recipe.toMaterialsNameMap)[0];
     return props.recipe.toMaterialsNameMap[key];
   } else {

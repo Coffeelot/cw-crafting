@@ -4,6 +4,7 @@ import { Recipe, Recipes } from './types'
 
 export const useGlobalStore = defineStore('global', {
   state: () => ({
+    oxInventory: false,
     uiIsOpen: false,
     selectedCategories: [] as string[],
     selectedRecipe: '',

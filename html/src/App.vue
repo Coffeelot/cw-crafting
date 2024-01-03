@@ -48,8 +48,14 @@ const populateRecipes = async () => {
 
 }
 
+const setInventory = async () => {
+  const res = await api.post("getInventory");
+  globalStore.$state.oxInventory = res.data
+}
+
 onMounted(() => {
   window.addEventListener("message", handleMessageListener);
+  setInventory()
 });
 
 onUnmounted(() => {
