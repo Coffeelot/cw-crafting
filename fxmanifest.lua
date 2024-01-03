@@ -1,18 +1,19 @@
 
 fx_version 'adamant'
 game 'gta5'
+lua54 'yes'
 
 author 'Coffeelot and Wuggie'
 description 'CW crafting system'
-version '1.69'
+version '2.0'
 
-ui_page 'html/index.html'
-
-lua54 'yes'
+ui_page {
+    "html/dist/index.html"
+}
 
 files {
-	'html/*',
-    'html/recipeImages/*'
+    "html/dist/index.html",
+    "html/dist/assets/*.*",
 }
 
 client_scripts{

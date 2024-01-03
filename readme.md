@@ -9,23 +9,18 @@ Blueprints are items that have a unique value tied to them. By default you have 
 READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 
 # Youtube Preview 📽
+## Initial release video
 [![YOUTUBE VIDEO](http://img.youtube.com/vi/NVUlgIOcvbU/0.jpg)](https://youtu.be/NVUlgIOcvbU)
+
+## UI update
+[![YOUTUBE VIDEO](http://img.youtube.com/vi/ZAUrmS63ZaM/0.jpg)](https://youtu.be/ZAUrmS63ZaM)
 
 # Features
 - Blueprint based crafting
 - Easy addition of new recipes
 - Exports to give blueprints (through loot for example)
-- All base QB recipes
-- A very sexy UI if I do say so myself
+- A UI made in VUE
 - Support for OX inventory
-
-## Commands
-`/addblueprint <source> <blueprint name>` adds a blueprint to database for player
-
-`/removeblueprint <source> <blueprint name>` removes a blueprint to database for player
-
-`/giveblueprint <source> <blueprint name>` gives the player a blueprint item
-
 
 # Developed by Coffeelot and Wuggie
 [More scripts by us](https://github.com/stars/Coffeelot/lists/cw-scripts)  👈
@@ -46,7 +41,11 @@ Items to add to qb-core>shared>items.lua
 ```
 Also make sure the images are in qb-inventory>html>images
 
+> A common issue here is that another script has the "blueprint" name. If so, make sure to rename either this blueprint item or the other one and update all code.
+
 ## Make your recipe values show in qb inventory (optional)
+> This step is not needed if you use ox inventory
+
 To make it show item value in qb-inventory add this in app.js somewhere in the `FormatItemInfo` function (look for similar `else if` statements)
 ```
         else if (itemData.name == "blueprint") {
@@ -77,12 +76,50 @@ You'll want to add these to server side loot distribution of any script you thin
 
 ## Creating new crafting tables
 All you gotta do is go into the `Config.Lua`, head to the bottom and you'll find the Tables. You can add a table her,  in the same style as the existing ones. So say you wanted to add a "kitchen" table, it'd look like this:
-```    
+```lua
 kitchen = {
         title = "Open kitchen",
-        objects = { 'gr_prop_gr_hobo_stove_01' }
+        objects = { 'gr_prop_gr_hobo_stove_01' }, -- providing this will make ALL objects of this variant a table (leave empty if this is not what you want, ei objects = {})
+		locations = {  vector3(-165.14, -984.55, 254.22), }, -- spawn at these locations (optional)
+		spawnTable = { { coords = vector4(794.49, -2613.63, 87.97, 2.4), prop = 'gr_prop_gr_hobo_stove_01' } } -- List of several tables with prop and location. If these are added it will SPAWN a table that's interactable (optional)
     },
+```
+> Note: The example above has ALL the cration types, which obviously might not be optimal. Use one or more, to fit your needs.
+
+## Creating recipes
+As of the new update, we no longer provide the base QB recipies (since so many people refuse to read instructions and update them to fit their server before reporting errors). The recipies have also been updated to be more aligned to make them more easier to manage.
+
+Example recipe:
+```lua
+['lockpick'] = {
+		category = "Tools", -- category 
+		toItems = { -- table that includes the output and their amounts, this one will output 2 lockpicks
+			lockpick = 2,
+		},
+		materials = { -- table that includes the input and their material cost
+            metalscrap = 12,
+            plastic = 12 
+        },
+        label = 'Lockpicks' -- label that shows in crafting menu, will default to item in toItems (if 1) or the recipe name (in this case 'lockpick') otherwise (optional, higly suggested)
+		craftingTime= 3000, -- crafting time (optional)
+        blueprint = 'Lockpick', -- blueprint name. Case sensitive to the blueprint name! (optional)
+        jobs = { -- table of job requirements (optional)
+			{ type = 'mechanic', level = 2 }, -- example of a job using TYPE rather than name
+			{ name = 'police', level = 2 } -- example of a job using specific names
+	 	},
+		tables = {'mechanic', 'police'} -- specific tables this recipe can be made at
+	}
 ```
 
 
 Now you got a new table! To fill it with items all you need to do is add `"tables = {'kitchen'}"`  to your recipes. You can see examples of these in the Recipes object. If you check the Recipes at the top they have comments explaining the different fields
+
+# Want to change the look?
+Crafting is now built in VUE, this means you can't just edit the files directly. This requires some more know-how than just developing with basic html/js. You can find out more information in this [Boilerplate Repo](https://github.com/alenvalek/fivem-vuejs-boilerplate).
+
+# Commands
+`/addblueprint <source> <blueprint name>` adds a blueprint to database for player
+
+`/removeblueprint <source> <blueprint name>` removes a blueprint to database for player
+
+`/giveblueprint <source> <blueprint name>` gives the player a blueprint item

@@ -6,9 +6,10 @@ local currentTableType = nil
 local ItemNames = {}
 local useDebug = Config.Debug
 local isCrafting = false
+local Entities = {}
 
 local function getOxItems()
-    if Config.Inventory == 'ox' then
+    if Config.oxInv then
         for items, datas in pairs(exports.ox_inventory:Items()) do
             ItemNames[items] = datas
         end
@@ -22,8 +23,8 @@ AddEventHandler('onResourceStart', function(resource)
 end)
 
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    getOxItems()
-    if Config.Inventory == 'ox' then
+    if Config.oxInv then
+        getOxItems()
         exports.ox_inventory:displayMetadata("value", "Blueprint")
     end
 end)
@@ -83,7 +84,6 @@ local function validateJob(item)
             return false
         end
     else
-        -- print('No job requirement for', item.name )
         return nil
     end
 end
@@ -95,43 +95,42 @@ local function validateBlueprints(item)
         end
         return false
     else
-        -- print('No blueprint requirement for', item.name)
         return nil
     end
 end
 
-local function validateAccess(item)
+local function validateAccess(item, recipe)
     local playerPassesJobReq = validateJob(item)
     local playerPassesBlueprintReq = validateBlueprints(item)
 
     if item.requireBlueprintAndJob == true then
         if useDebug then
-            print(item.name.. ' requires both job and blueprint', playerPassesJobReq, playerPassesBlueprintReq)
+            print(recipe.. ' requires both job and blueprint', playerPassesJobReq, playerPassesBlueprintReq)
         end
         return playerPassesJobReq and playerPassesBlueprintReq
     elseif item.blueprint ~= nil and item.jobs ~= nil then
         if useDebug then
-           print(item.name.. ' can use either job or blueprint', playerPassesJobReq, playerPassesBlueprintReq)
+           print(recipe.. ' can use either job or blueprint', playerPassesJobReq, playerPassesBlueprintReq)
         end
         return playerPassesJobReq or playerPassesBlueprintReq
     elseif item.blueprint ~= nil then
         if useDebug then
-           print(item.name.. ' requires blueprint', playerPassesBlueprintReq)
+           print(recipe.. ' requires blueprint', playerPassesBlueprintReq)
         end
         return playerPassesBlueprintReq
     elseif item.jobs ~= nil then
         if useDebug then
-           print(item.name.. ' requires job', playerPassesJobReq)
+           print(recipe.. ' requires job', playerPassesJobReq)
         end
         return playerPassesJobReq
     end
     if useDebug then
-       print(item.name..' has no requirements')
+       print(recipe..' has no requirements')
     end
     return true
 end
 
-local function validateRights(item)
+local function validateRights(item, recipe)
     local tables = {}
     if item.tables ~= nil then
         for i, table in pairs(item.tables) do
@@ -145,7 +144,7 @@ local function validateRights(item)
         if useDebug then
             print('is basic table')
         end
-        return validateAccess(item)
+        return validateAccess(item, recipe)
     end
     if useDebug then
         print('recipe did not match this table')
@@ -154,10 +153,7 @@ local function validateRights(item)
 end
 
 local function canCraftItem(item)
-    if useDebug then
-       print('checking job')
-    end
-    if Config.Inventory == 'qb' then
+    if not Config.oxInv then
         local craft = true
         for material, amount in pairs(item.materials) do
             if useDebug then
@@ -172,7 +168,7 @@ local function canCraftItem(item)
             end
         end
         return craft
-    elseif Config.Inventory == 'ox' then
+    else
         local craft = true
         for material, amount in pairs(item.materials) do
             local count = 0
@@ -197,16 +193,37 @@ local function canCraftItem(item)
     end
 end
 
-local function craftItem(item)
+local function getHasItemsMap(item)
+    local hasItemsMap = {}
+    if not Config.oxInv then
+        local craft = true
+        for material, amount in pairs(item.materials) do
+            if useDebug then
+               print(amount*CurrentAmount, material)
+            end
+            hasItemsMap[material] = QBCore.Functions.HasItem(material, amount*CurrentAmount)
+        end
+    else
+        local craft = true
+        for material, amount in pairs(item.materials) do
+            local count = exports.ox_inventory:Search('count', material)
+            if count then 
+                hasItemsMap[material] = count >= amount*CurrentAmount
+            else
+                hasItemsMap[material] = false
+            end
+                
+        end
+    end
+    return hasItemsMap
+end
+
+local function craftItem(item, recipe)
     if canCraftItem(item) then
         -- do emote here
         local craftTime = Config.DefaultCraftingTime*CurrentAmount
         if item.craftingTime then
             craftTime = item.craftingTime*CurrentAmount
-        end
-        local amount = 1
-        if item.amount then
-            amount = item.amount*CurrentAmount
         end
         isCrafting = true
         TriggerEvent('animations:client:EmoteCommandStart', {"mechanic"})
@@ -216,13 +233,7 @@ local function craftItem(item)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function()
-            TriggerServerEvent('cw-crafting:server:craftItem', PlayerPedId(), item, CurrentAmount)
-           --[[  print('item name', item.name) ]]
-            if Config.Inventory == 'qb' then
-                QBCore.Functions.Notify('You have crafted '..amount..' '.. QBCore.Shared.Items[item.name].label, "success")
-            else
-                QBCore.Functions.Notify('You have crafted '..amount..' '.. ItemNames[item.name].label, "success")
-            end
+            TriggerServerEvent('cw-crafting:server:craftItem',recipe, item, CurrentAmount)
             TriggerEvent('animations:client:EmoteCommandStart', {"c"})
             isCrafting = false
         end, function() -- Cancel
@@ -233,8 +244,8 @@ local function craftItem(item)
         return true
     else
         QBCore.Functions.Notify('You dont have the required items', "error", 2500)
+        return false
     end
-    return false
 end
 
 local function getRecipes()
@@ -247,12 +258,11 @@ local function getRecipes()
     end
 
     for recipe, item in pairs(Config.Recipes) do
-        local canCraft = validateRights(item)
+        local canCraft = validateRights(item, recipe)
         if canCraft then
             local materialsNameMap = {}
             local toMaterialsNameMap = {}
-            if Config.Inventory == 'qb' then
-                item.data = QBCore.Shared.Items[item.name]
+            if not Config.oxInv then
                 if item.materials then
                     if useDebug then
                         print('Material used:')
@@ -263,56 +273,60 @@ local function getRecipes()
                         end
                         materialsNameMap[mat] = QBCore.Shared.Items[mat].label
                     end
+                else
+                    print('!!! CW CRAFTING WARNING !!!')
+                    print('Recipe has no input: ', recipe)
                 end
-                if item.toMaterials ~= nil then
+                if item.toItems ~= nil then
                     if useDebug then
                        print('Materials given')
                     end
-                    for mat, amount in pairs(item.toMaterials) do
+                    for mat, amount in pairs(item.toItems) do
                         if useDebug then
                             print(mat, amount)
                         end
                         toMaterialsNameMap[mat] = QBCore.Shared.Items[mat].label
                     end
+                else
+                    print('!!! CW CRAFTING WARNING !!!')
+                    print('Recipe has no output: ', recipe)
                 end
-                if useDebug then
-                    print('===============')
-                end
-            elseif Config.Inventory == 'ox' then
+            else
                 if useDebug then
                    print('name', item.materials)
                 end
-                item.data = ItemNames[item.name]
                 if item.materials then
                     for mat, amount in pairs(item.materials) do
                         materialsNameMap[mat] = ItemNames[mat].label
                     end
+                else
+                    print('!!! CW CRAFTING WARNING !!!')
+                    print('Recipe has no input: ', recipe)
                 end
-                if item.toMaterials ~= nil then
-                    for mat, amount in pairs(item.toMaterials) do
+                if item.toItems ~= nil then
+                    for mat, amount in pairs(item.toItems) do
                         toMaterialsNameMap[mat] = ItemNames[mat].label
                     end
+                else
+                    print('!!! CW CRAFTING WARNING !!!')
+                    print('Recipe has no output: ', recipe)
                 end
 
-            end
-            if item.data == nil then
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Item is probably missing from your items.lua: ', item.name)
             end
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
             item.type = item.type
             
             Recipes[recipe] = item
-            if item.craftTime == nil then
-                Recipes[recipe].craftTime = Config.DefaultCraftingTime
+            if item.craftingTime == nil then
+                Recipes[recipe].craftingTime = Config.DefaultCraftingTime
             end
             if useDebug then
-                print('Has access to', item.name)
+                print('Has access to', recipe)
             end
         else
             if useDebug then
-                print('Did not have access to', item.name)
+                print('Did not have access to', recipe)
             end
         end
         if useDebug then
@@ -328,17 +342,20 @@ local function setCraftingOpen(bool, i)
     QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
         Blueprints = bps
         if useDebug then
-            print('Crafting was opened')
+            print('Crafting was opened', bool)
         end
         SetNuiFocus(bool, bool)
         if bool then
             currentTableType = i;
+            StartScreenEffect('MenuMGIn', 1, true)
         else
             currentTableType = nil;
+            StopScreenEffect('MenuMGIn')
         end
         SendNUIMessage({
             action = "cwCrafting",
-            toggle = bool
+            toggle = bool,
+            type = 'toggleUi'
         })
     end)
 end exports('setCraftingOpen', setCraftingOpen)
@@ -358,8 +375,9 @@ RegisterNUICallback('attemptCrafting', function(recipe, cb)
         if useDebug then
             print(recipe.currentRecipe, dump(currentRecipe))
         end
-        local success = craftItem(currentRecipe)
+        local success = craftItem(currentRecipe, recipe.currentRecipe)
         cb(success)
+        return
     end
     cb(false)
 end)
@@ -370,6 +388,16 @@ RegisterNUICallback('getRecipes', function(data, cb)
     end
     getRecipes()
     cb(Recipes)
+end)
+
+RegisterNUICallback('getCanCraft', function(data, cb)
+    if useDebug then
+       print('Checking if items are in pockets')
+    end
+    CurrentAmount = data.craftingAmount
+    local currentRecipe = Config.Recipes[data.currentRecipe]
+
+    cb(getHasItemsMap(currentRecipe))
 end)
 
 
@@ -437,7 +465,7 @@ local function createTable(type, benchType)
             SetEntityHeading(benchEntity, bench.coords.w)
             FreezeEntityPosition(benchEntity, true)
             PlaceObjectOnGroundProperly(benchEntity)
-
+            Entities[#Entities+1] = benchEntity
             exports['qb-target']:AddTargetEntity(benchEntity, {
                 options = options,
                 distance = 2.0
@@ -458,8 +486,18 @@ end)
 
 
 RegisterNetEvent('cw-crafting:client:toggleDebug', function(debug)
-   print('Setting debug to',debug)
+   QBCore.Functions.Notify('Toggling Crafting debug to', debug)
    useDebug = debug
+end)
+
+AddEventHandler('onResourceStop', function (resource)
+   if resource ~= GetCurrentResourceName() then return end
+   for i, entity in pairs(Entities) do
+       print('deleting', entity)
+       if DoesEntityExist(entity) then
+          DeleteEntity(entity)
+       end
+    end
 end)
 
 RegisterNetEvent('cw-crafting:client:progressbar', function()
@@ -487,7 +525,7 @@ local function getAllBlueprints()
 end
 
 local function hasBlueprint(input)
-    if Config.Inventory == 'qb' then
+    if not Config.oxInv then
         local bps = getAllBlueprints()
         for i,bp in pairs(bps) do
             if bp.info.value == input then
@@ -495,7 +533,7 @@ local function hasBlueprint(input)
             end
         end
         return false
-    elseif Config.Inventory == 'ox' then
+    else
         local blueprintItem = 'blueprint'
 
         local items = exports.ox_inventory:Search('count', blueprintItem, { value = input } )

@@ -1,30 +1,22 @@
 QBCore =  exports['qb-core']:GetCoreObject()
 local useDebug = Config.Debug
-function dump(o)
-   if type(o) == 'table' then
-   local s = '{ '
-   for k,v in pairs(o) do
-      if type(k) ~= 'number' then k = '"'..k..'"' end
-      s = s .. '['..k..'] = ' .. dump(v) .. ','
-   end
-   return s .. '} '
-   else
-   return tostring(o)
-   end
-end
 
-RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, craftingAmount)
-    print(craftingAmount)
+RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, craftingAmount)
     local src = source
     local total = 0
-    if Config.Inventory == 'qb' then
+    if useDebug then 
+        print('Crafting', recipe, craftingAmount)
+        print('item', json.encode(item))
+    end
+
+    if not Config.oxInv then
         local Player = QBCore.Functions.GetPlayer(src)
         for material, amount in pairs(item.materials) do
             Player.Functions.RemoveItem(material, amount*craftingAmount)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
         end
-        if item.toMaterials ~= nil then
-            for material, amount in pairs(item.toMaterials) do
+        if item.toItems ~= nil then
+            for material, amount in pairs(item.toItems) do
                 Player.Functions.AddItem(material, amount*craftingAmount)
                 TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "add")
             end
@@ -37,14 +29,14 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
             Player.Functions.AddItem(item.name, total, item.metadata)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
         end
-    elseif Config.Inventory == 'ox' then
+    else
         local pped = GetPlayerPed(src)
         local coords = GetEntityCoords(pped)
         for material, amount in pairs(item.materials) do
             exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount)
         end
-        if item.toMaterials ~= nil then
-            for material, amount in pairs(item.toMaterials) do
+        if item.toItems ~= nil then
+            for material, amount in pairs(item.toItems) do
                 if exports.ox_inventory:CanCarryItem(src, material, amount*craftingAmount) then
                     exports.ox_inventory:AddItem(src, material, amount*craftingAmount )
                 else
@@ -52,17 +44,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(player, item, crafting
                 end
             end
         else
-            if item.amount ~= nil then
-                total = item.amount * craftingAmount or craftingAmount
-            else
-                total = craftingAmount
-            end
-
-            if exports.ox_inventory:CanCarryItem(src, item.name, total) then
-                exports.ox_inventory:AddItem(src, item.name, total, item.metadata)
-            else
-                exports.ox_inventory:CustomDrop("craft", {{item.name, total, durability = 100}}, coords)
-            end
+            print('Recipe is not created correctly: Missing toItems', recipe)
         end
     end
 end)
@@ -120,7 +102,7 @@ local function handleAddBlueprintFromItem(source, blueprint)
     local success = addBlueprint(citizenId, blueprint)
     if success then
         local blueprints = Player.Functions.GetItemsByName('blueprint')
-        if Config.Inventory == 'qb' then
+        if not Config.oxInv then
             local slot = nil
             for _, bpItem in ipairs(blueprints) do
                 if Config.Debugcraft then
@@ -166,13 +148,13 @@ local function getQBItem(item)
 end
 
 local function giveBlueprintItem(source, blueprintValue)
-    if Config.Inventory == 'qb' then
+    if not Config.oxInv then
         local info = {}
     	local Player = QBCore.Functions.GetPlayer(source)
         info.value = blueprintValue
         Player.Functions.AddItem('blueprint', 1, nil, info)
         TriggerClientEvent('inventory:client:ItemBox', source, getQBItem('blueprint'), "add")
-    elseif Config.Inventory == 'ox' then
+    else
         local carry = exports.ox_inventory:CanCarryItem(source, 'blueprint', 1)
         if carry then
             exports.ox_inventory:AddItem(source, 'blueprint', 1, {value = blueprintValue})
@@ -282,10 +264,10 @@ QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
         end
         TriggerClientEvent('cw-crafting:client:progressbar', source)
         local blueprint = nil
-        if Config.Inventory == 'ox' then
-            blueprint = item.metadata.value
-        else
+        if not Config.oxInv then
             blueprint = item.info.value
+        else
+            blueprint = item.metadata.value
         end
         handleAddBlueprintFromItem(source, blueprint)
     end
