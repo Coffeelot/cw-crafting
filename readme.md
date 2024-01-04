@@ -119,6 +119,17 @@ Now you got a new table! To fill it with items all you need to do is add `"table
 # Want to change the look?
 Crafting is now built in VUE, this means you can't just edit the files directly. This requires some more know-how than just developing with basic html/js. You can find out more information in this [Boilerplate Repo](https://github.com/alenvalek/fivem-vuejs-boilerplate).
 
+The very bacis for building and installing it are:
+1. Open a command window in the html folder
+2. run `npm i`
+3. run `npm run build` (to create a new build of the ui), `npm run watch` to dev with it
+
+> If nothing is happening, try deleting the dist folder before you run the build command
+
+> This does require some know-how and use of [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+> If you're catching errors, it might be because your Node version is old/to new. I use Node 18. 
+
 # Commands
 `/addblueprint <source> <blueprint name>` adds a blueprint to database for player
 
