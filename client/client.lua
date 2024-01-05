@@ -16,10 +16,83 @@ local function getOxItems()
     end
 end
 
+local function verifyAllItemsExists()
+    local allItemsExist = true;
+    local recipesAreFine = true;
+    for recipe, item in pairs(Config.Recipes) do
+        if not Config.oxInv then
+            if item.materials ~= nil then
+                for mat, amount in pairs(item.materials) do
+                    if not QBCore.Shared.Items[mat] then
+                        allItemsExist = false
+                        print('!!! CW CRAFTING WARNING !!!')
+                        print('item defined in config but does not exist in your item.lua: ', mat)
+                    end
+                end
+            else
+                recipesAreFine = false
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Recipe has no input: ', recipe)
+            end
+            if item.toItems ~= nil then
+                for mat, amount in pairs(item.toItems) do
+                    if not QBCore.Shared.Items[mat] then
+                        allItemsExist = false
+                        print('!!! CW CRAFTING WARNING !!!')
+                        print('item defined in config but does not exist in your item.lua: ', mat)
+                    end
+                end
+            else
+                recipesAreFine = false
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Recipe has no output: ', recipe)
+            end
+        else
+            if item.materials ~= nil then
+                for mat, amount in pairs(item.materials) do
+                    if not ItemNames[mat] then
+                        allItemsExist = false
+                        print('!!! CW CRAFTING WARNING !!!')
+                        print('item defined in config but does not exist in your item.lua: ', mat)
+                    end
+                end
+            else
+                recipesAreFine = false
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Recipe has no input: ', recipe)
+            end
+            if item.toItems ~= nil then
+                for mat, amount in pairs(item.toItems) do
+                    if not ItemNames[mat] then
+                        allItemsExist = false
+                        print('!!! CW CRAFTING WARNING !!!')
+                        print('item defined in config but does not exist in your item.lua: ', mat)
+                    end
+                end
+            else
+                recipesAreFine = false
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Recipe has no output: ', recipe)
+            end
+        end
+    end
+    if not allItemsExist or not recipesAreFine then
+        print('-------------------------')
+        print('There are issues with your cw crafting setup. This is most likely NOT the fault of the script.')
+        if not allItemsExist then
+            print('- Make sure to check all the item names for misspellings and that they exist')
+        end
+        if not recipesAreFine then 
+            print('- One or more of your crafting recipes are broken. Either lacking an input our an output')
+        end
+    end
+end
+
 AddEventHandler('onResourceStart', function(resource)
-   if resource == GetCurrentResourceName() then
+    if resource == GetCurrentResourceName() then
         getOxItems()
-   end
+    end
+    verifyAllItemsExists()
 end)
 
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
