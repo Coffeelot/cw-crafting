@@ -4,7 +4,8 @@
   >
     <v-card-title>Crafting: {{ recipeLabel }}</v-card-title>
     <v-card-text>
-      <v-card variant="tonal" class="mb-6">
+      <v-card variant="tonal" class="mb-6 d-flex flex-no-wrap justify-space-between align-center">
+        <div>
         <v-card-title>Recipe</v-card-title>
         <v-card-text>
           <h3>Components needed</h3>
@@ -18,6 +19,15 @@
           <h3 class="mt-4">Crafting time</h3>
           <span>{{ secondsToHMS(recipe.craftingTime) }}</span>
         </v-card-text>
+      </div>
+          <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
+            <v-img :src="imageLink(undefined)"></v-img>
+          </v-avatar>
+          <div v-else >
+            <v-avatar class="avatar" v-for="item, materialName in recipe.toItems" rounded="0"  size="80px">
+              <v-img :src="imageLink(materialName)"></v-img>
+            </v-avatar>
+          </div>
        </v-card>
        <v-card variant="tonal">
         <v-card-title>Crafting</v-card-title>
@@ -83,6 +93,21 @@ const secondsToHMS = (input: number) => {
     else if (secondsString) return secondsString
     else return 'Unknown'
 }
+const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
+
+const imageLink = (material: string | undefined) => {
+  let key = undefined
+  if (!material) {
+    key = Object.keys(props.recipe.toMaterialsNameMap)[0] 
+  } else {
+    key = props.recipe.toMaterialsNameMap[material];
+  }
+    if (globalStore.oxInventory) {
+      return `nui://ox_inventory/web/images/${key}.png`
+    } else {
+      return `nui://qb-inventory/html/images/${key}`
+    }
+}
 
 const props = defineProps<{
   recipe: Recipe
@@ -126,6 +151,9 @@ onMounted(()=> canCraft())
 </script>
 
 <style scoped lang="scss">
+.avatar {
+  margin-right: 1rem;
+}
 .chip-holder {
   display: flex;
   flex-direction: row;
