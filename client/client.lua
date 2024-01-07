@@ -91,8 +91,8 @@ end
 AddEventHandler('onResourceStart', function(resource)
     if resource == GetCurrentResourceName() then
         getOxItems()
+        verifyAllItemsExists()
     end
-    verifyAllItemsExists()
 end)
 
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
