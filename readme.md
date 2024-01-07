@@ -80,6 +80,7 @@ All you gotta do is go into the `Config.Lua`, head to the bottom and you'll find
 ```lua
 kitchen = {
         title = "Open kitchen",
+		icon = "food-fork-drink" -- icon for the crafting menu, uses Material Desgin Icons https://pictogrammers.com/library/mdi/ (optional)
         objects = { 'gr_prop_gr_hobo_stove_01' }, -- providing this will make ALL objects of this variant a table (leave empty if this is not what you want, ei objects = {})
 		locations = {  vector3(-165.14, -984.55, 254.22), }, -- spawn at these locations (optional)
 		spawnTable = { { coords = vector4(794.49, -2613.63, 87.97, 2.4), prop = 'gr_prop_gr_hobo_stove_01' } } -- List of several tables with prop and location. If these are added it will SPAWN a table that's interactable (optional)

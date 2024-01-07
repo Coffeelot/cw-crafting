@@ -1,7 +1,13 @@
 <template>
   <div class="ui-container">
     <div class="screen-container" v-if="globalStore.recipes">
-          <FilterMenu></FilterMenu>
+          <div class="top">
+            <div class="icon-holder" >
+                  <v-icon v-if="globalStore.table.icon" :icon="`mdi-${globalStore.table.icon}`"></v-icon>
+                  <v-icon v-else icon="mdi-wrench"></v-icon>
+            </div>
+            <FilterMenu></FilterMenu>
+          </div>
           <div class="content">
             <RecipesList class="list"></RecipesList>
             <CraftingMenu :recipe="globalStore.recipes[globalStore.selectedRecipe]" class="menu" v-if="globalStore.selectedRecipe"></CraftingMenu>
@@ -26,6 +32,21 @@ document.onkeydown = function (evt) {
 </script>
 
 <style scoped lang="scss">
+
+.top {
+  display: flex;
+  gap: 1em;
+  flex-direction: row;
+  align-items: center;
+}
+
+.icon-holder {
+  min-width: fit-content;
+  height: fit-content;
+  background: #1d1d24;
+  border-radius: 100%;
+  padding: 1em;
+}
 body {
   overflow: hidden;
 }
@@ -33,6 +54,7 @@ body {
 .list {
   flex-grow: 1;
     flex-shrink: 4;
+    width: 100%;
 }
 
 .menu {

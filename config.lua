@@ -59,6 +59,7 @@ Config.Recipes = {
 
 
 -- Search for more tables here, for example: https://gta-objects.xyz/objects
+-- For icons see https://pictogrammers.com/library/mdi/
 Config.CraftingTables = {
 	['basic'] = {
 		title = "Crafting",
@@ -68,12 +69,14 @@ Config.CraftingTables = {
 	['mechanic'] = {
 		title = "Mechanic Crafting",
 		objects = { 'prop_toolchest_05' },
+		icon = "car-wrench", -- optional. Defaults to 'wrench'
 		jobType = { ['mechanic'] = 1 }, -- NOTE: This checks TYPES not name. A new qb thing. It's good. Use it.
 		locations = { vector3(948.81, -1552.64, 30.59), }, -- BOXZONE: If you add one of these objects (locations = ...) it will spawn boxzones
 		spawnTable = { { coords = vector4(794.49, -2613.63, 87.97, 2.4), prop = 'ex_prop_ex_toolchest_01' } } -- SPAWNS TABLE: the spawnTable field holds a list of several tables with prop and location. If these are added it will SPAWN a table that's interactable
 	},
 	['guns'] = {
 		title = "Weapon Crafting",
+		icon = "pistol",
 		objects = { 'gr_prop_gr_bench_01a' }
 	},
 }

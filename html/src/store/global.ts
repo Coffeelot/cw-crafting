@@ -1,6 +1,6 @@
 // Utilities
 import { defineStore } from 'pinia'
-import { Recipe, Recipes } from './types'
+import { Recipe, Recipes, Table } from './types'
 
 export const useGlobalStore = defineStore('global', {
   state: () => ({
@@ -10,6 +10,7 @@ export const useGlobalStore = defineStore('global', {
     selectedRecipe: '',
     search: '',
     recipes: {} as Recipes,
+    table: {} as Table,
     isLoadingBaseData: true,
   })
 })

@@ -30,6 +30,7 @@ const toggleApp = (show: boolean): void => {
 const handleMessageListener = (event: MessageEvent) => {
   const itemData: any = event?.data;
   if (itemData?.type) {
+    globalStore.$state.table = itemData.table
     switch (itemData.type) {
       case 'toggleUi':
         toggleApp(itemData.toggle)
