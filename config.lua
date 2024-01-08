@@ -1,7 +1,7 @@
 Config = {}
 Config.Debug = false
 
-Config.Inventory = 'qb' -- set this to ox if you have ox_inventory
+Config.oxInv = true -- set this to ox if you have ox_inventory
 
 Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers lowering chance of getting the item
 	['aluminumoxide_pro'] = { rarity = 3, chance = 30 },
