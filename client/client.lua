@@ -411,7 +411,6 @@ local function getRecipes()
 end
 
 local function setCraftingOpen(bool, i)
-    local citizenId = QBCore.Functions.GetPlayerData().citizenid
     QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
         Blueprints = bps
         if useDebug then
@@ -428,7 +427,8 @@ local function setCraftingOpen(bool, i)
         SendNUIMessage({
             action = "cwCrafting",
             toggle = bool,
-            type = 'toggleUi'
+            type = 'toggleUi',
+            table = Config.CraftingTables[currentTableType]
         })
     end)
 end exports('setCraftingOpen', setCraftingOpen)
