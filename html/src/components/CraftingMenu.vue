@@ -21,11 +21,11 @@
         </v-card-text>
       </div>
           <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
-            <v-img :src="imageLink(undefined)"></v-img>
+            <v-img :src="getImageLink(undefined, recipe.toMaterialsNameMap)"></v-img>
           </v-avatar>
           <div v-else >
             <v-avatar class="avatar" v-for="item, materialName in recipe.toItems" rounded="0"  size="80px">
-              <v-img :src="imageLink(materialName)"></v-img>
+              <v-img :src="getImageLink(materialName, recipe.toMaterialsNameMap)"></v-img>
             </v-avatar>
           </div>
        </v-card>
@@ -76,6 +76,7 @@
 <script setup lang="ts">
 import api from "@/api/axios";
 import { closeUi } from "@/helpers/closeUi";
+import { getImageLink } from "../helpers/getImageLink";
 import { useGlobalStore } from "@/store/global";
 import { Recipe } from "@/store/types";
 import { onUpdated } from "vue";
@@ -94,20 +95,6 @@ const secondsToHMS = (input: number) => {
     else return 'Unknown'
 }
 const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
-
-const imageLink = (material: string | undefined) => {
-  let key = undefined
-  if (!material) {
-    key = Object.keys(props.recipe.toMaterialsNameMap)[0] 
-  } else {
-    key = props.recipe.toMaterialsNameMap[material];
-  }
-    if (globalStore.oxInventory) {
-      return `nui://ox_inventory/web/images/${key}.png`
-    } else {
-      return `nui://qb-inventory/html/images/${key}`
-    }
-}
 
 const props = defineProps<{
   recipe: Recipe

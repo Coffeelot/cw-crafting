@@ -1,10 +1,8 @@
-// Utilities
 import { defineStore } from 'pinia'
-import { Recipe, Recipes, Table } from './types'
+import { Recipes, Table } from './types'
 
 export const useGlobalStore = defineStore('global', {
   state: () => ({
-    oxInventory: false,
     uiIsOpen: false,
     selectedCategories: [] as string[],
     selectedRecipe: '',
@@ -12,5 +10,9 @@ export const useGlobalStore = defineStore('global', {
     recipes: {} as Recipes,
     table: {} as Table,
     isLoadingBaseData: true,
+    settings: {
+      oxInventory: false,
+      useLocalImages: false,
+    }
   })
 })

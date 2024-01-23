@@ -14,6 +14,7 @@ ui_page {
 files {
     "html/dist/index.html",
     "html/dist/assets/*.*",
+    "images/*.*"
 }
 
 client_scripts{

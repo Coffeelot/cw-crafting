@@ -31,6 +31,7 @@ const handleMessageListener = (event: MessageEvent) => {
   const itemData: any = event?.data;
   if (itemData?.type) {
     globalStore.$state.table = itemData.table
+    // globalStore.$state.settings = itemData.settings
     switch (itemData.type) {
       case 'toggleUi':
         toggleApp(itemData.toggle)
@@ -50,8 +51,8 @@ const populateRecipes = async () => {
 }
 
 const setInventory = async () => {
-  const res = await api.post("getInventory");
-  globalStore.$state.oxInventory = res.data
+  const res = await api.post("getSettings");
+  globalStore.$state.settings = res.data
 }
 
 onMounted(() => {

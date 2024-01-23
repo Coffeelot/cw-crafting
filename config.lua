@@ -2,6 +2,7 @@ Config = {}
 Config.Debug = false
 
 Config.oxInv = true -- set this to ox if you have ox_inventory
+Config.UseLocalImages = false -- set this to true if you want to use local images rather than automatic. Put the images for the recipes and ingredients in the 'images' folder next to the blueprint.png
 
 Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers lowering chance of getting the item
 	['aluminumoxide_pro'] = { rarity = 3, chance = 30 },

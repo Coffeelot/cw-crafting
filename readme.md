@@ -21,7 +21,7 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 - Easy addition of new recipes
 - Exports to give blueprints (through loot for example)
 - A UI made in VUE
-- Support for OX inventory
+- Support for OX and QB inventory with limited support for other inventories (through QB)
 
 # Developed by Coffeelot and Wuggie
 [More scripts by us](https://github.com/stars/Coffeelot/lists/cw-scripts)  👈
@@ -116,6 +116,9 @@ Example recipe:
 
 
 Now you got a new table! To fill it with items all you need to do is add `"tables = {'kitchen'}"`  to your recipes. You can see examples of these in the Recipes object. If you check the Recipes at the top they have comments explaining the different fields
+
+## Using an inventory that is not OX or QB?
+You'll want to set `UseLocalImages` to true in the config and copy over all the images of the recipe items and ingredients to the images folder
 
 # Want to change the look?
 Crafting is now built in VUE, this means you can't just edit the files directly. This requires some more know-how than just developing with basic html/js. You can find out more information in this [Boilerplate Repo](https://github.com/alenvalek/fivem-vuejs-boilerplate).

@@ -7,13 +7,17 @@
     link
     @click="selectRecipe()"
     :width="globalStore.selectedRecipe ? '100%' : 'fit-content'"
-    :title="recipeLabel" 
+    :title="recipeLabel"
   >
     <template v-if="isSingleItem()" v-slot:prepend>
-      <v-avatar >
-        <v-img :src="imageLink"></v-img>
-    </v-avatar>
-      </template>
+      <v-avatar>
+        <v-img
+          :src="
+            imageLink
+          "
+        ></v-img>
+      </v-avatar>
+    </template>
     <v-card-text class="text">
       <v-chip v-for="(itemAmount, item) in recipe.materials"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
@@ -23,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { getImageLink } from "../helpers/getImageLink";
 import { useGlobalStore } from "@/store/global";
 import { Recipe } from "@/store/types";
 import { computed, ref } from "vue";
@@ -33,18 +38,13 @@ const props = defineProps<{
 }>();
 
 const globalStore = useGlobalStore();
-const reveal = ref(false);
-
-const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
-
-const imageLink = computed(() => {
-    const key = Object.keys(props.recipe.toMaterialsNameMap)[0];
-    if (globalStore.oxInventory) {
-      return `nui://ox_inventory/web/images/${key}.png`
-    } else {
-      return `nui://qb-inventory/html/images/${key}`
-    }
-})
+const imageLink = computed(()=> getImageLink(
+              Object.keys(props.recipe.toMaterialsNameMap)[0],
+              props.recipe.toMaterialsNameMap
+            ))
+const isSingleItem = () =>
+  props.recipe.toMaterialsNameMap &&
+  Object.keys(props.recipe.toMaterialsNameMap).length === 1;
 
 const recipeLabel = computed(() => {
   if (props.recipe.label) {
@@ -59,7 +59,7 @@ const recipeLabel = computed(() => {
 
 const selectRecipe = () => {
   globalStore.$state.selectedRecipe = props.recipeName;
-}
+};
 </script>
 
 <style scoped lang="scss">
