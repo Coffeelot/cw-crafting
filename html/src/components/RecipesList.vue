@@ -2,10 +2,12 @@
   <v-card class="mx-auto pa-2">
     <div class="recipe-list">
       <RecipeItem
+        v-if="Object.keys(filteredRecipes).length>0"
         v-for="(item, i) in filteredRecipes"
         :recipe="item"
         :recipeName="i"
       ></RecipeItem>
+      <h3>No Recipes to show</h3>
     </div>
   </v-card>
 </template>
