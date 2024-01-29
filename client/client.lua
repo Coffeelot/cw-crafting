@@ -389,7 +389,9 @@ local function getRecipes()
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
             item.type = item.type
-            
+            if not item.craftingSkill then
+                item.craftingSkill = 0
+            end
             Recipes[recipe] = item
             if item.craftingTime == nil then
                 Recipes[recipe].craftingTime = Config.DefaultCraftingTime
@@ -412,6 +414,10 @@ end
 
 local function setCraftingOpen(bool, i)
     QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
+        local PlayerData = QBCore.Functions.GetPlayerData()
+        local craftingSkill = PlayerData.metadata.craftingrep
+        if not craftingSkill then craftingSkill = 0 end
+        
         Blueprints = bps
         if useDebug then
             print('Crafting was opened', bool)
@@ -428,7 +434,8 @@ local function setCraftingOpen(bool, i)
             action = "cwCrafting",
             toggle = bool,
             type = 'toggleUi',
-            table = Config.CraftingTables[currentTableType]
+            table = Config.CraftingTables[currentTableType],
+            craftingSkill = craftingSkill
         })
     end)
 end exports('setCraftingOpen', setCraftingOpen)

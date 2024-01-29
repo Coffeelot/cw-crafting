@@ -2,7 +2,9 @@
   <v-card
     class="mx-auto pa-2"
   >
-    <v-card-title>Crafting: {{ recipeLabel }}</v-card-title>
+    <v-card-title>
+      Crafting: {{ recipeLabel }} 
+    </v-card-title>
     <v-card-text>
       <v-card variant="tonal" class="mb-6 d-flex flex-no-wrap justify-space-between align-center">
         <div>
@@ -34,8 +36,8 @@
         <v-card-text>
           <h3>Craft amount: {{ craftingAmount }}</h3>
           <v-slider
-            v-on:update:model-value="canCraft()"
-            @click="canCraft()"
+            v-on:update:model-value="verifyHasItems()"
+            @click="verifyHasItems()"
             v-model="craftingAmount"
             :min="1"
             :max="100"
@@ -59,14 +61,27 @@
                 @click="updateCraftingAmount(1)"
               ></v-btn>
             </template></v-slider>
-            <div class="chip-holder">
-              <v-chip v-for="(amount, key) in recipe.materials" :color="hasMaterialMap && hasMaterialMap[key] ? 'green':'red'"> {{ recipe.materialsNameMap[key] || key }}: {{ amount*craftingAmount }}</v-chip>
+            <div class="requirements">
+              <div>
+                <h3 class="mb-2">Items required</h3>
+                <div class="chip-holder">
+                  <v-chip v-for="(amount, key) in recipe.materials" :color="hasMaterialMap && hasMaterialMap[key] ? 'green':'red'"> {{ recipe.materialsNameMap[key] || key }}: {{ amount*craftingAmount }}</v-chip>
+                </div>
+              </div>
+              <v-divider :vertical="true"></v-divider>
+              <div v-if="recipe.craftingSkill>0" >
+                <h3 class="mb-2">Crafting skill required</h3>
+                <v-chip :color="craftingSkillIsMet ? 'green':'red'"> Skill Requirement: {{ recipe.craftingSkill }} </v-chip>
+              </div>
+              <v-divider v-if="recipe.craftingSkill>0" :vertical="true"></v-divider>
+              <div>
+              <h3 class="mb-2">Crafting time</h3>
+                <span>{{ secondsToHMS(recipe.craftingTime*craftingAmount) }}</span>
+              </div>
             </div>
-            <h3 class="mt-4">Crafting time</h3>
-            <span>{{ secondsToHMS(recipe.craftingTime*craftingAmount) }}</span>
             </v-card-text>
             <v-card-actions>
-              <v-btn :disabled="!hasAllMaterials" block variant="tonal" @click="craft">Craft {{ craftingAmount }} batches</v-btn>
+              <v-btn :disabled="!craftingSkillIsMet || !hasAllMaterials " block variant="tonal" @click="craft">Craft {{ craftingAmount }} batches</v-btn>
             </v-card-actions>
       </v-card>
         </v-card-text>
@@ -99,7 +114,7 @@ const updateCraftingAmount = ( amount:number) => {
   const newAmount = craftingAmount.value + amount;
   if (newAmount > 0 ) {
     craftingAmount.value = newAmount
-    canCraft()
+    verifyHasItems()
   }
 }
 const props = defineProps<{
@@ -111,6 +126,7 @@ const hasMaterialMap: Ref<Record<string, boolean> | undefined>= ref(undefined)
 const craftingAmount = ref(1)
 
 const hasAllMaterials = computed(() => hasMaterialMap.value !== undefined && Object.values(hasMaterialMap.value).every(value => value === true))
+const craftingSkillIsMet = computed(() => globalStore.playerCraftingSkill >= props.recipe.craftingSkill)
 
 const recipeLabel = computed(() => {
   if (props.recipe.label) {
@@ -126,7 +142,7 @@ const recipeLabel = computed(() => {
   }
 });
 
-const canCraft = async () => {
+const verifyHasItems = async () => {
   const res = await api.post("getCanCraft", JSON.stringify({craftingAmount: craftingAmount.value, currentRecipe: globalStore.selectedRecipe}));
   hasMaterialMap.value = res.data as Record<string, boolean>
 }
@@ -138,12 +154,16 @@ const craft = async () => {
   }
 }
 
-onUpdated(()=> canCraft())
-onMounted(()=> canCraft())
+onUpdated(()=> verifyHasItems())
+onMounted(()=> verifyHasItems())
 
 </script>
 
 <style scoped lang="scss">
+.requirements {
+  display: flex;
+  gap: 2rem;
+}
 .avatar {
   margin-right: 1rem;
 }

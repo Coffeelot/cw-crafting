@@ -4,6 +4,20 @@ Config.Debug = false
 Config.oxInv = true -- set this to ox if you have ox_inventory
 Config.UseLocalImages = false -- set this to true if you want to use local images rather than automatic. Put the images for the recipes and ingredients in the 'images' folder next to the blueprint.png
 
+local minimumSkillRep = 1 -- the least amount of skill you can gain per craft
+
+-- You can tweak this function to return different amount of points per skill
+-- The default one will give you 1 skill for a crafted item and the +1 for each 100 in skill requirement the item has. 
+Config.CraftingRepGainFunction = function(skillReq)
+	if not skillReq then return minimumSkillRep end
+	
+    local skillGain = 1 + math.floor((skillReq - 1) / 100)
+	if skillGain < minimumSkillRep then return minimumSkillRep end
+	if Config.Debug then print('Skill gain:', skillGain) end
+	return skillGain
+end
+
+
 Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers lowering chance of getting the item
 	['aluminumoxide_pro'] = { rarity = 3, chance = 30 },
 	['repairkit'] = { rarity = 2, chance = 40 },
@@ -28,6 +42,7 @@ Config.Recipes = {
 		},
 		materials = { metalscrap = 12, plastic = 12 },
 		craftingTime= 3000,
+		craftingSkill= 10,
 	},
 	['breakdown_phone'] = {
 		label = 'Breakdown phone',

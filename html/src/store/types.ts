@@ -6,7 +6,8 @@ export type Recipe = {
     materials: Record<string, number>,
     materialsNameMap: Record<string, string>,
     toItems: Record<string, number>,
-    toMaterialsNameMap: Record<string, string>
+    toMaterialsNameMap: Record<string, string>,
+    craftingSkill: number,
 }
 
 export type Recipes = Record<string, Recipe>

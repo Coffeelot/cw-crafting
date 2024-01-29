@@ -22,6 +22,7 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 - Exports to give blueprints (through loot for example)
 - A UI made in VUE
 - Support for OX and QB inventory with limited support for other inventories (through QB)
+- Crafting skill reqirements
 
 # Developed by Coffeelot and Wuggie
 [More scripts by us](https://github.com/stars/Coffeelot/lists/cw-scripts)  👈
@@ -103,6 +104,7 @@ Example recipe:
             plastic = 12 
         },
         label = 'Lockpicks' -- label that shows in crafting menu, will default to item in toItems (if 1) or the recipe name (in this case 'lockpick') otherwise (optional, higly suggested)
+		craftingSkill= 10, -- crafting skill required to craft this. Defaults to 0 if unset (optional)
 		craftingTime= 3000, -- crafting time (optional)
         blueprint = 'Lockpick', -- blueprint name. Case sensitive to the blueprint name! (optional)
         jobs = { -- table of job requirements (optional)

@@ -8,8 +8,8 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
         print('item', json.encode(item))
     end
 
+    local Player = QBCore.Functions.GetPlayer(src)
     if not Config.oxInv then
-        local Player = QBCore.Functions.GetPlayer(src)
         for material, amount in pairs(item.materials) do
             Player.Functions.RemoveItem(material, amount*craftingAmount)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
@@ -47,6 +47,9 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
             print('Recipe is not created correctly: Missing toItems', recipe)
         end
     end
+    local newSkill = Player.PlayerData.metadata['craftingrep'] + Config.CraftingRepGainFunction(recipe.craftingSkill)*craftingAmount
+    if useDebug then print('New skill:', newSkill) end
+    Player.Functions.SetMetaData('craftingrep', newSkill)
 end)
 
 local function updateBlueprints(citizenId, blueprints)

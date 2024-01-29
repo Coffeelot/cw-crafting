@@ -31,6 +31,7 @@ const handleMessageListener = (event: MessageEvent) => {
   const itemData: any = event?.data;
   if (itemData?.type) {
     globalStore.$state.table = itemData.table
+    globalStore.$state.playerCraftingSkill = itemData.craftingSkill ?? 0
     // globalStore.$state.settings = itemData.settings
     switch (itemData.type) {
       case 'toggleUi':

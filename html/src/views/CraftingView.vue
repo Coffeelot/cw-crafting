@@ -1,17 +1,28 @@
 <template>
   <div class="ui-container">
     <div class="screen-container" v-if="globalStore.recipes">
-          <div class="top">
-            <div class="icon-holder" >
-                  <v-icon v-if="globalStore.table.icon" :icon="`mdi-${globalStore.table.icon}`"></v-icon>
-                  <v-icon v-else icon="mdi-wrench"></v-icon>
-            </div>
-            <FilterMenu></FilterMenu>
-          </div>
-          <div class="content">
-            <RecipesList class="list"></RecipesList>
-            <CraftingMenu :recipe="globalStore.recipes[globalStore.selectedRecipe]" class="menu" v-if="globalStore.selectedRecipe"></CraftingMenu>
-          </div>
+      <div class="top">
+        <v-card
+          width="100%"
+          :prepend-icon="
+            globalStore.table.icon
+              ? `mdi-${globalStore.table.icon}`
+              : 'mdi-wrench'
+          "
+          :title="globalStore.table.title ? globalStore.table.title : ''"
+          :subtitle="'Crafting skill: ' + globalStore.playerCraftingSkill"
+        >
+        </v-card>
+        <FilterMenu></FilterMenu>
+      </div>
+      <div class="content">
+        <RecipesList class="list"></RecipesList>
+        <CraftingMenu
+          :recipe="globalStore.recipes[globalStore.selectedRecipe]"
+          class="menu"
+          v-if="globalStore.selectedRecipe"
+        ></CraftingMenu>
+      </div>
     </div>
   </div>
 </template>
@@ -28,15 +39,13 @@ const globalStore = useGlobalStore();
 document.onkeydown = function (evt) {
   if (evt?.key === "Escape") closeUi();
 };
-
 </script>
 
 <style scoped lang="scss">
-
 .top {
   display: flex;
   gap: 1em;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
 }
 
@@ -53,13 +62,14 @@ body {
 
 .list {
   flex-grow: 1;
-    flex-shrink: 4;
-    width: 100%;
+  flex-shrink: 4;
+  width: 100%;
 }
 
 .menu {
   flex-grow: 2;
   width: 100%;
+  overflow-y: auto;
 }
 h2 {
   margin-bottom: 0px;

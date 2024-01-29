@@ -18,6 +18,9 @@
         ></v-img>
       </v-avatar>
     </template>
+    <v-card-subtitle>
+      <v-chip v-if="recipe.craftingSkill>0" :color="craftingSkillIsMet ? 'green':'red'"> Skill Requirement: {{ recipe.craftingSkill }} </v-chip>
+    </v-card-subtitle>
     <v-card-text class="text">
       <v-chip v-for="(itemAmount, item) in recipe.materials"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
@@ -45,6 +48,7 @@ const imageLink = computed(()=> getImageLink(
 const isSingleItem = () =>
   props.recipe.toMaterialsNameMap &&
   Object.keys(props.recipe.toMaterialsNameMap).length === 1;
+const craftingSkillIsMet = computed(() => globalStore.playerCraftingSkill >= props.recipe.craftingSkill)
 
 const recipeLabel = computed(() => {
   if (props.recipe.label) {
