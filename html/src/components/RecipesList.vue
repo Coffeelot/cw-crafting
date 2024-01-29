@@ -7,7 +7,7 @@
         :recipe="item"
         :recipeName="i"
       ></RecipeItem>
-      <h3>No Recipes to show</h3>
+      <h3 v-else >No Recipes to show</h3>
     </div>
   </v-card>
 </template>
