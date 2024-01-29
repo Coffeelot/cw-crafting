@@ -160,14 +160,14 @@ local function giveBlueprintItem(source, blueprintValue)
     else
         local carry = exports.ox_inventory:CanCarryItem(source, 'blueprint', 1)
         if carry then
-            exports.ox_inventory:AddItem(source, 'blueprint', 1, {value = blueprintValue})
+            exports.ox_inventory:AddItem(source, 'blueprint', 1, {label = "Blueprint: "..blueprintValue, value = blueprintValue})
         else
             if useDebug then
                print("Can not carry. Dropping on ground")
             end
             local pped = GetPlayerPed(source)
             local coords = GetEntityCoords(pped)
-            exports.ox_inventory:CustomDrop("drop-"..math.random(1,9999), {{'blueprint', 1, {value = blueprintValue}}}, coords)
+            exports.ox_inventory:CustomDrop("drop-"..math.random(1,9999), {{'blueprint', 1, {label = "Blueprint: "..blueprintValue, value = blueprintValue}}}, coords)
         end
     end
 end
@@ -265,13 +265,21 @@ QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
         if useDebug then
            print('used blueprint')
         end
-        TriggerClientEvent('cw-crafting:client:progressbar', source)
         local blueprint = nil
         if not Config.oxInv then
+            if not item.info.value then
+                TriggerClientEvent('QBCore:Notify', source, 'The person who gave/spawned you this can not read Readmes', 'error')
+                return
+            end
             blueprint = item.info.value
         else
+            if not item.metadata.value then
+                TriggerClientEvent('QBCore:Notify', source, 'The person who gave/spawned you this can not read Readmes', 'error')
+                return
+            end
             blueprint = item.metadata.value
         end
+        TriggerClientEvent('cw-crafting:client:progressbar', source)
         handleAddBlueprintFromItem(source, blueprint)
     end
 end)
@@ -286,7 +294,6 @@ RegisterNetEvent('cw-crafting:server:addBlueprintFromLearning', function(bluepri
 end)
 
 QBCore.Commands.Add('addblueprint', 'Give blueprint knowledge to player. (Admin Only)',{ { name = 'player id', help = 'the id of the player' }, { name = 'blueprint', help = 'name of blueprint' } }, true, function(source, args)
-    print(args[1])
     local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
     local citizenId = Player.PlayerData.citizenid
     print('adding '..args[2].. ' to '..citizenId)
