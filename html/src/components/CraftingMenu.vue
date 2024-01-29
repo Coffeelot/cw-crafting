@@ -47,7 +47,7 @@
                 size="small"
                 variant="text"
                 icon="mdi-minus"
-                @click="craftingAmount--; canCraft()"
+                @click="updateCraftingAmount(-1)"
               ></v-btn>
             </template>
 
@@ -56,7 +56,7 @@
                 size="small"
                 variant="text"
                 icon="mdi-plus"
-                @click="craftingAmount++; canCraft()"
+                @click="updateCraftingAmount(1)"
               ></v-btn>
             </template></v-slider>
             <div class="chip-holder">
@@ -95,7 +95,13 @@ const secondsToHMS = (input: number) => {
     else return 'Unknown'
 }
 const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
-
+const updateCraftingAmount = ( amount:number) => {
+  const newAmount = craftingAmount.value + amount;
+  if (newAmount > 0 ) {
+    craftingAmount.value = newAmount
+    canCraft()
+  }
+}
 const props = defineProps<{
   recipe: Recipe
 }>()

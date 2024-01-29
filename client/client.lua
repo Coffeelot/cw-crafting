@@ -445,6 +445,9 @@ RegisterNUICallback('attemptCrafting', function(recipe, cb)
         local Player = QBCore.Functions.GetPlayerData()
         local currentRecipe = Config.Recipes[recipe.currentRecipe]
         CurrentAmount = recipe.craftingAmount
+        if CurrentAmount == 0 then
+            QBCore.Functions.Notify("You can't craft a batch of 0.", "error")
+        end
         if useDebug then
             print(recipe.currentRecipe, dump(currentRecipe))
         end
@@ -482,8 +485,12 @@ RegisterNUICallback('closeCrafting', function(_, cb)
     cb('ok')
 end)
 
-RegisterNUICallback('getInventory', function(_, cb)
-    cb(Config.oxInv)
+RegisterNUICallback('getSettings', function(_, cb)
+    local settings = {
+        oxInventory = Config.oxInv,
+        useLocalImages = Config.UseLocalImages
+    }
+    cb(settings)
 end)
 
 --[[ RegisterCommand('openCrafting', function(source)

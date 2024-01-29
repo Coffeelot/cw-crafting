@@ -3,7 +3,6 @@ local useDebug = Config.Debug
 
 RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, craftingAmount)
     local src = source
-    local total = 0
     if useDebug then 
         print('Crafting', recipe, craftingAmount)
         print('item', json.encode(item))
@@ -21,6 +20,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
                 TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "add")
             end
         else
+            local total = 0
             if item.amount ~= nil then
                 total = item.amount * craftingAmount or craftingAmount
             else
