@@ -148,10 +148,8 @@ const verifyHasItems = async () => {
 }
 
 const craft = async () => {
-  const res = await api.post("attemptCrafting", JSON.stringify({craftingAmount: craftingAmount.value, currentRecipe: globalStore.selectedRecipe}));
-  if (res.data) {
-    closeUi()
-  }
+  closeUi()
+  await api.post("attemptCrafting", JSON.stringify({craftingAmount: craftingAmount.value, currentRecipe: globalStore.selectedRecipe}));
 }
 
 onUpdated(()=> verifyHasItems())

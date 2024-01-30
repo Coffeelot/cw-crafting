@@ -3,6 +3,7 @@ local Recipes = {}
 local Blueprints = {}
 local CurrentAmount = 1
 local currentTableType = nil
+local lastTableType = nil
 local ItemNames = {}
 local useDebug = Config.Debug
 local isCrafting = false
@@ -291,36 +292,6 @@ local function getHasItemsMap(item)
     return hasItemsMap
 end
 
-local function craftItem(item, recipe)
-    if canCraftItem(item) then
-        -- do emote here
-        local craftTime = Config.DefaultCraftingTime*CurrentAmount
-        if item.craftingTime then
-            craftTime = item.craftingTime*CurrentAmount
-        end
-        isCrafting = true
-        TriggerEvent('animations:client:EmoteCommandStart', {"mechanic"})
-        QBCore.Functions.Progressbar("crafting", "Crafting", craftTime , false, true, {
-            disableMovement = true,
-            disableCarMovement = true,
-            disableMouse = false,
-            disableCombat = true,
-        }, {}, {}, {}, function()
-            TriggerServerEvent('cw-crafting:server:craftItem',recipe, item, CurrentAmount)
-            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
-            isCrafting = false
-        end, function() -- Cancel
-            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
-            isCrafting = false
-            QBCore.Functions.Notify(Lang:t('error.canceled'), "error")
-        end)
-        return true
-    else
-        QBCore.Functions.Notify('You dont have the required items', "error", 2500)
-        return false
-    end
-end
-
 local function getRecipes()
     if useDebug then
        print('generating recipes for table', currentTableType)
@@ -413,23 +384,31 @@ local function getRecipes()
 end
 
 local function setCraftingOpen(bool, i)
-    QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
-        local PlayerData = QBCore.Functions.GetPlayerData()
-        local craftingSkill = PlayerData.metadata.craftingrep
-        if not craftingSkill then craftingSkill = 0 end
-        
-        Blueprints = bps
-        if useDebug then
-            print('Crafting was opened', bool)
-        end
-        SetNuiFocus(bool, bool)
-        if bool then
+    local PlayerData = QBCore.Functions.GetPlayerData()
+    local craftingSkill = PlayerData.metadata.craftingrep
+    if not craftingSkill then craftingSkill = 0 end
+    if bool then
+        QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
+            Blueprints = bps
+            if useDebug then
+                print('Crafting was opened', bool)
+            end
+            SetNuiFocus(bool, bool)
             currentTableType = i;
             StartScreenEffect('MenuMGIn', 1, true)
-        else
-            currentTableType = nil;
-            StopScreenEffect('MenuMGIn')
-        end
+            SendNUIMessage({
+                action = "cwCrafting",
+                toggle = bool,
+                type = 'toggleUi',
+                table = Config.CraftingTables[currentTableType],
+                craftingSkill = craftingSkill
+            })
+        end)
+    else
+        SetNuiFocus(bool, bool)
+        lastTableType = currentTableType
+        currentTableType = nil;
+        StopScreenEffect('MenuMGIn')
         SendNUIMessage({
             action = "cwCrafting",
             toggle = bool,
@@ -437,8 +416,38 @@ local function setCraftingOpen(bool, i)
             table = Config.CraftingTables[currentTableType],
             craftingSkill = craftingSkill
         })
-    end)
+    end
 end exports('setCraftingOpen', setCraftingOpen)
+
+local function craftItem(item, recipe)
+    if canCraftItem(item) then
+        local craftTime = Config.DefaultCraftingTime*CurrentAmount
+        if item.craftingTime then
+            craftTime = item.craftingTime*CurrentAmount
+        end
+        isCrafting = true
+        TriggerEvent('animations:client:EmoteCommandStart', {"mechanic"})
+        QBCore.Functions.Progressbar("crafting", "Crafting", craftTime , false, true, {
+            disableMovement = true,
+            disableCarMovement = true,
+            disableMouse = false,
+            disableCombat = true,
+        }, {}, {}, {}, function()
+            setCraftingOpen(true, lastTableType)
+            TriggerServerEvent('cw-crafting:server:craftItem',recipe, item, CurrentAmount)
+            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+            isCrafting = false
+        end, function() -- Cancel
+            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+            isCrafting = false
+            QBCore.Functions.Notify(Lang:t('error.canceled'), "error")
+        end)
+        return true
+    else
+        QBCore.Functions.Notify('You dont have the required items', "error", 2500)
+        return false
+    end
+end
 
 local function benchpermissions(jobTypes)
     local Player = QBCore.Functions.GetPlayerData()
@@ -458,7 +467,7 @@ RegisterNUICallback('attemptCrafting', function(recipe, cb)
         if useDebug then
             print(recipe.currentRecipe, dump(currentRecipe))
         end
-        local success = craftItem(currentRecipe, recipe.currentRecipe)
+        local success = craftItem(currentRecipe, recipe.currentRecipe, lastTableType)
         cb(success)
         return
     end
