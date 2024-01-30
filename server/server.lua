@@ -11,7 +11,10 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
     local Player = QBCore.Functions.GetPlayer(src)
     if not Config.oxInv then
         for material, amount in pairs(item.materials) do
-            Player.Functions.RemoveItem(material, amount*craftingAmount)
+            if not Player.Functions.RemoveItem(material, amount*craftingAmount) then 
+                TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
+                return
+            end
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
         end
         if item.toItems ~= nil then
@@ -33,7 +36,10 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
         local pped = GetPlayerPed(src)
         local coords = GetEntityCoords(pped)
         for material, amount in pairs(item.materials) do
-            exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount)
+            if not exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount) then 
+                TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
+                return
+            end
         end
         if item.toItems ~= nil then
             for material, amount in pairs(item.toItems) do
@@ -262,9 +268,7 @@ QBCore.Functions.CreateUseableItem("blueprint", function(source, item)
     if Config.BlueprintDudes then
         TriggerClientEvent('QBCore:Notify', source, "You need to find someone who can teach you this..", "error")
     else
-        if useDebug then
-           print('used blueprint')
-        end
+        if useDebug then print('used blueprint') end
         local blueprint = nil
         if not Config.oxInv then
             if not item.info.value then
