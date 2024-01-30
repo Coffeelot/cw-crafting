@@ -18,10 +18,8 @@
         ></v-img>
       </v-avatar>
     </template>
-    <v-card-subtitle>
-      <v-chip v-if="recipe.craftingSkill>0" :color="craftingSkillIsMet ? 'green':'red'"> Skill Requirement: {{ recipe.craftingSkill }} </v-chip>
-    </v-card-subtitle>
     <v-card-text class="text">
+      <v-chip v-if="recipe.craftingSkill>0" :color="craftingSkillIsMet ? 'green':'red'"> Skill Requirement: {{ recipe.craftingSkill }} </v-chip>
       <v-chip v-for="(itemAmount, item) in recipe.materials"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
       >
