@@ -9,17 +9,27 @@
     :width="globalStore.selectedRecipe ? '100%' : 'fit-content'"
     :title="recipeLabel"
   >
-    <template v-if="isSingleItem()" v-slot:prepend>
-      <v-avatar>
-        <v-img
-          :src="
-            imageLink
-          "
-        ></v-img>
+    <template v-slot:prepend>
+      <v-badge
+        v-if="recipe.type !== 'breakdown' && !isSingleItem()"
+        color="green"
+        :content="'+' + (amountOfMaterials() - 1)"
+      >
+        <v-avatar>
+          <v-img :src="imageLink"></v-img>
+        </v-avatar>
+      </v-badge>
+      <v-avatar v-else>
+        <v-img :src="imageLink"></v-img>
       </v-avatar>
     </template>
     <v-card-text class="text">
-      <v-chip v-if="recipe.craftingSkill>0" :color="craftingSkillIsMet ? 'green':'red'"> Skill Requirement: {{ recipe.craftingSkill }} </v-chip>
+      <v-chip
+        v-if="recipe.craftingSkill > 0"
+        :color="craftingSkillIsMet ? 'green' : 'red'"
+      >
+        Skill Requirement: {{ recipe.craftingSkill }}
+      </v-chip>
       <v-chip v-for="(itemAmount, item) in recipe.materials"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
       >
@@ -39,14 +49,29 @@ const props = defineProps<{
 }>();
 
 const globalStore = useGlobalStore();
-const imageLink = computed(()=> getImageLink(
-              Object.keys(props.recipe.toMaterialsNameMap)[0],
-              props.recipe.toMaterialsNameMap
-            ))
+const imageLink = computed(() => {
+  console.log(props.recipeName, JSON.stringify(props.recipe));
+  if (props.recipe.type == "breakdown") {
+    console.log("is breakdown", Object.keys(props.recipe.materialsNameMap)[0]);
+    return getImageLink(
+      Object.keys(props.recipe.materialsNameMap)[0],
+      props.recipe.materialsNameMap
+    );
+  }
+  return getImageLink(
+    Object.keys(props.recipe.toMaterialsNameMap)[0],
+    props.recipe.toMaterialsNameMap
+  );
+});
 const isSingleItem = () =>
   props.recipe.toMaterialsNameMap &&
   Object.keys(props.recipe.toMaterialsNameMap).length === 1;
-const craftingSkillIsMet = computed(() => globalStore.playerCraftingSkill >= props.recipe.craftingSkill)
+const amountOfMaterials = () =>
+  Object.keys(props.recipe.toMaterialsNameMap).length;
+
+const craftingSkillIsMet = computed(
+  () => globalStore.playerCraftingSkill >= props.recipe.craftingSkill
+);
 
 const recipeLabel = computed(() => {
   if (props.recipe.label) {

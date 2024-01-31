@@ -8,11 +8,12 @@ export type Recipe = {
     toItems: Record<string, number>,
     toMaterialsNameMap: Record<string, string>,
     craftingSkill: number,
+    type: string,
 }
 
 export type Recipes = Record<string, Recipe>
 
 export type Table = {
     title: string,
-    icon: string
+    icon: string,
 }

@@ -359,7 +359,6 @@ local function getRecipes()
             end
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
-            item.type = item.type
             if not item.craftingSkill then
                 item.craftingSkill = 0
             end

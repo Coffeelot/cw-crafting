@@ -99,6 +99,7 @@ Example recipe:
 		toItems = { -- table that includes the output and their amounts, this one will output 2 lockpicks
 			lockpick = 2,
 		},
+		type = nil -- type of recipe. This is used to display breakdown recipes correctly for example. Valid values: nil or 'breakdown' 
 		materials = { -- table that includes the input and their material cost
             metalscrap = 12,
             plastic = 12 
