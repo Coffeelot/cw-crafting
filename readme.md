@@ -13,8 +13,8 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 ## Initial release video
 [![YOUTUBE VIDEO](http://img.youtube.com/vi/NVUlgIOcvbU/0.jpg)](https://youtu.be/NVUlgIOcvbU)
 
-## UI update
-[![YOUTUBE VIDEO](http://img.youtube.com/vi/ZAUrmS63ZaM/0.jpg)](https://youtu.be/ZAUrmS63ZaM)
+## UI update video
+[![YOUTUBE VIDEO](http://img.youtube.com/vi/IzgkVJ3RzDc/0.jpg)](https://youtu.be/IzgkVJ3RzDc)
 
 # Features
 - Blueprint based crafting
