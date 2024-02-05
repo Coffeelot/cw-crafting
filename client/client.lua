@@ -522,6 +522,8 @@ local function createTable(type, benchType)
         type = 'client',
         label = benchType.title,
         icon = "fas fa-wrench",
+        gang = benchType.gang,
+        job = benchType.job,
         action = function()
             setCraftingOpen(true, type)
         end,

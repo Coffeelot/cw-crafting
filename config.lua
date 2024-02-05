@@ -95,6 +95,12 @@ Config.CraftingTables = {
 		icon = "pistol",
 		objects = { 'gr_prop_gr_bench_01a' }
 	},
+	['ballasguns'] = {
+		title = "Weapon Crafting For Ballas",
+		icon = "pistol",
+		gang = "ballas",
+		spawnTable = { { coords = vector4(100.52, -1968.95, 20.91, 352.84), prop='gr_prop_gr_bench_02a' }}
+	},
 }
 
 Config.UseSundownUtils = false
