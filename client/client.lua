@@ -536,11 +536,13 @@ local function createTable(type, benchType)
         end,
     }
 
-    for j, benchProp in pairs(benchType.objects) do
-        exports['qb-target']:AddTargetModel(benchProp, {
-            options = options,
-            distance = 2.0
-        })
+    if benchType.objects then
+        for j, benchProp in pairs(benchType.objects) do
+            exports['qb-target']:AddTargetModel(benchProp, {
+                options = options,
+                distance = 2.0
+            })
+        end
     end
     if benchType.locations then
         for j, benchLoc in pairs(benchType.locations) do
