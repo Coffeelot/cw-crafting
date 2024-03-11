@@ -55,6 +55,7 @@ Config.Recipes = {
 			glass = 21,
 			plastic = 10
 		},
+		maxCraft = 10,
 		category = 'Breakdown',
 		craftingTime= 4000,
 	},
