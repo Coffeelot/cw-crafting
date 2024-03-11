@@ -92,6 +92,8 @@ kitchen = {
 ```
 > Note: The example above has ALL the cration types, which obviously might not be optimal. Use one or more, to fit your needs.
 
+Now you got a new table! To fill it with items all you need to do is add `"tables = {'kitchen'}"`  to your recipes. You can see examples of these in the Recipes object. If you check the Recipes at the top they have comments explaining the different fields
+
 ## Creating recipes
 As of the new update, we no longer provide the base QB recipies (since so many people refuse to read instructions and update them to fit their server before reporting errors). The recipies have also been updated to be more aligned to make them more easier to manage.
 
@@ -123,8 +125,9 @@ Example recipe:
 
 > NOTE: Highly recommend setting maxCraft to 1 for legal weapons as the system that creates serials might not support multi-creation of the items
 
-
-Now you got a new table! To fill it with items all you need to do is add `"tables = {'kitchen'}"`  to your recipes. You can see examples of these in the Recipes object. If you check the Recipes at the top they have comments explaining the different fields
+# Blueprints and BlueprintDudes
+At the bottom of the config you'll find the BlueprintDudes. If you don't want this just remove them. If they are removed, you can learn recipes via using the blueprints when they are in your inventory.
+If the dudes and recipes have matching types, they can teach you them. 
 
 ## Using an inventory that is not OX or QB?
 You'll want to set `UseLocalImages` to true in the config and copy over all the images of the recipe items and ingredients to the images folder

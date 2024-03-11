@@ -19,15 +19,14 @@ end
 
 
 Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers lowering chance of getting the item
-	['aluminumoxide_pro'] = { rarity = 3, chance = 30 },
-	['repairkit'] = { rarity = 2, chance = 40 },
-	['screwdriverset'] = { rarity = 2, chance = 50 },
-	['electronickit'] = { rarity = 2, chance = 30 },
-	['radioscanner'] = { rarity = 3, chance = 5 },
-	['gatecrack'] = { rarity = 4, chance = 20 },
-	['handcuffs'] = { },
-	['armor'] = { rarity = 5, chance = 5 },
-	['Ap Pistol'] = { rarity = 5, chance = 1 },
+	['aluminumoxide_pro'] = { rarity = 3, chance = 30, type='legal' },
+	['repairkit'] = { rarity = 2, chance = 40,  type='legal' },
+	['screwdriverset'] = { rarity = 2, chance = 50,  type='legal' },
+	['electronickit'] = { rarity = 2, chance = 30,  type='legal' },
+	['radioscanner'] = { rarity = 3, chance = 5, type='illegal' },
+	['gatecrack'] = { rarity = 4, chance = 20,  type='illegal' },
+	['armor'] = { rarity = 5, chance = 5, type='illegal'},
+	['Ap Pistol'] = { rarity = 5, chance = 1, type='illegal' },
 }
 
 Config.DefaultFailChance = 80
@@ -109,11 +108,13 @@ Config.UseSundownUtils = false
 Config.BlueprintDudes = { -- SET THIS TO Config.BlueprintDudes = nil TO DISABLE
 	{
 		model = 'cs_nigel',
+		type = 'legal',
 		coords = vector4(-1647.53, 248.17, 61.97, 118.29),
 		animation = 'WORLD_HUMAN_SEAT_LEDGE_EATING',
 	},
 	{
 		model = 'u_m_m_blane',
+		type = 'illegal',
 		coords = vector4(1641.73, 3731.21, 35.07, 6.15),
 		animation = 'WORLD_HUMAN_DRINKING',
 	}
