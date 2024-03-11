@@ -78,14 +78,16 @@ local function verifyAllItemsExists()
         end
     end
     if not allItemsExist or not recipesAreFine then
-        print('-------------------------')
-        print('There are issues with your cw crafting setup. This is most likely NOT the fault of the script.')
+        print('^1-------------------------')
+        print('^1There are issues with your cw crafting setup. This is most likely NOT the fault of the script.')
         if not allItemsExist then
             print('- Make sure to check all the item names for misspellings and that they exist')
+            print('- Item names are case sensitive')
         end
         if not recipesAreFine then 
             print('- One or more of your crafting recipes are broken. Either lacking an input our an output')
         end
+        print('^1-------------------------')
     end
 end
 

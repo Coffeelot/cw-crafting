@@ -111,6 +111,7 @@ Example recipe:
 		craftingSkill= 10, -- crafting skill required to craft this. Defaults to 0 if unset (optional)
 		craftingTime= 3000, -- crafting time (optional)
         blueprint = 'Lockpick', -- blueprint name. Case sensitive to the blueprint name! (optional)
+		maxCraft = 20, -- the max amount you can craft in one batch (optional) 
         jobs = { -- table of job requirements (optional)
 			{ type = 'mechanic', level = 2 }, -- example of a job using TYPE rather than name
 			{ name = 'police', level = 2 } -- example of a job using specific names
@@ -119,6 +120,8 @@ Example recipe:
         metadata = { color = 'orange'} -- metadata of item (optional)
 	}
 ```
+
+> NOTE: Highly recommend setting maxCraft to 1 for legal weapons as the system that creates serials might not support multi-creation of the items
 
 
 Now you got a new table! To fill it with items all you need to do is add `"tables = {'kitchen'}"`  to your recipes. You can see examples of these in the Recipes object. If you check the Recipes at the top they have comments explaining the different fields

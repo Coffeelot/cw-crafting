@@ -35,12 +35,13 @@
         <v-card-title>Crafting</v-card-title>
         <v-card-text>
           <h3>Craft amount: {{ craftingAmount }}</h3>
+          <h4>Max: {{ recipe.maxCraft ? recipe.maxCraft : 10 }}</h4>
           <v-slider
             v-on:update:model-value="verifyHasItems()"
             @click="verifyHasItems()"
             v-model="craftingAmount"
             :min="1"
-            :max="100"
+            :max="recipe.maxCraft ? recipe.maxCraft : 10"
             :step="1"
             thumb-label
           >
@@ -109,10 +110,12 @@ const secondsToHMS = (input: number) => {
     else if (secondsString) return secondsString
     else return 'Unknown'
 }
+
 const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
 const updateCraftingAmount = ( amount:number) => {
-  const newAmount = craftingAmount.value + amount;
+  let newAmount = craftingAmount.value + amount;
   if (newAmount > 0 ) {
+    if (props.recipe.maxCraft && props.recipe.maxCraft < newAmount) newAmount = props.recipe.maxCraft
     craftingAmount.value = newAmount
     verifyHasItems()
   }

@@ -8,6 +8,7 @@ export type Recipe = {
     toItems: Record<string, number>,
     toMaterialsNameMap: Record<string, string>,
     craftingSkill: number,
+    maxCraft?: number,
     type: string,
 }
 
