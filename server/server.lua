@@ -161,20 +161,11 @@ local function giveBlueprintItem(source, blueprintValue)
         local info = {}
     	local Player = QBCore.Functions.GetPlayer(source)
         info.value = blueprintValue
+        info.label = "Blueprint "..blueprintValue
         Player.Functions.AddItem('blueprint', 1, nil, info)
         TriggerClientEvent('inventory:client:ItemBox', source, getQBItem('blueprint'), "add")
     else
-        local carry = exports.ox_inventory:CanCarryItem(source, 'blueprint', 1)
-        if carry then
-            exports.ox_inventory:AddItem(source, 'blueprint', 1, {label = "Blueprint: "..blueprintValue, value = blueprintValue})
-        else
-            if useDebug then
-               print("Can not carry. Dropping on ground")
-            end
-            local pped = GetPlayerPed(source)
-            local coords = GetEntityCoords(pped)
-            exports.ox_inventory:CustomDrop("drop-"..math.random(1,9999), {{'blueprint', 1, {label = "Blueprint: "..blueprintValue, value = blueprintValue}}}, coords)
-        end
+        exports.ox_inventory:AddItem(source, 'blueprint', 1, {label = "Blueprint: "..blueprintValue, value = blueprintValue})
     end
 end
 exports("giveBlueprintItem", giveBlueprintItem)
