@@ -26,6 +26,7 @@ server_scripts{
     '@oxmysql/lib/MySQL.lua',
     'config.lua',
     'server/*.lua',
+    '@ox_lib/init.lua',
 }
 
 shared_scripts {

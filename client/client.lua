@@ -101,7 +101,6 @@ end)
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     if Config.oxInv then
         getOxItems()
-        exports.ox_inventory:displayMetadata("value", "Blueprint")
     end
 end)
 
@@ -635,35 +634,60 @@ local function hasBlueprint(input)
         end
         return false
     else
-        local blueprintItem = 'blueprint'
-
-        local items = exports.ox_inventory:Search('count', blueprintItem, { value = input } )
-        return items > 0
+        -- local items = exports.ox_inventory:GetItemCount('blueprint', { value = input } ,false)
+        local items = exports.ox_inventory:Search('slots', 'blueprint')
+        for i,bp in pairs(items) do
+            if bp.metadata.value == input then
+                return true
+            end
+        end
+        return false
     end
 end
 
-local function generateBlueprintOptions(dude)
-    local options = {}
+local function generateBlueprintOptions(dude, oxlib)
+    local bpOptions = {}
     for name, blueprint in pairs(Config.Blueprints) do
         local dudeHasBlueprint = true
         if blueprint.type and dude.type and blueprint.type ~= dude.type then
             dudeHasBlueprint = false
         end
+
+        local label = name
+        if blueprint.label then
+            label = blueprint.label
+        end
+
         if dudeHasBlueprint then
-            options[#options+1] = {
-                type = "server",
-                event = "cw-crafting:server:addBlueprintFromLearning",
-                bpName = name,
-                icon = "fas fa-graduation-cap",
-                gang = dude.gang,
-                label = "Learn "..name,
-                canInteract = function()
-                    return hasBlueprint(name)
-                end
-            }
+            if oxlib then
+                bpOptions[#bpOptions+1] = {
+                    type = "server",
+                    serverEvent = "cw-crafting:server:addBlueprintFromLearning",
+                    bpName = name,
+                    icon = "fas fa-graduation-cap",
+                    gang = dude.gang,
+                    label = "Learn "..label,
+                    canInteract = function()
+                        return hasBlueprint(name)
+                    end
+                }
+            else
+                bpOptions[#bpOptions+1] = {
+                    type = "server",
+                    event = "cw-crafting:server:addBlueprintFromLearning",
+                    bpName = name,
+                    icon = "fas fa-graduation-cap",
+                    gang = dude.gang,
+                    label = "Learn "..label,
+                    canInteract = function()
+                        return hasBlueprint(name)
+                    end
+                }
+            end
         end
     end
-    return options
+
+    return bpOptions
 end
 
 if Config.BlueprintDudes then
@@ -687,11 +711,16 @@ if Config.BlueprintDudes then
                 exports['sundown-utils']:addPedToBanlist(currentDude)
             end
     
-            local options = generateBlueprintOptions(dude)
-            exports['qb-target']:AddTargetEntity(currentDude, {
-                options = options,
-                distance = 2.0
-            })
+            if Config.oxLib then
+                local options = generateBlueprintOptions(dude, true)
+                exports.ox_target:addLocalEntity(currentDude, options)
+            else
+                local options = generateBlueprintOptions(dude, false)
+                exports['qb-target']:AddTargetEntity(currentDude, {
+                    options = options,
+                    distance = 2.0
+                })
+            end
         end
     end)
 end

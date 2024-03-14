@@ -157,15 +157,19 @@ local function getQBItem(item)
 end
 
 local function giveBlueprintItem(source, blueprintValue)
+    local label = blueprintValue
+    if Config.Blueprints[blueprintValue].label then
+        label = Config.Blueprints[blueprintValue].label
+    end
+    local info = {}
+    info.value = blueprintValue
+    info.label = label
     if not Config.oxInv then
-        local info = {}
     	local Player = QBCore.Functions.GetPlayer(source)
-        info.value = blueprintValue
-        info.label = "Blueprint "..blueprintValue
         Player.Functions.AddItem('blueprint', 1, nil, info)
         TriggerClientEvent('inventory:client:ItemBox', source, getQBItem('blueprint'), "add")
     else
-        exports.ox_inventory:AddItem(source, 'blueprint', 1, {label = "Blueprint: "..blueprintValue, value = blueprintValue})
+        exports.ox_inventory:AddItem(source, 'blueprint', 1, info)
     end
 end
 exports("giveBlueprintItem", giveBlueprintItem)
@@ -282,7 +286,7 @@ end)
 RegisterNetEvent('cw-crafting:server:addBlueprintFromLearning', function(blueprint)
     local src = source
     if useDebug then
-        print('used blueprint')
+        print('used blueprint', json.encode(blueprint, {indent=true}))
     end
     TriggerClientEvent('cw-crafting:client:progressbar', src)
     handleAddBlueprintFromItem(src, blueprint.bpName)
