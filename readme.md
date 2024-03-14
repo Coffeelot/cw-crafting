@@ -37,9 +37,19 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 # Setup 🔧
 ## Add to qb-core ❗
 Items to add to qb-core>shared>items.lua 
-```
+```lua
 	-- CW crafting
 	["blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 0, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
+```
+For ox: 
+```lua
+	['blueprint'] = {
+		label = 'Blueprint',
+		weight = 0,
+		close = true,
+		allowArmed = true,
+		stack = false,
+	},
 ```
 Also make sure the images are in qb-inventory>html>images
 
