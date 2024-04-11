@@ -4,6 +4,8 @@ We hated the idea of the crafting grind, so we made a crafting script that's foc
 
 Blueprints are items that have a unique value tied to them. By default you have to find one of the blueprint trainers to teach you a blueprint. These are found at the bottom of the Config file. You can disable them to make blueprints usable to learn the reciepe instead. Reciepes can also be tied to jobs, or both jobs and blueprints! The config holds a lot of comments to help you create your own recipes, crafting benches and blueprints!
 
+> Now also supports crafting skill using [cw-rep](https://github.com/Coffeelot/cw-rep/)! (might be biased here, but it's much better than using qbcores metadata)
+
 ### ❗❗ YOU CAN NOT SPAWN BLUEPRINT ITEMS WITH /giveitem OR ANY MENU! SEE COMMANDS ❗❗
 
 

@@ -17,6 +17,15 @@ local function getOxItems()
     end
 end
 
+local function getCraftingSkill()
+    if Config.UseCWRepForCraftingSkill then
+        return exports['cw-rep']:getCurrentSkill(Config.CraftingSkillName) or 0
+    else
+        local PlayerData = QBCore.Functions.GetPlayerData()
+        return PlayerData.metadata.craftingrep or 0
+    end
+end
+
 local function verifyAllItemsExists()
     local allItemsExist = true;
     local recipesAreFine = true;
@@ -104,19 +113,6 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     end
 end)
 
-function dump(o)
-   if type(o) == 'table' then
-   local s = '{ '
-   for k,v in pairs(o) do
-      if type(k) ~= 'number' then k = '"'..k..'"' end
-      s = s .. '['..k..'] = ' .. dump(v) .. ','
-   end
-   return s .. '} '
-   else
-   return tostring(o)
-   end
-end
-
 local function validateJob(item)
     if item.jobs then
         local Player = QBCore.Functions.GetPlayerData()
@@ -155,7 +151,6 @@ local function validateJob(item)
                 return false
             end
         else
-            -- print('Does not have jobs', dump(item.jobs))
             return false
         end
     else
@@ -215,6 +210,7 @@ local function validateRights(item, recipe)
         tables = { ['basic'] = 'basic' }
     end
 
+    if useDebug then print('Item table:', json.encode(tables, {indent=true})) print('Current table type', currentTableType) print('matches', tables[currentTableType]) end
     if (tables == nil or tables[currentTableType]) and tables[currentTableType] then -- no table reqirement and this is a basic table
         if useDebug then
             print('is basic table')
@@ -338,7 +334,7 @@ local function getRecipes()
                 end
             else
                 if useDebug then
-                   print('name', item.materials)
+                   print('materials', json.encode(item.materials, {indent=true}))
                 end
                 if item.materials then
                     for mat, amount in pairs(item.materials) do
@@ -350,7 +346,14 @@ local function getRecipes()
                 end
                 if item.toItems ~= nil then
                     for mat, amount in pairs(item.toItems) do
-                        toMaterialsNameMap[mat] = ItemNames[mat].label
+                        if mat and ItemNames[mat] and ItemNames[mat].label then
+                            toMaterialsNameMap[mat] = ItemNames[mat].label
+                        else
+                            print('^1Recipe is using a broken item')
+                            print('Material:', mat)
+                            print('Item data', json.encode(ItemNames[mat], {indent=true}))
+                            print('If the above is "null" then this item does not exist in your items.lua')
+                        end
                     end
                 else
                     print('!!! CW CRAFTING WARNING !!!')
@@ -384,8 +387,7 @@ local function getRecipes()
 end
 
 local function setCraftingOpen(bool, i)
-    local PlayerData = QBCore.Functions.GetPlayerData()
-    local craftingSkill = PlayerData.metadata.craftingrep
+    local craftingSkill = getCraftingSkill()
     if not craftingSkill then craftingSkill = 0 end
     if bool then
         QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
@@ -465,7 +467,7 @@ RegisterNUICallback('attemptCrafting', function(recipe, cb)
             QBCore.Functions.Notify("You can't craft a batch of 0.", "error")
         end
         if useDebug then
-            print(recipe.currentRecipe, dump(currentRecipe))
+            print(recipe.currentRecipe, json.encode(currentRecipe, {indent=true}))
         end
         local success = craftItem(currentRecipe, recipe.currentRecipe, lastTableType)
         cb(success)

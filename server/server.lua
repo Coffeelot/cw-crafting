@@ -1,6 +1,18 @@
 QBCore =  exports['qb-core']:GetCoreObject()
 local useDebug = Config.Debug
 
+local function increaseCraftingSkill(src, amount)
+    if Config.UseCWRepForCraftingSkill then
+        if useDebug then print('Increasing crafting skill by:', amount) end
+        exports['cw-rep']:updateSkill(src, Config.CraftingSkillName, amount)
+    else
+        local Player = QBCore.Functions.GetPlayer(src)
+        local newSkill = Player.PlayerData.metadata['craftingrep'] + amount
+        if useDebug then print('New skill:', newSkill) end
+        Player.Functions.SetMetaData('craftingrep', newSkill)
+    end
+end
+
 RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, craftingAmount)
     local src = source
     if useDebug then 
@@ -53,9 +65,8 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
             print('Recipe is not created correctly: Missing toItems', recipe)
         end
     end
-    local newSkill = Player.PlayerData.metadata['craftingrep'] + Config.CraftingRepGainFunction(recipe.craftingSkill)*craftingAmount
-    if useDebug then print('New skill:', newSkill) end
-    Player.Functions.SetMetaData('craftingrep', newSkill)
+    increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill)*craftingAmount)
+
 end)
 
 local function updateBlueprints(citizenId, blueprints)
