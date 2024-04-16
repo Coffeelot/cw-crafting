@@ -26,6 +26,15 @@ local function getCraftingSkill()
     end
 end
 
+local function getCraftingLevel()
+    if Config.UseCWRepForCraftingSkill then
+        return exports['cw-rep']:getCurrentLevel(Config.CraftingSkillName) or 0
+    else
+        local PlayerData = QBCore.Functions.GetPlayerData()
+        return math.ceil(PlayerData.metadata.craftingrep / 100) or 0
+    end
+end
+
 local function verifyAllItemsExists()
     local allItemsExist = true;
     local recipesAreFine = true;
@@ -365,6 +374,29 @@ local function getRecipes()
             item.toMaterialsNameMap = toMaterialsNameMap
             if not item.craftingSkill then
                 item.craftingSkill = 0
+            else
+                local skillName = item.skillName or Config.CraftingSkillName
+                local skillLabel = Config.CraftingSkillLabel
+                local currentSkill = 0
+                if Config.UseCWRepForCraftingSkill then
+                    skillLabel = exports['cw-rep']:getSkillInfo(skillName).label or skillName
+                    if Config.UseLevelsInsteadOfSkill then
+                        currentSkill = exports['cw-rep']:getCurrentLevel(skillName) or 0
+                    else
+                        currentSkill = exports['cw-rep']:getCurrentSkill(skillName) or 0
+                    end
+                else
+                    local PlayerData = QBCore.Functions.GetPlayerData()
+                    currentSkill = PlayerData.metadata.craftingrep or 0
+                end
+
+                local skillData = {
+                    skillName = skillName,
+                    currentSkill = currentSkill,
+                    skillLabel = skillLabel,
+                    passes = item.craftingSkill <= currentSkill
+                }
+                item.skillData = skillData
             end
             Recipes[recipe] = item
             if item.craftingTime == nil then
@@ -388,6 +420,7 @@ end
 
 local function setCraftingOpen(bool, i)
     local craftingSkill = getCraftingSkill()
+    local craftingLevel = getCraftingLevel()
     if not craftingSkill then craftingSkill = 0 end
     if bool then
         QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
@@ -403,7 +436,8 @@ local function setCraftingOpen(bool, i)
                 toggle = bool,
                 type = 'toggleUi',
                 table = Config.CraftingTables[currentTableType],
-                craftingSkill = craftingSkill
+                craftingSkill = craftingSkill,
+                craftingLevel = craftingLevel
             })
         end)
     else

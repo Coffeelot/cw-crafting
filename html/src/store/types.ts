@@ -1,3 +1,10 @@
+export type SkillData = {
+    skillName: string,
+    currentSkill: number,
+    skillLabel: string,
+    passes: boolean
+}
+
 export type Recipe = {
     label?: string,
     blueprint: string,
@@ -8,6 +15,7 @@ export type Recipe = {
     toItems: Record<string, number>,
     toMaterialsNameMap: Record<string, string>,
     craftingSkill: number,
+    skillData: SkillData
     maxCraft?: number,
     type: string,
 }

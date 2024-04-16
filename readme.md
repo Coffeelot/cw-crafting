@@ -132,6 +132,7 @@ Example recipe:
         },
         label = 'Lockpicks' -- label that shows in crafting menu, will default to item in toItems (if 1) or the recipe name (in this case 'lockpick') otherwise (optional, higly suggested)
 		craftingSkill= 10, -- crafting skill required to craft this. Defaults to 0 if unset (optional)
+		skillName='lockpick_crafting' -- Will override the default skill type with this one instead. Needs cw-rep to work (optional)
 		craftingTime= 3000, -- crafting time (optional)
         blueprint = 'Lockpick', -- blueprint name. Case sensitive to the blueprint name! (optional)
 		maxCraft = 20, -- the max amount you can craft in one batch (optional) 
@@ -144,6 +145,15 @@ Example recipe:
 	}
 ```
 
+## Creating blueprints
+Example blueprint:
+```lua
+	['aluminumoxide_pro'] = { 
+		label="Aluminum Oxide Optimized", -- label of recipe that's shown (might only work for ox? I dunno)
+		rarity = 3,  -- rarity level. Used for randomization.
+		type='legal' -- defines what blueprint teacher teaches this. Needs to match type of teacher in Config.BlueprintDude
+	},
+```
 > NOTE: Highly recommend setting maxCraft to 1 for legal weapons as the system that creates serials might not support multi-creation of the items
 
 # Blueprints and BlueprintDudes
@@ -173,3 +183,7 @@ The very bacis for building and installing it are:
 `/removeblueprint <source> <blueprint name>` removes a blueprint to database for player
 
 `/giveblueprint <source> <blueprint name>` gives the player a blueprint item
+
+# Sponsored Features
+## Per-recipe skill requirements
+@Knuffelpanda | [KnuffelpandaTV Clubhouse](https://discord.com/invite/MpVCTDgUyb)

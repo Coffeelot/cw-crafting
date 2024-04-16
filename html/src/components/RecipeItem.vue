@@ -28,7 +28,7 @@
         v-if="recipe.craftingSkill > 0"
         :color="craftingSkillIsMet ? 'green' : 'red'"
       >
-        Skill Requirement: {{ recipe.craftingSkill }}
+        {{ recipe.skillData.skillLabel }}: {{ recipe.craftingSkill }}
       </v-chip>
       <v-chip v-for="(itemAmount, item) in recipe.materials"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
@@ -70,7 +70,7 @@ const amountOfMaterials = () =>
   Object.keys(props.recipe.toMaterialsNameMap).length;
 
 const craftingSkillIsMet = computed(
-  () => globalStore.playerCraftingSkill >= props.recipe.craftingSkill
+  () => props.recipe.skillData.currentSkill >= props.recipe.craftingSkill
 );
 
 const recipeLabel = computed(() => {

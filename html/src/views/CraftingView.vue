@@ -10,7 +10,7 @@
               : 'mdi-wrench'
           "
           :title="globalStore.table.title ? globalStore.table.title : ''"
-          :subtitle="'Crafting skill: ' + globalStore.playerCraftingSkill"
+          :subtitle="'Crafting Level: '+ globalStore.playerCraftingLevel + ' (XP: ' + globalStore.playerCraftingSkill+')'"
         >
         </v-card>
         <FilterMenu></FilterMenu>

@@ -11,6 +11,7 @@ export const useGlobalStore = defineStore('global', {
     table: {} as Table,
     isLoadingBaseData: true,
     playerCraftingSkill: 0,
+    playerCraftingLevel: 0,
     settings: {
       oxInventory: false,
       useLocalImages: false,

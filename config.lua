@@ -8,8 +8,11 @@ Config.oxLib = true -- set this to ox if you have ox_lib !!! MAKE SURE OX LIB IS
 
 Config.UseLocalImages = false -- set this to true if you want to use local images rather than automatic. Put the images for the recipes and ingredients in the 'images' folder next to the blueprint.png
 
-Config.UseCWRepForCraftingSkill = false -- Set to true if you want to use cw-rep for skill instead of qbs metadata (highly recommended)
+Config.UseCWRepForCraftingSkill = false -- Set to true if you want to use cw-rep for skill instead of qbs metadata
+-- The following all require cw-rep to be enabled:
 Config.CraftingSkillName = 'crafting' -- Make sure this matches the crafting skill name in your cw-rep config
+Config.CraftingSkillLabel = '"Crafting Skill"' -- Default name for the crafting skill
+Config.UseLevelsInsteadOfSkill = false -- If true then cw-rep will use level instead of pure xp 
 
 local minimumSkillRep = 1 -- the least amount of skill you can gain per craft
 
@@ -26,14 +29,14 @@ end
 
 
 Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers lowering chance of getting the item
-	['aluminumoxide_pro'] = { rarity = 3, chance = 30, type='legal' },
-	['repairkit'] = { rarity = 2, chance = 40,  type='legal' },
-	['screwdriverset'] = { rarity = 2, chance = 50,  type='legal' },
-	['electronickit'] = { rarity = 2, chance = 30,  type='legal' },
-	['radioscanner'] = { rarity = 3, chance = 5, type='illegal' },
-	['gatecrack'] = { rarity = 4, chance = 20,  type='illegal' },
-	['armor'] = { rarity = 5, chance = 5, type='illegal'},
-	['Ap Pistol'] = { rarity = 5, chance = 1, type='illegal' },
+	['aluminumoxide_pro'] = { label="Aluminum Oxide Optimized", rarity = 3, type='legal' },
+	['repairkit'] = { label="Repair Kit", rarity = 2,  type='legal' },
+	['screwdriverset'] = { rarity = 2,  type='legal' },
+	['electronickit'] = { rarity = 2,  type='legal' },
+	['radioscanner'] = { rarity = 3, type='illegal' },
+	['gatecrack'] = { rarity = 4,  type='illegal' },
+	['armor'] = { rarity = 5, type='illegal'},
+	['Ap Pistol'] = { rarity = 5, type='illegal' },
 }
 
 Config.DefaultFailChance = 80
@@ -76,6 +79,8 @@ Config.Recipes = {
 		category = 'Weapons',
 		tables = {'guns'},
 		blueprint = 'Ap Pistol',
+		craftingSkill= 200,
+		skillName = 'gun_crafting', -- optional. If set, will override what skill is required. ONLY WORKS WITH CW-REP!!!
 		metadata = {registered= false} -- If set, will write info/metadata on item
 	},
 }

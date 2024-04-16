@@ -72,7 +72,7 @@
               <v-divider :vertical="true"></v-divider>
               <div v-if="recipe.craftingSkill>0" >
                 <h3 class="mb-2">Crafting skill required</h3>
-                <v-chip :color="craftingSkillIsMet ? 'green':'red'"> Skill Requirement: {{ recipe.craftingSkill }} </v-chip>
+                <v-chip :color="craftingSkillIsMet ? 'green':'red'"> {{ recipe.skillData.skillLabel }}: {{ recipe.skillData.currentSkill }} / {{ recipe.craftingSkill }} </v-chip>
               </div>
               <v-divider v-if="recipe.craftingSkill>0" :vertical="true"></v-divider>
               <div>
@@ -129,7 +129,7 @@ const hasMaterialMap: Ref<Record<string, boolean> | undefined>= ref(undefined)
 const craftingAmount = ref(1)
 
 const hasAllMaterials = computed(() => hasMaterialMap.value !== undefined && Object.values(hasMaterialMap.value).every(value => value === true))
-const craftingSkillIsMet = computed(() => globalStore.playerCraftingSkill >= props.recipe.craftingSkill)
+const craftingSkillIsMet = computed(() => props.recipe.skillData.currentSkill >= props.recipe.craftingSkill)
 
 const recipeLabel = computed(() => {
   if (props.recipe.label) {
