@@ -135,6 +135,7 @@ Example recipe:
 		skillName='lockpick_crafting' -- Will override the default skill type with this one instead. Needs cw-rep to work (optional)
 		craftingTime= 3000, -- crafting time (optional)
         blueprint = 'Lockpick', -- blueprint name. Case sensitive to the blueprint name! (optional)
+		requireBlueprintAndJob = true -- if this is set then BOTH job and blueprint are required (optional, default is false)
 		maxCraft = 20, -- the max amount you can craft in one batch (optional) 
         jobs = { -- table of job requirements (optional)
 			{ type = 'mechanic', level = 2 }, -- example of a job using TYPE rather than name
@@ -144,6 +145,8 @@ Example recipe:
         metadata = { color = 'orange'} -- metadata of item (optional)
 	}
 ```
+
+> So if you only want a recipe to use jobs, don't include `blueprint` and vice versa. If both are included then either or will allow users to access the recipe, if `requireBlueprintAndJob` is set then it will require both.
 
 ## Creating blueprints
 Example blueprint:
