@@ -50,9 +50,7 @@ const props = defineProps<{
 
 const globalStore = useGlobalStore();
 const imageLink = computed(() => {
-  console.log(props.recipeName, JSON.stringify(props.recipe));
   if (props.recipe.type == "breakdown") {
-    console.log("is breakdown", Object.keys(props.recipe.materialsNameMap)[0]);
     return getImageLink(
       Object.keys(props.recipe.materialsNameMap)[0],
       props.recipe.materialsNameMap
