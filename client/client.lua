@@ -749,13 +749,21 @@ if Config.BlueprintDudes then
     
             if Config.oxLib then
                 local options = generateBlueprintOptions(dude, true)
-                exports.ox_target:addLocalEntity(currentDude, options)
+                if options then 
+                    exports.ox_target:addLocalEntity(currentDude, options)
+                else
+                    if useDebug then print('No options for blueprint npc', dude.model, dude.type) end
+                end
             else
                 local options = generateBlueprintOptions(dude, false)
-                exports['qb-target']:AddTargetEntity(currentDude, {
-                    options = options,
-                    distance = 2.0
-                })
+                if options then 
+                    exports['qb-target']:AddTargetEntity(currentDude, {
+                        options = options,
+                        distance = 2.0
+                    })
+                else
+                    if useDebug then print('No options for blueprint npc', dude.model, dude.type) end
+                end
             end
         end
     end)
