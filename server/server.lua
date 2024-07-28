@@ -24,11 +24,13 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
     local Player = QBCore.Functions.GetPlayer(src)
     if not Config.oxInv then
         for material, amount in pairs(item.materials) do
-            if not Player.Functions.RemoveItem(material, amount*craftingAmount) then 
-                TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
-                return
+            if not item.keepMaterials or not item.keepMaterials[material] then 
+                if not Player.Functions.RemoveItem(material, amount*craftingAmount) then 
+                    TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
+                    return
+                end
+                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
             end
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "remove")
         end
         if item.toItems ~= nil then
             for material, amount in pairs(item.toItems) do
@@ -49,9 +51,12 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
         local pped = GetPlayerPed(src)
         local coords = GetEntityCoords(pped)
         for material, amount in pairs(item.materials) do
-            if not exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount) then 
-                TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
-                return
+            if not item.keepMaterials or not item.keepMaterials[material] then 
+                if not exports.ox_inventory:RemoveItem(src, material, amount * craftingAmount) then 
+                    TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
+                    return
+                end
+
             end
         end
         if item.toItems ~= nil then
@@ -66,7 +71,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
             print('Recipe is not created correctly: Missing toItems', recipe)
         end
     end
-    increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill)*craftingAmount, item.skillData.skillName)
+    increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill, recipe)*craftingAmount, item.skillData.skillName)
 
 end)
 

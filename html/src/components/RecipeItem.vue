@@ -30,7 +30,9 @@
       >
         {{ recipe.skillData.skillLabel }}: {{ recipe.craftingSkill }}
       </v-chip>
-      <v-chip v-for="(itemAmount, item) in recipe.materials"
+      <v-chip 
+        v-for="(itemAmount, item) in recipe.materials"
+        :prepend-icon="recipe.keepMaterials && recipe.keepMaterials[item] ? 'mdi-toolbox' : ''"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
       >
     </v-card-text>

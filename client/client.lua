@@ -375,6 +375,7 @@ local function getRecipes()
             end
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
+            item.skillGain = Config.CraftingRepGainFunction(item.craftingSkill, recipe)
             if not item.craftingSkill then
                 item.craftingSkill = 0
             else
@@ -393,6 +394,10 @@ local function getRecipes()
                     currentSkill = PlayerData.metadata.craftingrep or 0
                 end
 
+                if useDebug then 
+                    print('Current skill level', currentSkill)
+                    print('Required skill level', item.craftingSkill)
+                end
                 local skillData = {
                     skillName = skillName,
                     currentSkill = currentSkill,

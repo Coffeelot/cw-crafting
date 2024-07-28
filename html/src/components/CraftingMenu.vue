@@ -12,7 +12,12 @@
         <v-card-text>
           <h3>Components needed</h3>
           <div class="chip-holder">
-            <v-chip v-for="(amount, key) in recipe.materials"> {{ recipe.materialsNameMap[key] || key}}: {{ amount }}</v-chip>
+            <v-chip 
+              v-for="(amount, key) in recipe.materials"
+              :prepend-icon="recipe.keepMaterials && recipe.keepMaterials[key] ? 'mdi-toolbox' : ''"
+              > 
+              {{ recipe.materialsNameMap[key] || key}}: {{ amount }}
+            </v-chip>
           </div>
           <h3 class="mt-4">Output</h3>
           <div class="chip-holder">
@@ -20,6 +25,8 @@
           </div>
           <h3 class="mt-4">Crafting time</h3>
           <span>{{ secondsToHMS(recipe.craftingTime) }}</span>
+          <h3 class="mt-4">Skill gain</h3>
+          <span>{{ recipe.skillGain }}</span>
         </v-card-text>
       </div>
           <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
@@ -66,7 +73,13 @@
               <div>
                 <h3 class="mb-2">Items required</h3>
                 <div class="chip-holder">
-                  <v-chip v-for="(amount, key) in recipe.materials" :color="hasMaterialMap && hasMaterialMap[key] ? 'green':'red'"> {{ recipe.materialsNameMap[key] || key }}: {{ amount*craftingAmount }}</v-chip>
+                  <v-chip 
+                    v-for="(amount, key) in recipe.materials" 
+                    :color="hasMaterialMap && hasMaterialMap[key] ? 'green':'red'"
+                    :prepend-icon="recipe.keepMaterials && recipe.keepMaterials[key] ? 'mdi-toolbox' : ''"
+                    >
+                      {{ recipe.materialsNameMap[key] || key }}: {{ amount*craftingAmount }}
+                    </v-chip>
                 </div>
               </div>
               <v-divider :vertical="true"></v-divider>
@@ -76,8 +89,13 @@
               </div>
               <v-divider v-if="recipe.craftingSkill>0" :vertical="true"></v-divider>
               <div>
-              <h3 class="mb-2">Crafting time</h3>
+                <h3 class="mb-2">Crafting time</h3>
                 <span>{{ secondsToHMS(recipe.craftingTime*craftingAmount) }}</span>
+              </div>
+              <v-divider :vertical="true"></v-divider>
+              <div>
+                <h3 class="mb-2">Skill gain</h3>
+                <span>{{ recipe.skillGain*craftingAmount }}</span>
               </div>
             </div>
             </v-card-text>
@@ -98,6 +116,7 @@ import { Recipe } from "@/store/types";
 import { onUpdated } from "vue";
 import { onMounted } from "vue";
 import { Ref, computed, ref } from "vue";
+import { json } from "stream/consumers";
 
 const secondsToHMS = (input: number) => {
     const seconds = Math.floor((input / 1000) % 60);

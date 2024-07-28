@@ -142,7 +142,9 @@ Example recipe:
 			{ name = 'police', level = 2 } -- example of a job using specific names
 	 	},
 		tables = {'mechanic', 'police'}, -- specific tables this recipe can be made at
-        metadata = { color = 'orange'} -- metadata of item (optional)
+        metadata = { color = 'orange'}, -- metadata of item (optional)
+		customSkillGain = 20 -- Overrides the skill gain with this value instead
+		keepMaterials = { metalscrap = true } -- This will make it so that the recipe does not use up these items. Needs to match one in "materials". A toolbox icon will show in the UI on non-consumed materials
 	}
 ```
 

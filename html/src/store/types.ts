@@ -15,6 +15,9 @@ export type Recipe = {
     toItems: Record<string, number>,
     toMaterialsNameMap: Record<string, string>,
     craftingSkill: number,
+    customSkillGain: number,
+    skillGain: number,
+    keepMaterials: Record<string, boolean>
     skillData: SkillData
     maxCraft?: number,
     type: string,
