@@ -2,31 +2,43 @@
   <v-card
     class="mx-auto pa-2"
   >
-    <v-card-title>
-      Crafting: {{ recipeLabel }} 
+    <v-card-title class="menu-title">
+      <span>Crafting: {{ recipeLabel }} </span>
+      <v-btn @click="closeCraftingMenu" variant="plain" density="compact" icon="mdi-close"></v-btn>
     </v-card-title>
     <v-card-text>
       <v-card variant="tonal" class="mb-6 d-flex flex-no-wrap justify-space-between align-center">
         <div>
         <v-card-title>Recipe</v-card-title>
-        <v-card-text>
-          <h3>Components needed</h3>
-          <div class="chip-holder">
-            <v-chip 
-              v-for="(amount, key) in recipe.materials"
-              :prepend-icon="recipe.keepMaterials && recipe.keepMaterials[key] ? 'mdi-toolbox' : ''"
-              > 
-              {{ recipe.materialsNameMap[key] || key}}: {{ amount }}
-            </v-chip>
+        <v-card-text class="horizontal-list">
+          <div>
+            <h3 class="mb-4">Components needed</h3>
+            <div class="chip-holder">
+              <v-chip 
+                v-for="(amount, key) in recipe.materials"
+                :prepend-icon="recipe.keepMaterials && recipe.keepMaterials[key] ? 'mdi-toolbox' : ''"
+                > 
+                {{ recipe.materialsNameMap[key] || key}}: {{ amount }}
+              </v-chip>
+            </div>
           </div>
-          <h3 class="mt-4">Output</h3>
-          <div class="chip-holder">
-            <v-chip v-for="(amount, key) in recipe.toItems"> {{ recipe.toMaterialsNameMap[key] || key}}: {{ amount }}</v-chip>
+          <v-divider :vertical="true"></v-divider>
+          <div>
+            <h3 class="mb-4">Output</h3>
+            <div class="chip-holder">
+              <v-chip v-for="(amount, key) in recipe.toItems"> {{ recipe.toMaterialsNameMap[key] || key}}: {{ amount }}</v-chip>
+            </div>
           </div>
-          <h3 class="mt-4">Crafting time</h3>
-          <span>{{ secondsToHMS(recipe.craftingTime) }}</span>
-          <h3 class="mt-4">Skill gain</h3>
-          <span>{{ recipe.skillGain }}</span>
+          <v-divider :vertical="true"></v-divider>
+          <div>
+            <h3 class="mb-4">Crafting time</h3>
+            <span>{{ secondsToHMS(recipe.craftingTime) }}</span>
+          </div>
+          <v-divider :vertical="true"></v-divider>
+          <div>
+            <h3 class="mb-4">Skill gain</h3>
+            <span>{{ recipe.skillGain }}</span>
+          </div>
         </v-card-text>
       </div>
           <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
@@ -42,13 +54,13 @@
         <v-card-title>Crafting</v-card-title>
         <v-card-text>
           <h3>Craft amount: {{ craftingAmount }}</h3>
-          <h4>Max: {{ recipe.maxCraft ? recipe.maxCraft : 10 }}</h4>
+          <h4>Max: {{ recipe.maxCraft }}</h4>
           <v-slider
             v-on:update:model-value="verifyHasItems()"
             @click="verifyHasItems()"
             v-model="craftingAmount"
             :min="1"
-            :max="recipe.maxCraft ? recipe.maxCraft : 10"
+            :max="recipe.maxCraft"
             :step="1"
             thumb-label
           >
@@ -69,7 +81,7 @@
                 @click="updateCraftingAmount(1)"
               ></v-btn>
             </template></v-slider>
-            <div class="requirements">
+            <div class="horizontal-list">
               <div>
                 <h3 class="mb-2">Items required</h3>
                 <div class="chip-holder">
@@ -83,11 +95,11 @@
                 </div>
               </div>
               <v-divider :vertical="true"></v-divider>
-              <div v-if="recipe.craftingSkill>0" >
+              <div v-if="recipe.craftingSkill && recipe.craftingSkill > 0" >
                 <h3 class="mb-2">Crafting skill required</h3>
                 <v-chip :color="craftingSkillIsMet ? 'green':'red'"> {{ recipe.skillData.skillLabel }}: {{ recipe.skillData.currentSkill }} / {{ recipe.craftingSkill }} </v-chip>
               </div>
-              <v-divider v-if="recipe.craftingSkill>0" :vertical="true"></v-divider>
+              <v-divider v-if="recipe.craftingSkill && recipe.craftingSkill > 0" :vertical="true"></v-divider>
               <div>
                 <h3 class="mb-2">Crafting time</h3>
                 <span>{{ secondsToHMS(recipe.craftingTime*craftingAmount) }}</span>
@@ -116,7 +128,6 @@ import { Recipe } from "@/store/types";
 import { onUpdated } from "vue";
 import { onMounted } from "vue";
 import { Ref, computed, ref } from "vue";
-import { json } from "stream/consumers";
 
 const secondsToHMS = (input: number) => {
     const seconds = Math.floor((input / 1000) % 60);
@@ -131,6 +142,7 @@ const secondsToHMS = (input: number) => {
 }
 
 const isSingleItem = () => props.recipe.toMaterialsNameMap && Object.keys(props.recipe.toMaterialsNameMap).length === 1
+
 const updateCraftingAmount = ( amount:number) => {
   let newAmount = craftingAmount.value + amount;
   if (newAmount > 0 ) {
@@ -148,7 +160,7 @@ const hasMaterialMap: Ref<Record<string, boolean> | undefined>= ref(undefined)
 const craftingAmount = ref(1)
 
 const hasAllMaterials = computed(() => hasMaterialMap.value !== undefined && Object.values(hasMaterialMap.value).every(value => value === true))
-const craftingSkillIsMet = computed(() => props.recipe.skillData.currentSkill >= props.recipe.craftingSkill)
+const craftingSkillIsMet = computed(() => props.recipe.craftingSkill ? props.recipe.skillData.currentSkill >= props.recipe.craftingSkill : true )
 
 const recipeLabel = computed(() => {
   if (props.recipe.label) {
@@ -168,21 +180,36 @@ const verifyHasItems = async () => {
   const res = await api.post("getCanCraft", JSON.stringify({craftingAmount: craftingAmount.value, currentRecipe: globalStore.selectedRecipe}));
   hasMaterialMap.value = res.data as Record<string, boolean>
 }
+const verifyAmount = async () => {
+  if (props.recipe.maxCraft < craftingAmount.value) craftingAmount.value = props.recipe.maxCraft
+}
 
 const craft = async () => {
   closeUi()
   await api.post("attemptCrafting", JSON.stringify({craftingAmount: craftingAmount.value, currentRecipe: globalStore.selectedRecipe}));
 }
 
-onUpdated(()=> verifyHasItems())
+const closeCraftingMenu = () => {
+  globalStore.$state.selectedRecipe = '';
+};
+
+onUpdated(()=> {
+  verifyHasItems()
+  verifyAmount()
+})
 onMounted(()=> verifyHasItems())
 
 </script>
 
 <style scoped lang="scss">
-.requirements {
+.horizontal-list {
   display: flex;
   gap: 2rem;
+}
+.menu-title {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 .avatar {
   margin-right: 1rem;

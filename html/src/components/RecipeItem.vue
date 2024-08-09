@@ -25,7 +25,7 @@
     </template>
     <v-card-text class="text">
       <v-chip
-        v-if="recipe.craftingSkill > 0"
+        v-if="recipe.craftingSkill && recipe.craftingSkill > 0"
         :color="craftingSkillIsMet ? 'green' : 'red'"
       >
         {{ recipe.skillData.skillLabel }}: {{ recipe.craftingSkill }}

@@ -19,7 +19,7 @@ export type Recipe = {
     skillGain: number,
     keepMaterials: Record<string, boolean>
     skillData: SkillData
-    maxCraft?: number,
+    maxCraft: number,
     type: string,
 }
 
