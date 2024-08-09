@@ -13,6 +13,7 @@ Config.UseCWRepForCraftingSkill = false -- Set to true if you want to use cw-rep
 Config.CraftingSkillName = 'crafting' -- Make sure this matches the crafting skill name in your cw-rep config
 Config.CraftingSkillLabel = '"Crafting Skill"' -- Default name for the crafting skill
 Config.UseLevelsInsteadOfSkill = false -- If true then cw-rep will use level instead of pure xp 
+Config.DefaultMaxCraft = 10 -- Default max amount a player can craft at a time
 
 local minimumSkillRep = 1 -- the least amount of skill you can gain per craft
 
@@ -107,6 +108,7 @@ Config.CraftingTables = {
 	},
 	['guns'] = {
 		title = "Weapon Crafting",
+		craftingLevelText = "Guns crafting level:",
 		icon = "pistol",
 		objects = { 'gr_prop_gr_bench_01a' }
 	},
