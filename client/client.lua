@@ -380,36 +380,37 @@ local function getRecipes()
                 item.maxCraft = Config.DefaultMaxCraft or 10
             end
 
+            local skillName = item.skillName or Config.CraftingSkillName
+            local skillLabel = Config.CraftingSkillLabel
+            local currentSkill = 0
+            if Config.UseCWRepForCraftingSkill then
+                skillLabel = exports['cw-rep']:getSkillInfo(skillName).label or skillName
+                if Config.UseLevelsInsteadOfSkill then
+                    currentSkill = exports['cw-rep']:getCurrentLevel(skillName) or 0
+                else
+                    currentSkill = exports['cw-rep']:getCurrentSkill(skillName) or 0
+                end
+            else
+                local PlayerData = QBCore.Functions.GetPlayerData()
+                currentSkill = PlayerData.metadata.craftingrep or 0
+            end
+
+            if useDebug then 
+                print('Current skill level', currentSkill)
+                print('Required skill level', item.craftingSkill)
+            end
             if not item.craftingSkill then
                 item.craftingSkill = 0
             else
-                local skillName = item.skillName or Config.CraftingSkillName
-                local skillLabel = Config.CraftingSkillLabel
-                local currentSkill = 0
-                if Config.UseCWRepForCraftingSkill then
-                    skillLabel = exports['cw-rep']:getSkillInfo(skillName).label or skillName
-                    if Config.UseLevelsInsteadOfSkill then
-                        currentSkill = exports['cw-rep']:getCurrentLevel(skillName) or 0
-                    else
-                        currentSkill = exports['cw-rep']:getCurrentSkill(skillName) or 0
-                    end
-                else
-                    local PlayerData = QBCore.Functions.GetPlayerData()
-                    currentSkill = PlayerData.metadata.craftingrep or 0
-                end
-
-                if useDebug then 
-                    print('Current skill level', currentSkill)
-                    print('Required skill level', item.craftingSkill)
-                end
-                local skillData = {
-                    skillName = skillName,
-                    currentSkill = currentSkill,
-                    skillLabel = skillLabel,
-                    passes = item.craftingSkill <= currentSkill
-                }
-                item.skillData = skillData
             end
+            local skillData = {
+                skillName = skillName,
+                currentSkill = currentSkill,
+                skillLabel = skillLabel,
+                passes = item.craftingSkill <= currentSkill
+            }
+            item.skillData = skillData
+        
             Recipes[recipe] = item
             if item.craftingTime == nil then
                 Recipes[recipe].craftingTime = Config.DefaultCraftingTime
@@ -622,6 +623,9 @@ local function createTable(type, benchType)
             })
         end
     end
+    if not Config.CraftingTables[type] then
+        Config.CraftingTables[type] = benchType
+    end
 end exports("createTable", createTable)
 
 CreateThread(function()
@@ -629,6 +633,16 @@ CreateThread(function()
         createTable(i, benchType)
     end
 end)
+
+local function addRecipe(name, recipe)
+    if not name then print('^1 did not include name when trying to create table') return end
+    if not recipe then print('^1 did not include recipe') return end
+    
+    if Config.Recipes[name] then print('^1 the name is already in use', name) return end
+
+    Config.Recipes[name] = recipe
+    if useDebug then print('^2Added recipe '..name..' to list of recipes') end
+end exports("addRecipe", addRecipe)
 
 -- RegisterCommand('testcraft', function(_, args)
 -- 	craftItem(Config.Recipes[args[1]])
