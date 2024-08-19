@@ -34,18 +34,11 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
         end
         if item.toItems ~= nil then
             for material, amount in pairs(item.toItems) do
-                Player.Functions.AddItem(material, amount*craftingAmount)
+                Player.Functions.AddItem(material, amount*craftingAmount, item.metadata)
                 TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "add")
             end
         else
-            local total = 0
-            if item.amount ~= nil then
-                total = item.amount * craftingAmount or craftingAmount
-            else
-                total = craftingAmount
-            end
-            Player.Functions.AddItem(item.name, total, item.metadata)
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], "add")
+            print('Recipe is not created correctly: Missing toItems', recipe)
         end
     else
         local pped = GetPlayerPed(src)
@@ -62,7 +55,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
         if item.toItems ~= nil then
             for material, amount in pairs(item.toItems) do
                 if exports.ox_inventory:CanCarryItem(src, material, amount*craftingAmount) then
-                    exports.ox_inventory:AddItem(src, material, amount*craftingAmount )
+                    exports.ox_inventory:AddItem(src, material, amount*craftingAmount, item.metadata)
                 else
                     exports.ox_inventory:CustomDrop("craft", {{material, amount*craftingAmount, {durability = 100 }}}, coords)
                 end
@@ -71,7 +64,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
             print('Recipe is not created correctly: Missing toItems', recipe)
         end
     end
-    increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill, recipe)*craftingAmount, item.skillData.skillName)
+    increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill, item)*craftingAmount, item.skillName or Config.CraftingSkillName)
 
 end)
 

@@ -19,8 +19,8 @@ local minimumSkillRep = 1 -- the least amount of skill you can gain per craft
 
 -- You can tweak this function to return different amount of points per skill
 -- The default one will give you 1 skill for a crafted item and the +1 for each 100 in skill requirement the item has. 
-Config.CraftingRepGainFunction = function(skillReq, recipeName)
-	if recipeName and Config.Recipes[recipeName].customSkillGain then return Config.Recipes[recipeName].customSkillGain end
+Config.CraftingRepGainFunction = function(skillReq, recipe)
+	if recipe and recipe.customSkillGain then return recipe.customSkillGain end
 	if not skillReq then return minimumSkillRep end
 	
     local skillGain = 1 + math.floor((skillReq - 1) / 100)
