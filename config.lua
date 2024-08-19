@@ -96,7 +96,8 @@ Config.CraftingTables = {
 	['basic'] = {
 		title = "Crafting",
 		objects = { 'ex_prop_ex_toolchest_01', 'prop_toolchest_04', 'prop_toolchest_05'}, 
-		locations = {  vector3(939.4, -1554.36, 30.58), }
+		locations = {  vector3(939.4, -1554.36, 30.58), },
+		skipPlaceObjectOnGroundProperly = true -- Defaults to false, if set to true then object wont be placed onto ground. Useful for placing items on tables etc
 	},
 	['mechanic'] = {
 		title = "Mechanic Crafting",

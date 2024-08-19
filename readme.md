@@ -108,7 +108,8 @@ kitchen = {
 		gang = 'hotdoggang', -- gang name. Works same as qb target so you can use a table with ranks also (I think?) (optional)
         objects = { 'gr_prop_gr_hobo_stove_01' }, -- providing this will make ALL objects of this variant a table, can include multiple (leave empty if this is not what you want, ei objects = {})
 		locations = {  vector3(-165.14, -984.55, 254.22), }, -- spawn at these locations (optional)
-		spawnTable = { { coords = vector4(794.49, -2613.63, 87.97, 2.4), prop = 'gr_prop_gr_hobo_stove_01' } } -- List of several tables with prop and location. If these are added it will SPAWN a table that's interactable (optional)
+		spawnTable = { { coords = vector4(794.49, -2613.63, 87.97, 2.4), prop = 'gr_prop_gr_hobo_stove_01' } }, -- List of several tables with prop and location. If these are added it will SPAWN a table that's interactable (optional)
+		skipPlaceObjectOnGroundProperly = true -- If this is set to true then the object wont be placed onto ground via Native. Good for placing things on tables for example (optional)
     },
 ```
 > Note: The example above has ALL the cration types, which obviously might not be optimal. Use one or more, to fit your needs.
