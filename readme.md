@@ -116,8 +116,27 @@ kitchen = {
 
 Now you got a new table! To fill it with items all you need to do is add `"tables = {'kitchen'}"`  to your recipes. You can see examples of these in the Recipes object. If you check the Recipes at the top they have comments explaining the different fields
 
+### Creating tables from other scripts
+With this export you can create tables from other scripts. The `table` input is the exact same as how tables are defined in the Config, just like above ☝, and the name is a string that identifies the table for your recipes
+
+```lua
+	exports['cw-crafting']:createTable('name', table)
+```
+
+For example, if you wanted to create a table that has cooking on it:
+```lua
+	local table = {
+		title = "Kitchen",
+		icon = "stove",
+		spawnTable = { { coords = vector4(743.47, -704.91, 49.14, 267.64), prop = 'prop_pizza_oven_01' } }
+	},
+	exports['cw-crafting']:createTable('kitchen', table)
+
+```
+
+
 ## Creating recipes
-As of the new update, we no longer provide the base QB recipies (since so many people refuse to read instructions and update them to fit their server before reporting errors). The recipies have also been updated to be more aligned to make them more easier to manage.
+As of the new update, we no longer provide the base QB recipies (since so many people refuse to read instructions and update them to fit their server before reporting errors). The recipies have also been updated to be more aligned to make them more easier to manage. The name needs to be unique.
 
 Example recipe:
 ```lua
@@ -150,6 +169,32 @@ Example recipe:
 ```
 
 > So if you only want a recipe to use jobs, don't include `blueprint` and vice versa. If both are included then either or will allow users to access the recipe, if `requireBlueprintAndJob` is set then it will require both.
+
+### Creating recipes from other scripts
+With this export you can create recipes from other scripts. The `recipe` input is the exact same as how recipes are defined in the Config, just like above ☝, and the name is a string that identifies the recipes. The name needs to be unique.
+
+```lua
+	exports['cw-crafting']:addRecipe('name', recipe)
+```
+
+For example, if you wanted to add a recipe for a sandwich at your kitchen:
+```lua
+	local recipe = {
+		toItems = {
+			sandwich = 1,
+		},
+		materials = {
+			["bread"] = 2,
+			["chicken_meat"] = 1,
+			["lettuce"] = 1,
+		},
+		category = 'Sandwiches',
+		tables = {'kitchen'},
+	},
+	exports['cw-crafting']:addRecipe('sandwich', recipe)
+
+```
+> Obviously don't just paste this in your code unless you have all those materials, or you're kinda dumb.
 
 ## Creating blueprints
 Example blueprint:
