@@ -611,7 +611,9 @@ local function createTable(type, benchType)
         for j, bench in pairs(benchType.spawnTable) do
             local benchEntity = CreateObject(bench.prop, bench.coords.x, bench.coords.y, bench.coords.z, false,  false, true)
             SetEntityHeading(benchEntity, bench.coords.w)
-            PlaceObjectOnGroundProperly(benchEntity)
+            if not bench.skipPlaceObjectOnGroundProperly then
+                PlaceObjectOnGroundProperly(benchEntity)
+            end
             FreezeEntityPosition(benchEntity, true)
             Entities[#Entities+1] = benchEntity
             exports['qb-target']:AddTargetEntity(benchEntity, {
@@ -697,7 +699,14 @@ local function generateBlueprintOptions(dude, oxlib)
     local bpOptions = {}
     for name, blueprint in pairs(Config.Blueprints) do
         local dudeHasBlueprint = true
-        if blueprint.type and dude.type and blueprint.type ~= dude.type then
+
+        if not blueprint.type then
+            blueprint.type = 'legal'
+        end
+        if not dude.type then
+            dude.type = 'legal'
+        end
+        if blueprint.type ~= dude.type then
             dudeHasBlueprint = false
         end
 
@@ -761,20 +770,22 @@ if Config.BlueprintDudes then
     
             if Config.oxLib then
                 local options = generateBlueprintOptions(dude, true)
-                if options then 
+                if options and #options > 0 then 
                     exports.ox_target:addLocalEntity(currentDude, options)
                 else
-                    if useDebug then print('No options for blueprint npc', dude.model, dude.type) end
+                    print('^3No options for blueprint npc', dude.model, 'with type:', dude.type)
+                    print('^3This NPC will spawn but will be useless and might cause issues. Consider adding blueprints for them or removing them from your list')
                 end
             else
                 local options = generateBlueprintOptions(dude, false)
-                if options then 
+                if options and #options > 0 then 
                     exports['qb-target']:AddTargetEntity(currentDude, {
                         options = options,
                         distance = 2.0
                     })
                 else
-                    if useDebug then print('No options for blueprint npc', dude.model, dude.type) end
+                    print('^3No options for blueprint npc', dude.model, 'with type:', dude.type)
+                    print('^3This NPC will spawn but will be useless and might cause issues. Consider adding blueprints for them or removing them from your list')
                 end
             end
         end
