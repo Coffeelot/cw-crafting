@@ -55,12 +55,14 @@ const imageLink = computed(() => {
   if (props.recipe.type == "breakdown") {
     return getImageLink(
       Object.keys(props.recipe.materialsNameMap)[0],
-      props.recipe.materialsNameMap
+      props.recipe.materialsNameMap,
+      props.recipe.metadata
     );
   }
   return getImageLink(
     Object.keys(props.recipe.toMaterialsNameMap)[0],
-    props.recipe.toMaterialsNameMap
+    props.recipe.toMaterialsNameMap,
+    props.recipe.metadata
   );
 });
 const isSingleItem = () =>

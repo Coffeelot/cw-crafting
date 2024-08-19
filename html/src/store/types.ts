@@ -21,6 +21,7 @@ export type Recipe = {
     skillData: SkillData
     maxCraft: number,
     type: string,
+    metadata?: any
 }
 
 export type Recipes = Record<string, Recipe>

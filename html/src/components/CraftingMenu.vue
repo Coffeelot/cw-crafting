@@ -42,11 +42,11 @@
         </v-card-text>
       </div>
           <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
-            <v-img :src="getImageLink(undefined, recipe.toMaterialsNameMap)"></v-img>
+            <v-img :src="getImageLink(undefined, recipe.toMaterialsNameMap, recipe.metadata)"></v-img>
           </v-avatar>
           <div v-else >
             <v-avatar class="avatar" v-for="item, materialName in recipe.toItems" rounded="0"  size="80px">
-              <v-img :src="getImageLink(materialName, recipe.toMaterialsNameMap)"></v-img>
+              <v-img :src="getImageLink(materialName, recipe.toMaterialsNameMap, recipe.metadata)"></v-img>
             </v-avatar>
           </div>
        </v-card>

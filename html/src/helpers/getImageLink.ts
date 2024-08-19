@@ -2,14 +2,19 @@ import { useGlobalStore } from "@/store/global";
 
 export const getImageLink = (
   material: string | undefined,
-  toMaterialsNameMap: Record<string, string>
+  toMaterialsNameMap: Record<string, string>,
+  metadata: any
 ) => {
   const store = useGlobalStore();
   let key = undefined;
-  if (!material) {
-    key = Object.keys(toMaterialsNameMap)[0];
+  if (metadata?.image) {
+    key = metadata.image
   } else {
-    key = material;
+    if (!material) {
+      key = Object.keys(toMaterialsNameMap)[0];
+    } else {
+      key = material;
+    }
   }
 
   if (store.settings.useLocalImages) {
