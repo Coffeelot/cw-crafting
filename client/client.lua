@@ -134,18 +134,22 @@ local function validateJob(item)
         local jobLevel = Player.job.grade.level
         local jobName = Player.job.name
         local jobType = Player.job.type
+        if useDebug then print('Player job:', jobName, 'type:', jobType) end
     
         for i, job in pairs(item.jobs) do
+            if useDebug then print('checking if player job matches this type:', job.type, 'or name:', job.name) end
             if job.type and jobType then
                 if job.type == jobType then
                     playerHasJob = true
                     levelRequirement = job.level
+                    if useDebug then print('Player has job of type. Level req:', levelRequirement) end
                     break;
                 end
             else
                 if job.name == jobName then
                     playerHasJob = true
                     levelRequirement = job.level
+                    if useDebug then print('Player has job of name. Level req:', levelRequirement) end
                     break;
                 end
             end
@@ -197,12 +201,12 @@ local function validateAccess(item, recipe)
         return playerPassesJobReq or playerPassesBlueprintReq
     elseif item.blueprint ~= nil then
         if useDebug then
-           print(recipe.. ' requires blueprint', playerPassesBlueprintReq)
+           print(recipe.. ' requires blueprint. Player has blueprint:', playerPassesBlueprintReq)
         end
         return playerPassesBlueprintReq
     elseif item.jobs ~= nil then
         if useDebug then
-           print(recipe.. ' requires job', playerPassesJobReq)
+           print(recipe.. ' requires job. Player has job:', playerPassesJobReq)
         end
         return playerPassesJobReq
     end
