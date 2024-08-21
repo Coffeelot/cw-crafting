@@ -38,9 +38,10 @@ local function getCraftingLevel()
     end
 end
 
+local allItemsExist = true;
+local recipesAreFine = true;
+
 local function verifyAllItemsExists()
-    local allItemsExist = true;
-    local recipesAreFine = true;
     for recipe, item in pairs(Config.Recipes) do
         if not Config.oxInv then
             if item.materials ~= nil then
@@ -100,7 +101,7 @@ local function verifyAllItemsExists()
     end
     if not allItemsExist or not recipesAreFine then
         print('^1-------------------------')
-        print('^1There are issues with your cw crafting setup. This is most likely NOT the fault of the script.')
+        print('^1There are issues with your cw crafting setup. This is most likeCraftingSkillLabelly NOT the fault of the script.')
         if not allItemsExist then
             print('- Make sure to check all the item names for misspellings and that they exist')
             print('- Item names are case sensitive')
@@ -112,10 +113,39 @@ local function verifyAllItemsExists()
     end
 end
 
+local function setupPrintout()
+    if useDebug then
+        print('^4=== '.. GetCurrentResourceName()..' ===')
+        print('^2= Base setup = ')
+        print('Using OX Lib', Config.oxLib)
+        print('Using OX inventory', Config.oxInv)
+        print('Using Local Images', Config.UseLocalImages)
+    
+        print('^2= Rep = ')
+        print('Using CW Rep', Config.UseCWRepForCraftingSkill)
+        print('Using Level instead of skill', Config.UseLevelsInsteadOfSkill)
+        if not Config.UseCWRepForCraftingSkill and Config.UseLevelsInsteadOfSkill then print('^1Thissetup is incorrect. You need cw rep to use levels') end
+        print('Crafting skill name', Config.CraftingSkillName)
+        print('Crating Skill label', Config.CraftingSkillLabel)
+    
+        if not allItemsExist or not recipesAreFine then
+            print('^1Your recipes are not set up correctly')
+            if not allItemsExist then
+                print('- Make sure to check all the item names for misspellings and that they exist')
+                print('- Item names are case sensitive')
+            end
+            if not recipesAreFine then 
+                print('- One or more of your crafting recipes are broken. Either lacking an input our an output')
+            end
+        end
+    end
+end
+
 AddEventHandler('onResourceStart', function(resource)
     if resource == GetCurrentResourceName() then
         getOxItems()
         verifyAllItemsExists()
+        setupPrintout()
     end
 end)
 
