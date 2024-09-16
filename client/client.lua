@@ -592,71 +592,114 @@ RegisterNUICallback('getSettings', function(_, cb)
     cb(settings)
 end)
 
---[[ RegisterCommand('openCrafting', function(source)
-    if useDebug then
-        print('Open crafting')
+local function generateTableOptions(type, benchType, oxLib) 
+    local bpOptions = {}
+
+    if Config.oxLib then
+        return {
+            {
+                label = benchType.title,
+                icon = "fas fa-wrench",
+                gang = benchType.gang,
+                job = benchType.job,
+                onSelect = function()
+                    setCraftingOpen(true, type)
+                end,
+                canInteract = function()
+                    if benchType.jobType ~= nil then
+                        return benchpermissions(benchType.jobType)
+                    else
+                        return true
+                    end
+                end,
+            }
+        }
+    else
+        return {
+            {
+                type = 'client',
+                label = benchType.title,
+                icon = "fas fa-wrench",
+                gang = benchType.gang,
+                job = benchType.job,
+                action = function()
+                    setCraftingOpen(true, type)
+                end,
+                canInteract = function()
+                    if benchType.jobType ~= nil then
+                        return benchpermissions(benchType.jobType)
+                    else
+                        return true
+                    end
+                end,
+            }
+        }
     end
-    setCraftingOpen(true)
-end)
- ]]
+end
 
 local function createTable(type, benchType)
     local options = {}
-    options[1] = {
-        type = 'client',
-        label = benchType.title,
-        icon = "fas fa-wrench",
-        gang = benchType.gang,
-        job = benchType.job,
-        action = function()
-            setCraftingOpen(true, type)
-        end,
-        canInteract = function()
-            if benchType.jobType ~= nil then
-                return benchpermissions(benchType.jobType)
-            else
-                return true
-            end
-        end,
-    }
+    options = generateTableOptions(type, benchType)
 
-    if benchType.objects then
-        for j, benchProp in pairs(benchType.objects) do
-            exports['qb-target']:AddTargetModel(benchProp, {
-                options = options,
-                distance = 2.0
-            })
-        end
-    end
-    if benchType.locations then
-        for j, benchLoc in pairs(benchType.locations) do
-            exports['qb-target']:AddBoxZone('crafting-'..benchType.title..'-'..j, benchLoc, 1.5, 1.5, {
-                name = 'crafting-'..benchType.title..'-'..j,
-                heading = 0,
-                debugPoly = useDebug,
-                minZ = benchLoc.z - 0.5,
-                maxZ = benchLoc.z + 0.5,
-            }, {
-                options = options,
-                distance = 2.0
-            })
-        end
-    end
-    if benchType.spawnTable then
-        for j, bench in pairs(benchType.spawnTable) do
-            local benchEntity = CreateObject(bench.prop, bench.coords.x, bench.coords.y, bench.coords.z, false,  false, true)
-            SetEntityHeading(benchEntity, bench.coords.w)
-            if not bench.skipPlaceObjectOnGroundProperly then
-                PlaceObjectOnGroundProperly(benchEntity)
+    if options and #options > 0 then 
+        if benchType.objects then
+            for j, benchProp in pairs(benchType.objects) do
+                if Config.oxLib then
+                    exports.ox_target:addModel(benchProp, options)
+                else
+                    exports['qb-target']:AddTargetModel(benchProp, {
+                        options = options,
+                        distance = 2.0
+                    })
+                end
             end
-            FreezeEntityPosition(benchEntity, true)
-            Entities[#Entities+1] = benchEntity
-            exports['qb-target']:AddTargetEntity(benchEntity, {
-                options = options,
-                distance = 2.0
-            })
+        end
+        if benchType.locations then
+            for j, benchLoc in pairs(benchType.locations) do
+                if Config.oxLib then
+                    exports.ox_target:addBoxZone({
+                        coords = benchLoc,
+                        size = vector3(1.5, 1.5, 1.5),
+                        debug = useDebug,
+                        drawSprite = useDebug,
+                        options = options,
+                    })
+                else
+                    exports['qb-target']:AddBoxZone('crafting-'..benchType.title..'-'..j, benchLoc, 1.5, 1.5, {
+                        name = 'crafting-'..benchType.title..'-'..j,
+                        heading = 0,
+                        debugPoly = useDebug,
+                        minZ = benchLoc.z - 0.5,
+                        maxZ = benchLoc.z + 0.5,
+                    }, {
+                        options = options,
+                        distance = 2.0
+                    })
+                end
+            end
+        end
+        if benchType.spawnTable then
+            for j, bench in pairs(benchType.spawnTable) do
+                local benchEntity = CreateObject(bench.prop, bench.coords.x, bench.coords.y, bench.coords.z, false,  false, true)
+                SetEntityHeading(benchEntity, bench.coords.w)
+                if not bench.skipPlaceObjectOnGroundProperly then
+                    PlaceObjectOnGroundProperly(benchEntity)
+                end
+                FreezeEntityPosition(benchEntity, true)
+                Entities[#Entities+1] = benchEntity
+                if Config.oxLib then
+                    exports.ox_target:addLocalEntity(benchEntity, options)
+                else
+                    exports['qb-target']:AddTargetEntity(benchEntity, {
+                        options = options,
+                        distance = 2.0
+                    })
+                end
+
+            end
         end
     end
+
     if not Config.CraftingTables[type] then
         Config.CraftingTables[type] = benchType
     end
