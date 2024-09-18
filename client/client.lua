@@ -409,7 +409,7 @@ local function getRecipes()
             end
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
-            item.skillGain = Config.CraftingRepGainFunction(item.craftingSkill, recipe)
+            item.skillGain = Config.CraftingRepGainFunction(item.craftingSkill, item)
             if not item.maxCraft then
                 item.maxCraft = Config.DefaultMaxCraft or 10
             end
