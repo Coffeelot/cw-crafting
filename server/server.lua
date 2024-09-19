@@ -21,6 +21,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
         print('Skill', item.skillData.skillName, item.skillData.currentSkill)
     end
 
+    local success = false
     local Player = QBCore.Functions.GetPlayer(src)
     if not Config.oxInv then
         for material, amount in pairs(item.materials) do
@@ -37,6 +38,7 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
                 Player.Functions.AddItem(material, amount*craftingAmount, item.metadata)
                 TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[material], "add")
             end
+            success = true
         else
             print('Recipe is not created correctly: Missing toItems', recipe)
         end
@@ -49,7 +51,6 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
                     TriggerClientEvent('QBCore:Notify', src, 'You are lacking the items to craft this', 'error') -- also possible exploit, if you wanna kick someone add it after this
                     return
                 end
-
             end
         end
         if item.toItems ~= nil then
@@ -60,12 +61,15 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
                     exports.ox_inventory:CustomDrop("craft", {{material, amount*craftingAmount, {durability = 100 }}}, coords)
                 end
             end
+            success = true
         else
             print('Recipe is not created correctly: Missing toItems', recipe)
         end
     end
-    increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill, item)*craftingAmount, item.skillName or Config.CraftingSkillName)
 
+    if success then
+        increaseCraftingSkill(src, Config.CraftingRepGainFunction(recipe.craftingSkill, item)*craftingAmount, item.skillName or Config.CraftingSkillName)
+    end
 end)
 
 local function updateBlueprints(citizenId, blueprints)
