@@ -731,6 +731,21 @@ RegisterNetEvent('cw-crafting:client:toggleDebug', function(debug)
    useDebug = debug
 end)
 
+
+
+RegisterNetEvent('cw-rep:client:repWasUpdated', function(skills)
+    if useDebug then QBCore.Functions.Notify('Rep was updated') end
+    local craftingSkill = getCraftingSkill()
+    local craftingLevel = getCraftingLevel()
+    Wait(1000)
+    SendNUIMessage({
+        action = "cwCrafting",
+        type = 'updateCraftingSkill',
+        craftingSkill = craftingSkill,
+        craftingLevel = craftingLevel
+    })
+end)
+
 AddEventHandler('onResourceStop', function (resource)
    if resource ~= GetCurrentResourceName() then return end
    for i, entity in pairs(Entities) do

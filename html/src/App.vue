@@ -30,13 +30,15 @@ const toggleApp = (show: boolean): void => {
 const handleMessageListener = (event: MessageEvent) => {
   const itemData: any = event?.data;
   if (itemData?.type) {
-    globalStore.$state.table = itemData.table
+    // globalStore.$state.settings = itemData.settings
     globalStore.$state.playerCraftingSkill = itemData.craftingSkill ?? 0
     globalStore.$state.playerCraftingLevel = itemData.craftingLevel ?? 0
-    // globalStore.$state.settings = itemData.settings
     switch (itemData.type) {
       case 'toggleUi':
+        globalStore.$state.table = itemData.table
         toggleApp(itemData.toggle)
+        break;
+      case 'updateCraftingSkill':
         break;
       default:
         break;
