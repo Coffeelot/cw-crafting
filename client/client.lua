@@ -101,7 +101,7 @@ local function verifyAllItemsExists()
     end
     if not allItemsExist or not recipesAreFine then
         print('^1-------------------------')
-        print('^1There are issues with your cw crafting setup. This is most likeCraftingSkillLabelly NOT the fault of the script.')
+        print('^1There are issues with your cw crafting setup. This is most likely NOT the fault of the script.')
         if not allItemsExist then
             print('- Make sure to check all the item names for misspellings and that they exist')
             print('- Item names are case sensitive')
@@ -731,10 +731,8 @@ RegisterNetEvent('cw-crafting:client:toggleDebug', function(debug)
    useDebug = debug
 end)
 
-
-
 RegisterNetEvent('cw-rep:client:repWasUpdated', function(skills)
-    if useDebug then QBCore.Functions.Notify('Rep was updated') end
+    if useDebug then QBCore.Functions.Notify('Rep was updated') print('new skills', json.encode(skills, {indent=true})) end
     local craftingSkill = getCraftingSkill()
     local craftingLevel = getCraftingLevel()
     Wait(1000)
