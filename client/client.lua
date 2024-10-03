@@ -516,7 +516,9 @@ local function craftItem(item, recipe)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function()
-            setCraftingOpen(true, lastTableType)
+            if Config.ReopenCraftingWhenFinished then
+                setCraftingOpen(true, lastTableType)
+            end
             TriggerServerEvent('cw-crafting:server:craftItem',recipe, item, CurrentAmount)
             TriggerEvent('animations:client:EmoteCommandStart', {"c"})
             isCrafting = false
