@@ -1,28 +1,43 @@
 <template>
   <div class="ui-container">
     <div class="screen-container" v-if="globalStore.recipes">
-      <div class="top">
-        <v-card
-          width="100%"
-          :prepend-icon="
-            globalStore.table.icon
-              ? `mdi-${globalStore.table.icon}`
-              : 'mdi-wrench'
-          "
-          :title="globalStore.table.title ? globalStore.table.title : ''"
-          :subtitle="`Crafting skill: ${globalStore.playerCraftingLevel} (XP: ${globalStore.playerCraftingSkill})`"
-        >
-        </v-card>
-        <FilterMenu></FilterMenu>
-      </div>
-      <div class="content">
-        <RecipesList class="list"></RecipesList>
-        <CraftingMenu
-          :recipe="globalStore.recipes[globalStore.selectedRecipe]"
-          class="menu"
-          v-if="globalStore.selectedRecipe"
-        ></CraftingMenu>
-      </div>
+      <v-card border class="d-flex flex-column main-card" rounded="lg">
+        <div class="top">
+          <v-card
+            width="100%"
+            variant="text"
+            :prepend-icon="
+              globalStore.table.icon
+                ? `mdi-${globalStore.table.icon}`
+                : 'mdi-wrench'
+            "
+
+          >
+            <template v-slot:title>
+              <div class="d-flex justify-space-between" width="100%">
+                <span>{{ globalStore.table.title ? globalStore.table.title : ''}}</span>
+                <v-btn @click="closeUi" variant="text" icon="mdi-close">
+                    
+                </v-btn>
+              </div>
+            </template>
+            <template v-slot:subtitle>
+              {{ `Crafting skill: ${globalStore.playerCraftingLevel} (XP: ${globalStore.playerCraftingSkill})` }}
+            </template>
+          </v-card>
+        </div>
+        <v-card-text>
+          <FilterMenu class="filters"></FilterMenu>
+          <div class="content">
+            <RecipesList class="list"></RecipesList>
+            <CraftingMenu
+              :recipe="globalStore.recipes[globalStore.selectedRecipe]"
+              class="menu"
+              v-if="globalStore.selectedRecipe"
+            ></CraftingMenu>
+          </div>
+        </v-card-text>
+      </v-card>
     </div>
   </div>
 </template>
@@ -42,6 +57,7 @@ document.onkeydown = function (evt) {
 </script>
 
 <style scoped lang="scss">
+
 .top {
   display: flex;
   gap: 1em;
@@ -60,10 +76,16 @@ body {
   overflow: hidden;
 }
 
+.content {
+  display: flex;
+  gap: 1em;
+  max-height: 59vh;
+}
+
 .list {
   flex-grow: 1;
-  flex-shrink: 4;
-  width: 100%;
+  overflow-y: auto;
+  max-height: 59vh;
 }
 
 .menu {
@@ -103,9 +125,5 @@ h2 {
   height: 460px;
 }
 
-.content {
-  display: flex;
-  gap: 1em;
-  overflow: auto;
-}
+
 </style>

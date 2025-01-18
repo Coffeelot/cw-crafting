@@ -14,7 +14,8 @@ import {
 } from "vue";
 import { useGlobalStore } from "./store/global";
 import api from "@/api/axios";
-
+import { useTheme } from "vuetify/lib/framework.mjs";
+const theme = useTheme()
 const globalStore = useGlobalStore();
 
 
@@ -27,8 +28,15 @@ const toggleApp = (show: boolean): void => {
   globalStore.$state.selectedCategories = []
 };
 
+const handleBaseData = (baseData: any) => {
+  if (baseData.primary) {
+      theme.themes.value.dark.colors.primary = baseData.primary;
+  }
+}
+
 const handleMessageListener = (event: MessageEvent) => {
   const itemData: any = event?.data;
+
   if (itemData?.type) {
     // globalStore.$state.settings = itemData.settings
     globalStore.$state.playerCraftingSkill = itemData.craftingSkill ?? 0
@@ -39,6 +47,9 @@ const handleMessageListener = (event: MessageEvent) => {
         toggleApp(itemData.toggle)
         break;
       case 'updateCraftingSkill':
+        break;
+      case 'baseData':
+        handleBaseData(itemData.baseData)
         break;
       default:
         break;

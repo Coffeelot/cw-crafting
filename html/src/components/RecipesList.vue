@@ -1,15 +1,13 @@
 <template>
-  <v-card class="mx-auto pa-2">
-    <div class="recipe-list">
+    <div class="recipe-list" v-if="Object.keys(filteredRecipes).length>0">
       <RecipeItem
-        v-if="Object.keys(filteredRecipes).length>0"
         v-for="(item, i) in filteredRecipes"
+        :key="i"
         :recipe="item"
         :recipeName="i"
       ></RecipeItem>
-      <h3 v-else >No Recipes to show</h3>
     </div>
-  </v-card>
+    <h3 v-else >No Recipes to show</h3>
 </template>
 
 <script setup lang="ts">
@@ -64,7 +62,7 @@ const filteredRecipes = computed(() => {
   gap: 1em;
   flex-wrap: wrap;
   align-content: flex-start;
-  overflow: auto;
+  overflow-y: auto;
   height: 100%;
 }
 </style>

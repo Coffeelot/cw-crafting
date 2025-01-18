@@ -1,6 +1,9 @@
 <template>
   <v-card
+    border
+    rounded="lg"
     variant="tonal"
+    :color="isSelected ? 'primary' : ''"
     height="fit-content"
     :key="recipeName"
     :value="recipeName"
@@ -32,6 +35,7 @@
       </v-chip>
       <v-chip 
         v-for="(itemAmount, item) in recipe.materials"
+        :key="item"
         :prepend-icon="recipe.keepMaterials && recipe.keepMaterials[item] ? 'mdi-toolbox' : ''"
         >{{ itemAmount }} {{ recipe.materialsNameMap[item] }}</v-chip
       >
@@ -89,6 +93,8 @@ const recipeLabel = computed(() => {
 const selectRecipe = () => {
   globalStore.$state.selectedRecipe = props.recipeName;
 };
+
+const isSelected = computed(() => globalStore.$state.selectedRecipe === props.recipeName)
 </script>
 
 <style scoped lang="scss">
