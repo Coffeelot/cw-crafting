@@ -9,13 +9,17 @@ Config.oxLib = true -- set this to ox if you have ox_lib !!! MAKE SURE OX LIB IS
 Config.UseLocalImages = false -- set this to true if you want to use local images rather than automatic. Put the images for the recipes and ingredients in the 'images' folder next to the blueprint.png
 Config.ReopenCraftingWhenFinished = false -- if true the script will re-open the crafting when it's done
 
-
+Config.ItemName = "cw_blueprint" -- Name of the item in your items.lua
+Config.PlayersTableName = 'characters' -- 'players' for qb/qbox, 'characters' for ox. Something else for esx probably
+Config.PlayerDbIdentifier = 'stateId' -- 'citizenId' for qb/qbox, 'stateId' for ox, Something else for ex probably
 Config.UseCWRepForCraftingSkill = false -- Set to true if you want to use cw-rep for skill instead of qbs metadata
 -- The following all require cw-rep to be enabled:
 Config.CraftingSkillName = 'crafting' -- Make sure this matches the crafting skill name in your cw-rep config
 Config.CraftingSkillLabel = '"Crafting Skill"' -- Default name for the crafting skill
 Config.UseLevelsInsteadOfSkill = false -- If true then cw-rep will use level instead of pure xp 
 Config.DefaultMaxCraft = 10 -- Default max amount a player can craft at a time
+
+Config.PrimaryUiColor = '#52d996' -- Primary color in UI, default is blue
 
 local minimumSkillRep = 1 -- the least amount of skill you can gain per craft
 
@@ -46,6 +50,7 @@ Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers low
 Config.DefaultFailChance = 80
 
 Config.DefaultCraftingTime = 1000 -- in milliseconds
+Config.LearningTime = 2500 -- time it takes to learn BP in milliseconds
 
 Config.Recipes = {
 	['lockpick'] = {
@@ -87,7 +92,7 @@ Config.Recipes = {
 		blueprint = 'Ap Pistol',
 		craftingSkill= 200,
 		skillName = 'gun_crafting', -- optional. If set, will override what skill is required. ONLY WORKS WITH CW-REP!!!
-		metadata = {registered= false} -- If set, will write info/metadata on item
+		metadata = { registered= false } -- If set, will write info/metadata on item
 	},
 }
 
@@ -97,6 +102,7 @@ Config.Recipes = {
 Config.CraftingTables = {
 	['basic'] = {
 		title = "Crafting",
+		animation = { dict = 'anim@amb@business@coc@coc_unpack_cut@', anim = 'fullcut_cycle_v7_cokecutter'},
 		objects = { 'ex_prop_ex_toolchest_01', 'prop_toolchest_04', 'prop_toolchest_05'}, 
 		locations = {  vector3(939.4, -1554.36, 30.58), },
 		skipPlaceObjectOnGroundProperly = true -- Defaults to false, if set to true then object wont be placed onto ground. Useful for placing items on tables etc
