@@ -1,102 +1,60 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+ItemNames = {}
+
 local Recipes = {}
 local Blueprints = {}
 local CurrentAmount = 1
 local currentTableType = nil
 local lastTableType = nil
-local ItemNames = {}
 local useDebug = Config.Debug
 local isCrafting = false
 local Entities = {}
-
-local function getOxItems()
-    if Config.oxInv then
-        for items, datas in pairs(exports.ox_inventory:Items()) do
-            ItemNames[items] = datas
-        end
-    end
-end
-
-local function getCraftingSkill()
-    if Config.UseCWRepForCraftingSkill then
-        return exports['cw-rep']:getCurrentSkill(Config.CraftingSkillName) or 0
-    else
-        local PlayerData = QBCore.Functions.GetPlayerData()
-        return PlayerData.metadata.craftingrep or 0
-    end
-end
-
-local function getCraftingLevel()
-    if Config.UseCWRepForCraftingSkill then
-        return exports['cw-rep']:getCurrentLevel(Config.CraftingSkillName) or 0
-    else
-        local PlayerData = QBCore.Functions.GetPlayerData()
-        if not PlayerData or PlayerData.metadata.craftingrep then print('Could not find player data') return 0 end
-        if not PlayerData.metadata.craftingrep then return 0 end
-
-        return math.ceil(PlayerData.metadata.craftingrep / 100) or 0
-    end
-end
-
 local allItemsExist = true;
 local recipesAreFine = true;
 
+local function stopAnimation()
+    ClearPedTasks(PlayerPedId())
+end
+
+local function handleAnimation(animation)
+    animation = animation or {}
+    local animDict = animation.dict or 'anim@amb@business@coc@coc_unpack_cut@'
+    local anim = animation.anim or 'fullcut_cycle_v7_cokecutter'
+    if not DoesAnimDictExist(animDict) then
+        if useDebug then print('animation dict does not exist') end
+        return false
+    end
+    RequestAnimDict(animDict)
+    while (not HasAnimDictLoaded(animDict)) do Wait(10) end
+    TaskPlayAnim(PlayerPedId(), animDict, anim, 5.0, 5.0, -1, 51, 0, false, false, false)
+end
+
 local function verifyAllItemsExists()
     for recipe, item in pairs(Config.Recipes) do
-        if not Config.oxInv then
-            if item.materials ~= nil then
-                for mat, amount in pairs(item.materials) do
-                    if not QBCore.Shared.Items[mat] then
-                        allItemsExist = false
-                        print('!!! CW CRAFTING WARNING !!!')
-                        print('item defined in config but does not exist in your item.lua: ', mat)
-                    end
+        if item.materials ~= nil then
+            for mat, amount in pairs(item.materials) do
+                if not ItemNames[mat] then
+                    allItemsExist = false
+                    print('^1!!! CW CRAFTING WARNING !!!^0')
+                    print('item defined in config but does not exist in your item.lua: ', mat)
                 end
-            else
-                recipesAreFine = false
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Recipe has no input: ', recipe)
-            end
-            if item.toItems ~= nil then
-                for mat, amount in pairs(item.toItems) do
-                    if not QBCore.Shared.Items[mat] then
-                        allItemsExist = false
-                        print('!!! CW CRAFTING WARNING !!!')
-                        print('item defined in config but does not exist in your item.lua: ', mat)
-                    end
-                end
-            else
-                recipesAreFine = false
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Recipe has no output: ', recipe)
             end
         else
-            if item.materials ~= nil then
-                for mat, amount in pairs(item.materials) do
-                    if not ItemNames[mat] then
-                        allItemsExist = false
-                        print('!!! CW CRAFTING WARNING !!!')
-                        print('item defined in config but does not exist in your item.lua: ', mat)
-                    end
+            recipesAreFine = false
+            print('^1!!! CW CRAFTING WARNING !!!^0')
+            print('Recipe has no input: ', recipe)
+        end
+        if item.toItems ~= nil then
+            for mat, amount in pairs(item.toItems) do
+                if not ItemNames[mat] then
+                    allItemsExist = false
+                    print('^1!!! CW CRAFTING WARNING !!!^0')
+                    print('item defined in config but does not exist in your item.lua: ', mat)
                 end
-            else
-                recipesAreFine = false
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Recipe has no input: ', recipe)
             end
-            if item.toItems ~= nil then
-                for mat, amount in pairs(item.toItems) do
-                    if not ItemNames[mat] then
-                        allItemsExist = false
-                        print('!!! CW CRAFTING WARNING !!!')
-                        print('item defined in config but does not exist in your item.lua: ', mat)
-                    end
-                end
-            else
-                recipesAreFine = false
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Recipe has no output: ', recipe)
-            end
+        else
+            recipesAreFine = false
+            print('^1!!! CW CRAFTING WARNING !!!^0')
+            print('Recipe has no output: ', recipe)
         end
     end
     if not allItemsExist or not recipesAreFine then
@@ -141,29 +99,38 @@ local function setupPrintout()
     end
 end
 
+local function baseUiSetup()
+    if useDebug then
+        print('Primary color:', Config.PrimaryUiColor)
+    end
+    SendNUIMessage({
+        action = "cwCrafting",
+        type = 'baseData',
+        baseData = {
+            primary = Config.PrimaryUiColor 
+        }
+    })
+end
+
 AddEventHandler('onResourceStart', function(resource)
     if resource == GetCurrentResourceName() then
-        getOxItems()
+        defineItems()
         verifyAllItemsExists()
         setupPrintout()
+        Wait(1000)
+        baseUiSetup()
     end
 end)
 
-AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    if Config.oxInv then
-        getOxItems()
-    end
-end)
 
 local function validateJob(item)
     if item.jobs then
-        local Player = QBCore.Functions.GetPlayerData()
 
         local playerHasJob = false
         local levelRequirement = nil
-        local jobLevel = Player.job.grade.level
-        local jobName = Player.job.name
-        local jobType = Player.job.type
+        local jobLevel = getPlayerJobLevel()
+        local jobName = getPlayerJobName()
+        local jobType = getPlayerJobType()
         if useDebug then print('Player job:', jobName, 'type:', jobType) end
     
         for i, job in pairs(item.jobs) do
@@ -270,67 +237,37 @@ local function validateRights(item, recipe)
 end
 
 local function canCraftItem(item)
-    if not Config.oxInv then
-        local craft = true
-        for material, amount in pairs(item.materials) do
-            if useDebug then
-               print(amount*CurrentAmount, material)
-            end
-            local hasItem = QBCore.Functions.HasItem(material, amount*CurrentAmount)
-            if useDebug then
-               print('hasitem', hasItem)
-            end
-            if not hasItem then
-                craft = false
-            end
+    local canCraft = true
+    for material, amount in pairs(item.materials) do
+        if useDebug then
+            print('total amount', amount*CurrentAmount, material)
+            print(json.encode(item, {indent=true}))
         end
-        return craft
-    else
-        local craft = true
-        for material, amount in pairs(item.materials) do
-            local count = 0
-            local recipe = exports.ox_inventory:Search('slots', material)
-                for k, ingredients in pairs(recipe) do
-                    if ingredients.metadata.degrade ~= nil then
-                        if ingredients.metadata.degrade >= 1 then
-                            count = count + ingredients.count
-                        else
-                            QBCore.Functions.Notify("Items are Bad Quality", 'error', 5000)
-                        end
-                    else
-                        count = count + ingredients.count
-                    end
-                end
-                if count < amount*CurrentAmount then
-                    craft = false
-                end
+        canCraft = hasItem(material, amount*CurrentAmount)
+        if useDebug then
+           print('hasitem',material, ': ', canCraft, amount*CurrentAmount)
         end
-        if not craft then return false end
-        return true
+        if not canCraft then
+            canCraft = false
+        end
     end
+    return canCraft
 end
 
 local function getHasItemsMap(item)
     local hasItemsMap = {}
-    if not Config.oxInv then
-        local craft = true
-        for material, amount in pairs(item.materials) do
-            if useDebug then
-               print(amount*CurrentAmount, material)
-            end
-            hasItemsMap[material] = QBCore.Functions.HasItem(material, amount*CurrentAmount)
+    for material, amount in pairs(item.materials) do
+
+        local total = amount*CurrentAmount
+        if item.keepMaterials and item.keepMaterials[material] then
+            total = 1*amount
         end
-    else
-        local craft = true
-        for material, amount in pairs(item.materials) do
-            local count = exports.ox_inventory:Search('count', material)
-            if count then 
-                hasItemsMap[material] = count >= amount*CurrentAmount
-            else
-                hasItemsMap[material] = false
-            end
-                
+        if useDebug then
+            print('amount:' ,total, material)
         end
+        
+        hasItemsMap[material] = hasItem(material, total)
+
     end
     return hasItemsMap
 end
@@ -349,64 +286,33 @@ local function getRecipes()
         if canCraft then
             local materialsNameMap = {}
             local toMaterialsNameMap = {}
-            if not Config.oxInv then
-                if item.materials then
-                    if useDebug then
-                        print('Material used:')
-                    end
-                    for mat, amount in pairs(item.materials) do
-                        if useDebug then
-                            print(mat, amount)
-                        end
-                        materialsNameMap[mat] = QBCore.Shared.Items[mat].label
-                    end
-                else
-                    print('!!! CW CRAFTING WARNING !!!')
-                    print('Recipe has no input: ', recipe)
-                end
-                if item.toItems ~= nil then
-                    if useDebug then
-                       print('Materials given')
-                    end
-                    for mat, amount in pairs(item.toItems) do
-                        if useDebug then
-                            print(mat, amount)
-                        end
-                        toMaterialsNameMap[mat] = QBCore.Shared.Items[mat].label
-                    end
-                else
-                    print('!!! CW CRAFTING WARNING !!!')
-                    print('Recipe has no output: ', recipe)
+            if useDebug then
+               print('materials', json.encode(item.materials, {indent=true}))
+            end
+            if item.materials then
+                for mat, amount in pairs(item.materials) do
+                    materialsNameMap[mat] = ItemNames[mat].label
                 end
             else
-                if useDebug then
-                   print('materials', json.encode(item.materials, {indent=true}))
-                end
-                if item.materials then
-                    for mat, amount in pairs(item.materials) do
-                        materialsNameMap[mat] = ItemNames[mat].label
-                    end
-                else
-                    print('!!! CW CRAFTING WARNING !!!')
-                    print('Recipe has no input: ', recipe)
-                end
-                if item.toItems ~= nil then
-                    for mat, amount in pairs(item.toItems) do
-                        if mat and ItemNames[mat] and ItemNames[mat].label then
-                            toMaterialsNameMap[mat] = ItemNames[mat].label
-                        else
-                            print('^1Recipe is using a broken item')
-                            print('Material:', mat)
-                            print('Item data', json.encode(ItemNames[mat], {indent=true}))
-                            print('If the above is "null" then this item does not exist in your items.lua')
-                        end
-                    end
-                else
-                    print('!!! CW CRAFTING WARNING !!!')
-                    print('Recipe has no output: ', recipe)
-                end
-
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Recipe has no input: ', recipe)
             end
+            if item.toItems ~= nil then
+                for mat, amount in pairs(item.toItems) do
+                    if mat and ItemNames[mat] and ItemNames[mat].label then
+                        toMaterialsNameMap[mat] = ItemNames[mat].label
+                    else
+                        print('^1Recipe is using a broken item')
+                        print('Material:', mat)
+                        print('Item data', json.encode(ItemNames[mat], {indent=true}))
+                        print('If the above is "null" then this item does not exist in your items.lua')
+                    end
+                end
+            else
+                print('!!! CW CRAFTING WARNING !!!')
+                print('Recipe has no output: ', recipe)
+            end
+
             item.materialsNameMap = materialsNameMap
             item.toMaterialsNameMap = toMaterialsNameMap
             item.skillGain = Config.CraftingRepGainFunction(item.craftingSkill, item)
@@ -420,13 +326,12 @@ local function getRecipes()
             if Config.UseCWRepForCraftingSkill then
                 skillLabel = exports['cw-rep']:getSkillInfo(skillName).label or skillName
                 if Config.UseLevelsInsteadOfSkill then
-                    currentSkill = exports['cw-rep']:getCurrentLevel(skillName) or 0
+                    currentSkill = getCraftingLevel() or 0
                 else
-                    currentSkill = exports['cw-rep']:getCurrentSkill(skillName) or 0
+                    currentSkill = getCraftingSkill() or 0
                 end
             else
-                local PlayerData = QBCore.Functions.GetPlayerData()
-                currentSkill = PlayerData.metadata.craftingrep or 0
+                currentSkill = getCraftingSkill()
             end
 
             if useDebug then 
@@ -465,36 +370,35 @@ local function getRecipes()
     return Recipes
 end
 
-local function setCraftingOpen(bool, i)
+local function setCraftingOpen(openCrafting, i)
     local craftingSkill = getCraftingSkill()
     local craftingLevel = getCraftingLevel()
     if not craftingSkill then craftingSkill = 0 end
-    if bool then
-        QBCore.Functions.TriggerCallback('cw-crafting:server:getBlueprints', function(bps)
-            Blueprints = bps
-            if useDebug then
-                print('Crafting was opened', bool)
-            end
-            SetNuiFocus(bool, bool)
-            currentTableType = i;
-            StartScreenEffect('MenuMGIn', 1, true)
-            SendNUIMessage({
-                action = "cwCrafting",
-                toggle = bool,
-                type = 'toggleUi',
-                table = Config.CraftingTables[currentTableType],
-                craftingSkill = craftingSkill,
-                craftingLevel = craftingLevel
-            })
-        end)
+    if openCrafting then
+        local bps = cwCallback.await('cw-crafting:server:getBlueprints')
+        Blueprints = bps
+        if useDebug then
+            print('Crafting was opened', openCrafting)
+        end
+        SetNuiFocus(openCrafting, openCrafting)
+        currentTableType = i;
+        StartScreenEffect('MenuMGIn', 1, true)
+        SendNUIMessage({
+            action = "cwCrafting",
+            toggle = openCrafting,
+            type = 'toggleUi',
+            table = Config.CraftingTables[currentTableType],
+            craftingSkill = craftingSkill,
+            craftingLevel = craftingLevel
+        })
     else
-        SetNuiFocus(bool, bool)
+        SetNuiFocus(openCrafting, openCrafting)
         lastTableType = currentTableType
         currentTableType = nil;
         StopScreenEffect('MenuMGIn')
         SendNUIMessage({
             action = "cwCrafting",
-            toggle = bool,
+            toggle = openCrafting,
             type = 'toggleUi',
             table = Config.CraftingTables[currentTableType],
             craftingSkill = craftingSkill
@@ -509,45 +413,39 @@ local function craftItem(item, recipe)
             craftTime = item.craftingTime*CurrentAmount
         end
         isCrafting = true
-        TriggerEvent('animations:client:EmoteCommandStart', {"mechanic"})
-        QBCore.Functions.Progressbar("crafting", "Crafting", craftTime , false, true, {
-            disableMovement = true,
-            disableCarMovement = true,
-            disableMouse = false,
-            disableCombat = true,
-        }, {}, {}, {}, function()
+        handleAnimation(Config.CraftingTables[currentTableType])
+        triggerProgressBar('crafting', 'Crafting', craftTime, function()
             if Config.ReopenCraftingWhenFinished then
                 setCraftingOpen(true, lastTableType)
             end
             TriggerServerEvent('cw-crafting:server:craftItem',recipe, item, CurrentAmount)
-            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+            stopAnimation()
             isCrafting = false
         end, function() -- Cancel
-            TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+            stopAnimation()
             isCrafting = false
-            QBCore.Functions.Notify(Lang:t('error.canceled'), "error")
+            notify('Canceled crafting', "error")
         end)
         return true
     else
-        QBCore.Functions.Notify('You dont have the required items', "error", 2500)
+        notify('You dont have the required items', "error")
         return false
     end
 end
 
 local function benchpermissions(jobTypes)
-    local Player = QBCore.Functions.GetPlayerData()
-    if jobTypes[Player.job.type] ~= nil then return true else return false end
+    local jobType = getPlayerJobType()
+    if jobTypes[jobType] ~= nil then return true else return false end
 end
 
 RegisterNUICallback('attemptCrafting', function(recipe, cb)
     if isCrafting then
-        QBCore.Functions.Notify("You're already crafting something", "error")
+        notify("You're already crafting something", "error")
     else
-        local Player = QBCore.Functions.GetPlayerData()
         local currentRecipe = Config.Recipes[recipe.currentRecipe]
         CurrentAmount = recipe.craftingAmount
         if CurrentAmount == 0 then
-            QBCore.Functions.Notify("You can't craft a batch of 0.", "error")
+            notify("You can't craft a batch of 0.", "error")
         end
         if useDebug then
             print(recipe.currentRecipe, json.encode(currentRecipe, {indent=true}))
@@ -595,7 +493,6 @@ RegisterNUICallback('getSettings', function(_, cb)
 end)
 
 local function generateTableOptions(type, benchType, oxLib) 
-    local bpOptions = {}
 
     if Config.oxLib then
         return {
@@ -728,13 +625,17 @@ end exports("addRecipe", addRecipe)
 -- end)
 
 
+RegisterNetEvent('cw-crafting:client:notify', function(message, type)
+   notify(message, type)
+end)
+
 RegisterNetEvent('cw-crafting:client:toggleDebug', function(debug)
-   QBCore.Functions.Notify('Toggling Crafting debug to', debug)
+   notify('Toggling Crafting debug to', debug)
    useDebug = debug
 end)
 
 RegisterNetEvent('cw-rep:client:repWasUpdated', function(skills)
-    if useDebug then QBCore.Functions.Notify('Rep was updated') print('new skills', json.encode(skills, {indent=true})) end
+    if useDebug then notify('Rep was updated') print('new skills', json.encode(skills, {indent=true})) end
     local craftingSkill = getCraftingSkill()
     local craftingLevel = getCraftingLevel()
     Wait(1000)
@@ -757,49 +658,10 @@ AddEventHandler('onResourceStop', function (resource)
 end)
 
 RegisterNetEvent('cw-crafting:client:progressbar', function()
-    QBCore.Functions.Progressbar('learnbp', 'Studying text on blueprint', 2500, false, false, {
-        disableMovement = true,
-        disableCarMovement = true,
-        disableMouse = false,
-        disableCombat = true,
-    }, {}, {}, {}, function()
+    triggerProgressBar('learnbp', 'Studying blueprint...', Config.LearningTime, function()
        return true
-        --Stuff goes here
-    end,{})
+    end)
 end)
-
-local function getAllBlueprints()
-    local blueprints = {}
-    local blueprintItem = 'blueprint'
-    local PlayerData = QBCore.Functions.GetPlayerData()
-    for i,item in pairs(PlayerData.items) do
-        if item.name == blueprintItem then
-            blueprints[item.info.value] = item
-        end
-    end
-    return blueprints
-end
-
-local function hasBlueprint(input)
-    if not Config.oxInv then
-        local bps = getAllBlueprints()
-        for i,bp in pairs(bps) do
-            if bp.info.value == input then
-                return true
-            end
-        end
-        return false
-    else
-        -- local items = exports.ox_inventory:GetItemCount('blueprint', { value = input } ,false)
-        local items = exports.ox_inventory:Search('slots', 'blueprint')
-        for i,bp in pairs(items) do
-            if bp.metadata.value == input then
-                return true
-            end
-        end
-        return false
-    end
-end
 
 local function generateBlueprintOptions(dude, oxlib)
     local bpOptions = {}
@@ -853,6 +715,14 @@ local function generateBlueprintOptions(dude, oxlib)
     return bpOptions
 end
 
+local function loadModel(model)
+    if type(model) == 'string' then model = GetHashKey(model) end
+    while not HasModelLoaded(model) do
+        RequestModel(model)
+        Wait(10)
+    end
+end
+
 if Config.BlueprintDudes then
     CreateThread(function()
         for i, dude in pairs(Config.BlueprintDudes) do
@@ -863,16 +733,12 @@ if Config.BlueprintDudes then
                 animation = "WORLD_HUMAN_STAND_IMPATIENT"
             end
     
-            QBCore.Functions.LoadModel(dude.model)
+            loadModel(dude.model)
             local currentDude = CreatePed(0, dude.model, dude.coords.x, dude.coords.y, dude.coords.z-1.0, dude.coords.w, false, false)
             TaskStartScenarioInPlace(currentDude,  animation)
             FreezeEntityPosition(currentDude, true)
             SetEntityInvincible(currentDude, true)
             SetBlockingOfNonTemporaryEvents(currentDude, true)
-            
-            if Config.UseSundownUtils then
-                exports['sundown-utils']:addPedToBanlist(currentDude)
-            end
     
             if Config.oxLib then
                 local options = generateBlueprintOptions(dude, true)

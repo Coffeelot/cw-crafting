@@ -19,23 +19,22 @@ files {
 
 client_scripts{
     'config.lua',
-    'client/*.lua',
+    'bridge/client/*.lua',
+    'client/functions.lua',
+    'client/client.lua',
 }
 
 server_scripts{
     '@oxmysql/lib/MySQL.lua',
     'config.lua',
-    'server/*.lua',
+    'bridge/server/*.lua',
+    'server/functions.lua',
+    'server/server.lua',
 }
 
 shared_scripts {
     'config.lua',
     '@ox_lib/init.lua',
-}
-
-exports {
-    'giveRandomBlueprint',
-    'giveBlueprintItem',
 }
 
 dependency 'oxmysql'
