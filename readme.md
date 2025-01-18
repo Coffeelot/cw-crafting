@@ -8,8 +8,14 @@ Blueprints are items that have a unique value tied to them. By default you have 
 
 ### ❗❗ YOU CAN NOT SPAWN BLUEPRINT ITEMS WITH /giveitem OR ANY MENU! SEE COMMANDS ❗❗
 
+Cw-crafting now supports QBOX, OX-core,QB-core and (possibly) ESX (as long as you use OX inventory)
 
-READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
+### THIS SCRIPT REQUIRES YOU TO READ THIS README AND GO THROUGH THE CONFIG. READ THROUGH IT WELL BEFORE YOU ASK QUESTIONS 🐱‍🐉
+
+# Images
+![ui](https://media.discordapp.net/attachments/1202695794537537568/1330247358507913287/image.png?ex=678d48e5&is=678bf765&hm=5314d122eaa7871f2dc943fb3cce8013ed86d08b44520002ba423fbda7ed41bb&=&format=webp&quality=lossless&width=804&height=197)
+![crafting open](https://media.discordapp.net/attachments/1202695794537537568/1330247383124279326/image.png?ex=678d48ea&is=678bf76a&hm=db6783459e681c12bd8c60eb871c7b9b45e29227a1376b141b1f2e58f49d960a&=&format=webp&quality=lossless&width=804&height=430)
+![filter](https://media.discordapp.net/attachments/1202695794537537568/1330247411930497084/image.png?ex=678d48f1&is=678bf771&hm=7a80fd1d2ecab968ed65cdd2c2b5712109f76f507df27b9a1e5e4d9f7172a919&=&format=webp&quality=lossless&width=804&height=192)
 
 # Youtube Preview 📽
 ## Initial release video
@@ -39,11 +45,11 @@ READ SETUP BEFORE YOU ASK QUESTIONS 🐱‍🐉
 Items to add to qb-core>shared>items.lua 
 ```lua
 	-- CW crafting
-	["blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 0, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
+	["cw_blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 0, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
 ```
 For ox: 
 ```lua
-	['blueprint'] = {
+	['cw_blueprint'] = {
 		label = 'Blueprint',
 		weight = 0,
 		close = true,
@@ -67,7 +73,7 @@ To make it show item value in qb-inventory add this in app.js somewhere in the `
 ```
 
 ## Adding Blueprints to loot
-There are two exports for this script. You can either randomize the blueprints (chance is based of what's in the config):
+There are two server side exports for this script. You can either randomize the blueprints (chance is based of what's in the config):
 
 ### Randomize
 ```lua
@@ -100,6 +106,7 @@ All you gotta do is go into the `Config.Lua`, head to the bottom and you'll find
 ```lua
 kitchen = {
         title = "Open kitchen",
+		animation = { dict = 'anim@amb@business@coc@coc_unpack_cut@', anim = 'fullcut_cycle_v7_cokecutter'}, -- define custom animations for this table with the animation prop (optional)
 		icon = "food-fork-drink", -- icon for the crafting menu, uses Material Desgin Icons https://pictogrammers.com/library/mdi/ (optional)
 		job = 'hotdogs', -- job name. Works same as qb target so you can use a table with ranks also (I think?) (optional)
 		jobType = { ['food'] = 1 }, -- NOTE: This checks TYPES not name. A new qb thing. Means you can have one type for several jobs (optional)
