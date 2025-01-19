@@ -543,7 +543,7 @@ local function createTable(type, benchType)
     if options and #options > 0 then 
         if benchType.objects then
             for j, benchProp in pairs(benchType.objects) do
-                if Config.oxLib then
+                if Config.useOxTarget then
                     exports.ox_target:addModel(benchProp, options)
                 else
                     exports['qb-target']:AddTargetModel(benchProp, {
@@ -555,7 +555,7 @@ local function createTable(type, benchType)
         end
         if benchType.locations then
             for j, benchLoc in pairs(benchType.locations) do
-                if Config.oxLib then
+                if Config.useOxTarget then
                     exports.ox_target:addBoxZone({
                         coords = benchLoc,
                         size = vector3(1.5, 1.5, 1.5),
@@ -586,7 +586,7 @@ local function createTable(type, benchType)
                 end
                 FreezeEntityPosition(benchEntity, true)
                 Entities[#Entities+1] = benchEntity
-                if Config.oxLib then
+                if Config.useOxTarget then
                     exports.ox_target:addLocalEntity(benchEntity, options)
                 else
                     exports['qb-target']:AddTargetEntity(benchEntity, {
@@ -740,7 +740,7 @@ if Config.BlueprintDudes then
             SetEntityInvincible(currentDude, true)
             SetBlockingOfNonTemporaryEvents(currentDude, true)
     
-            if Config.oxLib then
+            if Config.useOxTarget then
                 local options = generateBlueprintOptions(dude, true)
                 if options and #options > 0 then 
                     exports.ox_target:addLocalEntity(currentDude, options)

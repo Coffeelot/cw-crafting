@@ -5,6 +5,7 @@ Config.oxInv = true -- set this to ox if you have ox_inventory
 
 --  DISABLE OX LIB IN FXMANIFEST IF THIS IS FALSE:
 Config.oxLib = true -- set this to ox if you have ox_lib !!! MAKE SURE OX LIB IS ADDED TO SHARED_SCRIPTS IN FXMANIFEST!!
+Config.useOxTarget = true -- Set to true if you use ox-target. If this is false the script uses qb target
 
 Config.UseLocalImages = false -- set this to true if you want to use local images rather than automatic. Put the images for the recipes and ingredients in the 'images' folder next to the blueprint.png
 Config.ReopenCraftingWhenFinished = false -- if true the script will re-open the crafting when it's done
