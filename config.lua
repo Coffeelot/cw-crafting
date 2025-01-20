@@ -93,7 +93,7 @@ Config.Recipes = {
 		blueprint = 'Ap Pistol',
 		craftingSkill= 200,
 		skillName = 'gun_crafting', -- optional. If set, will override what skill is required. ONLY WORKS WITH CW-REP!!!
-		metadata = { registered= false } -- If set, will write info/metadata on item
+		metadata = { registered= false } -- If set, will write info/metadata on all items in toItems
 	},
 }
 
