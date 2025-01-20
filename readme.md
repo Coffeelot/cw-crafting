@@ -41,13 +41,16 @@ Cw-crafting now supports QBOX, OX-core,QB-core and (possibly) ESX (as long as yo
 
 [![Buy Us a Coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg)](https://www.buymeacoffee.com/cwscriptbois )
 # Setup 🔧
-## Add to qb-core ❗
+## Add the blueprint item
+### QB
 Items to add to qb-core>shared>items.lua 
 ```lua
 	-- CW crafting
 	["cw_blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 0, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
 ```
-For ox: 
+Also make sure the images are in qb-inventory>html>images
+
+### Ox
 ```lua
 	['cw_blueprint'] = {
 		label = 'Blueprint',
@@ -57,9 +60,8 @@ For ox:
 		stack = false,
 	},
 ```
-Also make sure the images are in qb-inventory>html>images
 
-> A common issue here is that another script has the "blueprint" name. If so, make sure to rename either this blueprint item or the other one and update all code.
+> A common issue here is that another script has the "cw_blueprint" name. If so, make sure to rename either this blueprint item or the other one and update all code.
 
 ## Make your recipe values show in qb inventory (optional)
 > This step is not needed if you use ox inventory
@@ -71,6 +73,8 @@ To make it show item value in qb-inventory add this in app.js somewhere in the `
             $(".item-info-description").html("<p> Recipe for: "+ itemData.info.value + "</p>");
         }
 ```
+
+## (If you use QBOX): uncomment the QBX line in fxmanifest
 
 ## Adding Blueprints to loot
 There are two server side exports for this script. You can either randomize the blueprints (chance is based of what's in the config):
