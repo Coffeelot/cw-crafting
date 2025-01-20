@@ -76,8 +76,7 @@
       </div>
         </div>
       </div>
-
-      <div variant="text">
+      <div>
         <div class="d-flex flex-column ga-2 mt-3">
           <h3>Craft amount: {{ craftingAmount }}</h3>
           <h4>Max: {{ recipe.maxCraft }}</h4>
@@ -128,7 +127,6 @@
                 </v-chip>
               </div>
             </div>
-            <v-divider :vertical="true"></v-divider>
             <div v-if="recipe.craftingSkill && recipe.craftingSkill > 0">
               <h3 class="mb-2">Crafting skill required</h3>
               <v-chip :color="craftingSkillIsMet ? 'green' : 'red'">
@@ -152,20 +150,20 @@
               <span>{{ recipe.skillGain * craftingAmount }}</span>
             </div>
           </div>
-          <v-card-actions>
-            <v-btn
-              :disabled="!craftingSkillIsMet || !hasAllMaterials"
-              block
-              rounded="xl"
-              variant="flat"
-              color="primary"
-              @click="craft"
-              >Craft {{ craftingAmount }} batches</v-btn
-            >
-          </v-card-actions>
         </div>
       </div>
     </v-card-text>
+    <v-card-actions>
+      <v-btn
+        :disabled="!craftingSkillIsMet || !hasAllMaterials"
+        block
+        rounded="xl"
+        variant="flat"
+        color="primary"
+        @click="craft"
+        >Craft {{ craftingAmount }} batches</v-btn
+      >
+    </v-card-actions>
   </v-card>
 </template>
 
