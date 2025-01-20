@@ -8,7 +8,7 @@ Blueprints are items that have a unique value tied to them. By default you have 
 
 ### ❗❗ YOU CAN NOT SPAWN BLUEPRINT ITEMS WITH /giveitem OR ANY MENU! SEE COMMANDS ❗❗
 
-Cw-crafting now supports QBOX, OX-core,QB-core and (possibly) ESX (as long as you use OX inventory)
+Cw-crafting now supports QBOX, OX-core,QB-core and (possibly) ESX (as long as you use OX inventory) CW-rep is required for skill/rep use with OX and ESX
 
 ### THIS SCRIPT REQUIRES YOU TO READ THIS README AND GO THROUGH THE CONFIG. READ THROUGH IT WELL BEFORE YOU ASK QUESTIONS 🐱‍🐉
 
