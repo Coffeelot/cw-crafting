@@ -21,8 +21,8 @@ RegisterNetEvent('cw-crafting:server:craftItem', function(recipe, item, crafting
             end
 
             if item.toItems ~= nil then
-                for material, amount in pairs(item.toItems) do
-                    addItem(src, material, amount*craftingAmount)
+                for toMat, toAmount in pairs(item.toItems) do
+                    addItem(src, toMat, toAmount*craftingAmount, item.metadata)
                 end
                 success = true
             else
