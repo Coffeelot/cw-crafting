@@ -35,7 +35,7 @@ server_scripts{
 shared_scripts {
     'config.lua',
     '@ox_lib/init.lua',
+    -- '@qbx_core/modules/playerdata.lua' -- Needed for QBOX!
 }
 
 dependency 'oxmysql'
-
