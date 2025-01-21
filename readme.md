@@ -46,7 +46,7 @@ Cw-crafting now supports QBOX, OX-core,QB-core and (possibly) ESX (as long as yo
 Items to add to qb-core>shared>items.lua 
 ```lua
 	-- CW crafting
-	["cw_blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 0, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
+	["cw_blueprint"] =          {["name"] = "blueprint",         ["label"] = "Blueprint",                  ["weight"] = 1, ["type"] = "item", ["image"] = "blueprint.png", ["unique"] = true, ["useable"] = true, ['shouldClose'] = true, ["combinable"] = nil, ["description"] = "A blueprint for a crafting item"},
 ```
 Also make sure the images are in qb-inventory>html>images
 
@@ -54,7 +54,7 @@ Also make sure the images are in qb-inventory>html>images
 ```lua
 	['cw_blueprint'] = {
 		label = 'Blueprint',
-		weight = 0,
+		weight = 1,
 		close = true,
 		allowArmed = true,
 		stack = false,
