@@ -16,7 +16,7 @@ function getPlayerJobName()
 end
 
 function getPlayerJobType()
-    local playerData = QBX.PlayerData
+    local playerData = QBCore.Functions.GetPlayerData()
     if playerData and playerData.job then
         return playerData.job.type
     end
