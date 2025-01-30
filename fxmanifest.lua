@@ -5,7 +5,7 @@ lua54 'yes'
 
 author 'Coffeelot and Wuggie'
 description 'CW crafting system'
-version '3.4'
+version '3.5'
 
 ui_page {
     "html/dist/index.html"
