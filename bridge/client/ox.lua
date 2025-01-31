@@ -84,18 +84,18 @@ function notify(text, type)
     })
 end
 
-function getCraftingSkill()
+function getCraftingSkill(skill)
     if Config.UseCWRepForCraftingSkill then
-        return exports['cw-rep']:getCurrentSkill(Config.CraftingSkillName) or 0
+        return exports['cw-rep']:getCurrentSkill(skill or Config.CraftingSkillName) or 0
     else
         if Config.Debug then print('^1CW REP is required to use skills with for OX core^0') end
         return 0
     end
 end
 
-function getCraftingLevel()
+function getCraftingLevel(skill)
     if Config.UseCWRepForCraftingSkill then
-        return exports['cw-rep']:getCurrentLevel(Config.CraftingSkillName) or 0
+        return exports['cw-rep']:getCurrentLevel(skill or Config.CraftingSkillName) or 0
     else
         if Config.Debug then print('^1CW REP is required to use skills with for OX core^0') end
         return 0

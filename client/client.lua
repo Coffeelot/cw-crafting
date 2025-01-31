@@ -321,14 +321,15 @@ local function getRecipes()
             end
 
             local skillName = item.skillName or Config.CraftingSkillName
+            if useDebug then print('Recipe skill:', skillName) end
             local skillLabel = Config.CraftingSkillLabel
             local currentSkill = 0
             if Config.UseCWRepForCraftingSkill then
                 skillLabel = exports['cw-rep']:getSkillInfo(skillName).label or skillName
                 if Config.UseLevelsInsteadOfSkill then
-                    currentSkill = getCraftingLevel() or 0
+                    currentSkill = getCraftingLevel(skillName) or 0
                 else
-                    currentSkill = getCraftingSkill() or 0
+                    currentSkill = getCraftingSkill(skillName) or 0
                 end
             else
                 currentSkill = getCraftingSkill()

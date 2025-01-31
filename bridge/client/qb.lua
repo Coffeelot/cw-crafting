@@ -84,18 +84,18 @@ function notify(text, type)
 
 end
 
-function getCraftingSkill()
+function getCraftingSkill(skill)
     if Config.UseCWRepForCraftingSkill then
-        return exports['cw-rep']:getCurrentSkill(Config.CraftingSkillName) or 0
+        return exports['cw-rep']:getCurrentSkill(skill or Config.CraftingSkillName) or 0
     else
         local PlayerData = QBCore.Functions.GetPlayerData()
         return PlayerData.metadata.craftingrep or 0
     end
 end
 
-function getCraftingLevel()
+function getCraftingLevel(skill)
     if Config.UseCWRepForCraftingSkill then
-        return exports['cw-rep']:getCurrentLevel(Config.CraftingSkillName) or 0
+        return exports['cw-rep']:getCurrentLevel(skill or Config.CraftingSkillName) or 0
     else
         local PlayerData = QBCore.Functions.GetPlayerData()
         if not PlayerData or PlayerData.metadata.craftingrep then print('Could not find player data') return 0 end
