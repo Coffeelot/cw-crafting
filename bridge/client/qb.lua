@@ -141,18 +141,16 @@ end
 
 function triggerProgressBar(name, label, time, cbSuc, cbCancel)
     if Config.oxLib then
-        function triggerProgressBar(name, label, time, cbSuc, cbCancel)
-            local canCancel = cbCancel ~= nil
-        
-            if lib.progressBar({
-                duration = time,
-                label = label,
-                canCancel = canCancel,
-            }) then
-                cbSuc()
-            else
-                cbCancel()
-            end
+        local canCancel = cbCancel ~= nil
+    
+        if lib.progressBar({
+            duration = time,
+            label = label,
+            canCancel = canCancel,
+        }) then
+            cbSuc()
+        else
+            cbCancel()
         end
     else
         local canCancel = cbCancel ~= nil
