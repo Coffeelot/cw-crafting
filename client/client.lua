@@ -272,101 +272,121 @@ local function getHasItemsMap(item)
     return hasItemsMap
 end
 
-local function getRecipes()
-    if useDebug then
-       print('generating recipes for table', currentTableType)
+local function getSkillLabel(skillName)
+    if Config.UseCWRepForCraftingSkill then
+        return exports['cw-rep']:getSkillInfo(skillName).label or skillName
     end
+    return Config.CraftingSkillLabel
+end
+
+local function getCurrentSkill()
+    if Config.UseCWRepForCraftingSkill then
+        if Config.UseLevelsInsteadOfSkill then
+            return getCraftingLevel() or 0
+        end
+    end
+    return getCraftingSkill() or 0
+end
+
+local function handleAddRecipeToCurrentList(recipe, item)
+    if useDebug then
+        print("=== Attempting to add Recipe for ^3"..(recipe or 'UNKNOWN').."^0 ===")
+    end
+    local skillName = item.skillName or Config.CraftingSkillName
+    local skillLabel = getSkillLabel(skillName)
+    local currentSkill = getCurrentSkill()
+
+    local canCraft = validateRights(item, recipe)
+    if not canCraft then 
+        if useDebug then
+            print('Player did ^1not^0 have access to^0', recipe)
+        end
+        return
+    end
+    
+    local hasSkill = item.craftingSkill <= currentSkill
+    if Config.HideRecipeIfSkillNotMet then 
+        if not hasSkill then 
+            if useDebug then
+                print('Player did ^1not^0 have skills enough for^0', recipe)
+            end
+            return 
+        end
+    end
+    
+    local materialsNameMap = {}
+    local toMaterialsNameMap = {}
+    if useDebug then
+        print('^2Passed Intial checks^0')
+        print('All materials materials', json.encode(item.materials, {indent=true}))
+    end
+    if item.materials then
+        for mat, amount in pairs(item.materials) do
+            materialsNameMap[mat] = ItemNames[mat].label
+        end
+    else
+        print('!!! CW CRAFTING WARNING !!!')
+        print('Recipe has no input: ', recipe)
+    end
+
+    if item.toItems ~= nil then
+        for mat, amount in pairs(item.toItems) do
+            if mat and ItemNames[mat] and ItemNames[mat].label then
+                toMaterialsNameMap[mat] = ItemNames[mat].label
+            else
+                print('^1Recipe is using a broken item')
+                print('Material:', mat)
+                print('Item data', json.encode(ItemNames[mat], {indent=true}))
+                print('If the above is "null" then this item does not exist in your items.lua')
+            end
+        end
+    else
+        print('!!! CW CRAFTING WARNING !!!')
+        print('Recipe has no output: ', recipe)
+    end
+
+    item.materialsNameMap = materialsNameMap
+    item.toMaterialsNameMap = toMaterialsNameMap
+    item.skillGain = Config.CraftingRepGainFunction(item.craftingSkill, item)
+    if not item.maxCraft then
+        item.maxCraft = Config.DefaultMaxCraft or 10
+    end
+
+    if useDebug then 
+        print('Current skill level', currentSkill)
+        print('Required skill level', item.craftingSkill)
+    end
+    if not item.craftingSkill then
+        item.craftingSkill = 0
+    else
+    end
+    local skillData = {
+        skillName = skillName,
+        currentSkill = currentSkill,
+        skillLabel = skillLabel,
+        passes = hasSkill
+    }
+    item.skillData = skillData
+    item.craftingTime = item.craftingTime or Config.DefaultCraftingTime
+
+    Recipes[recipe] = item
+    if useDebug then
+        print('^2Added^0', recipe)
+    end
+end
+
+local function getRecipes()
     Recipes = {}
     if useDebug then
-       print('Amount of recipes: ', #Config.Recipes)
+        print('^5[Generating recipes for table', currentTableType, ']^0')
+        print('Total amount of recipes in config: ', #Config.Recipes)
     end
 
     for recipe, item in pairs(Config.Recipes) do
-        local canCraft = validateRights(item, recipe)
-        if canCraft then
-            local materialsNameMap = {}
-            local toMaterialsNameMap = {}
-            if useDebug then
-               print('materials', json.encode(item.materials, {indent=true}))
-            end
-            if item.materials then
-                for mat, amount in pairs(item.materials) do
-                    materialsNameMap[mat] = ItemNames[mat].label
-                end
-            else
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Recipe has no input: ', recipe)
-            end
-            if item.toItems ~= nil then
-                for mat, amount in pairs(item.toItems) do
-                    if mat and ItemNames[mat] and ItemNames[mat].label then
-                        toMaterialsNameMap[mat] = ItemNames[mat].label
-                    else
-                        print('^1Recipe is using a broken item')
-                        print('Material:', mat)
-                        print('Item data', json.encode(ItemNames[mat], {indent=true}))
-                        print('If the above is "null" then this item does not exist in your items.lua')
-                    end
-                end
-            else
-                print('!!! CW CRAFTING WARNING !!!')
-                print('Recipe has no output: ', recipe)
-            end
-
-            item.materialsNameMap = materialsNameMap
-            item.toMaterialsNameMap = toMaterialsNameMap
-            item.skillGain = Config.CraftingRepGainFunction(item.craftingSkill, item)
-            if not item.maxCraft then
-                item.maxCraft = Config.DefaultMaxCraft or 10
-            end
-
-            local skillName = item.skillName or Config.CraftingSkillName
-            if useDebug then print('Recipe skill:', skillName) end
-            local skillLabel = Config.CraftingSkillLabel
-            local currentSkill = 0
-            if Config.UseCWRepForCraftingSkill then
-                skillLabel = exports['cw-rep']:getSkillInfo(skillName).label or skillName
-                if Config.UseLevelsInsteadOfSkill then
-                    currentSkill = getCraftingLevel(skillName) or 0
-                else
-                    currentSkill = getCraftingSkill(skillName) or 0
-                end
-            else
-                currentSkill = getCraftingSkill()
-            end
-
-            if useDebug then 
-                print('Current skill level', currentSkill)
-                print('Required skill level', item.craftingSkill)
-            end
-            if not item.craftingSkill then
-                item.craftingSkill = 0
-            else
-            end
-            local skillData = {
-                skillName = skillName,
-                currentSkill = currentSkill,
-                skillLabel = skillLabel,
-                passes = item.craftingSkill <= currentSkill
-            }
-            item.skillData = skillData
-        
-            Recipes[recipe] = item
-            if item.craftingTime == nil then
-                Recipes[recipe].craftingTime = Config.DefaultCraftingTime
-            end
-            if useDebug then
-                print('Has access to', recipe)
-            end
-        else
-            if useDebug then
-                print('Did not have access to', recipe)
-            end
-        end
-        if useDebug then
-            print("====================")
-        end
-
+        handleAddRecipeToCurrentList(recipe, item)
+    end
+    if useDebug then
+        print('^2[Done adding recipes for', currentTableType, ']^0')
     end
     return Recipes
 end

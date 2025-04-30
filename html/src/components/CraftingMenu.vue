@@ -13,15 +13,28 @@
       <div class="d-flex flex-column">
         <div variant="text" class="horizontal-list">
           <div>
-            <h3 class="mb-4">Components needed</h3>
+            <h3 class="mb-4">Components used</h3>
             <div class="chip-holder">
               <v-chip
-                v-for="(amount, key) in recipe.materials"
+                v-for="(amount, key) in materialsUsed"
                 :key="key"
-                :prepend-icon="
-                  recipe.keepMaterials && recipe.keepMaterials[key]
-                    ? 'mdi-toolbox'
-                    : ''
+                :prepend-avatar="
+                  getImageLink(key, recipe.toMaterialsNameMap, recipe.metadata)
+                "
+              >
+                {{ recipe.materialsNameMap[key] || key }}: {{ amount }}
+              </v-chip>
+            </div>
+          </div>
+          <v-divider v-if="Object.keys(materialsKept).length > 0" :vertical="true"></v-divider>
+          <div v-if="Object.keys(materialsKept).length > 0">
+            <h3 class="mb-4">Components required</h3>
+            <div class="chip-holder">
+              <v-chip
+                v-for="(amount, key) in materialsKept"
+                :key="key"
+                :prepend-avatar="
+                  getImageLink(key, recipe.toMaterialsNameMap, recipe.metadata)
                 "
               >
                 {{ recipe.materialsNameMap[key] || key }}: {{ amount }}
@@ -32,7 +45,13 @@
           <div>
             <h3 class="mb-4">Output</h3>
             <div class="chip-holder">
-              <v-chip v-for="(amount, key) in recipe.toItems" :key="key">
+              <v-chip
+                v-for="(amount, key) in recipe.toItems"
+                :key="key"
+                :prepend-avatar="
+                  getImageLink(key, recipe.toMaterialsNameMap, recipe.metadata)
+                "
+              >
                 {{ recipe.toMaterialsNameMap[key] || key }}:
                 {{ amount }}</v-chip
               >
@@ -48,32 +67,6 @@
             <h3 class="mb-4">Skill gain</h3>
             <span>{{ recipe.skillGain }}</span>
           </div>
-          <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
-        <v-img
-          :src="
-            getImageLink(undefined, recipe.toMaterialsNameMap, recipe.metadata)
-          "
-        ></v-img>
-      </v-avatar>
-      <div v-else>
-        <v-avatar
-          class="avatar"
-          v-for="(item, materialName) in recipe.toItems"
-          :key="materialName"
-          rounded="0"
-          size="80px"
-        >
-          <v-img
-            :src="
-              getImageLink(
-                materialName,
-                recipe.toMaterialsNameMap,
-                recipe.metadata
-              )
-            "
-          ></v-img>
-        </v-avatar>
-      </div>
         </div>
       </div>
       <div>
@@ -108,22 +101,26 @@
           ></v-slider>
           <div class="horizontal-list">
             <div>
-              <h3 class="mb-2">Items required</h3>
+              <h3 class="mb-2">Items used</h3>
               <div class="chip-holder">
                 <v-chip
-                  v-for="(amount, key) in recipe.materials"
+                  v-for="(amount, key) in materialsUsed"
                   :key="key"
                   :color="
                     hasMaterialMap && hasMaterialMap[key] ? 'green' : 'red'
                   "
-                  :prepend-icon="
-                    recipe.keepMaterials && recipe.keepMaterials[key]
-                      ? 'mdi-toolbox'
-                      : ''
+                  :prepend-avatar="
+                    getImageLink(
+                      key,
+                      recipe.toMaterialsNameMap,
+                      recipe.metadata
+                    )
                   "
                 >
                   {{ recipe.materialsNameMap[key] || key }}:
-                  {{ amount * (recipe.keepMaterials && recipe.keepMaterials[key] ? 1 : craftingAmount) }}
+                  {{
+                    amount * craftingAmount
+                  }}
                 </v-chip>
               </div>
             </div>
@@ -148,6 +145,33 @@
             <div>
               <h3 class="mb-2">Skill gain</h3>
               <span>{{ recipe.skillGain * craftingAmount }}</span>
+            </div>
+            <v-divider :vertical="true"></v-divider>
+            <v-avatar v-if="isSingleItem()" rounded="0" class="avatar" size="90px">
+              <v-img
+                :src="
+                  getImageLink(undefined, recipe.toMaterialsNameMap, recipe.metadata)
+                "
+              ></v-img>
+            </v-avatar>
+            <div v-else>
+              <v-avatar
+                class="avatar"
+                v-for="(item, materialName) in recipe.toItems"
+                :key="materialName"
+                rounded="0"
+                size="80px"
+              >
+                <v-img
+                  :src="
+                    getImageLink(
+                      materialName,
+                      recipe.toMaterialsNameMap,
+                      recipe.metadata
+                    )
+                  "
+                ></v-img>
+              </v-avatar>
             </div>
           </div>
         </div>
@@ -211,11 +235,30 @@ const globalStore = useGlobalStore();
 const hasMaterialMap: Ref<Record<string, boolean> | undefined> = ref(undefined);
 const craftingAmount = ref(1);
 
+const materialsUsed = computed(
+  () =>
+    Object.fromEntries(
+      Object.entries(props.recipe.materials).filter(
+        ([key]) => !props.recipe?.keepMaterials?.[key]
+      )
+    ) as Record<string, number>
+);
+
+const materialsKept = computed(
+  () =>
+    Object.fromEntries(
+      Object.entries(props.recipe.materials).filter(
+        ([key]) => props.recipe?.keepMaterials?.[key]
+      )
+    ) as Record<string, number>
+);
+
 const hasAllMaterials = computed(
   () =>
     hasMaterialMap.value !== undefined &&
     Object.values(hasMaterialMap.value).every((value) => value === true)
 );
+
 const craftingSkillIsMet = computed(() =>
   props.recipe.craftingSkill
     ? props.recipe.skillData.currentSkill >= props.recipe.craftingSkill
@@ -276,6 +319,7 @@ onMounted(() => verifyHasItems());
 <style scoped lang="scss">
 .horizontal-list {
   display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
 }
 .menu-title {

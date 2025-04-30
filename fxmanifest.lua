@@ -5,7 +5,7 @@ lua54 'yes'
 
 author 'Coffeelot and Wuggie'
 description 'CW crafting system'
-version '3.6'
+version '3.7'
 
 ui_page {
     "html/dist/index.html"
@@ -35,7 +35,7 @@ server_scripts{
 shared_scripts {
     'config.lua',
     '@ox_lib/init.lua',
-    -- '@qbx_core/modules/playerdata.lua' -- Needed for QBOX!
 }
 
 dependency 'oxmysql'
+

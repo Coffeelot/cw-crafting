@@ -16,7 +16,8 @@ Config.PlayerDbIdentifier = 'stateId' -- 'citizenId' for qb/qbox, 'stateId' for 
 Config.UseCWRepForCraftingSkill = false -- Set to true if you want to use cw-rep for skill instead of qbs metadata
 -- The following all require cw-rep to be enabled:
 Config.CraftingSkillName = 'crafting' -- Make sure this matches the crafting skill name in your cw-rep config
-Config.CraftingSkillLabel = '"Crafting Skill"' -- Default name for the crafting skill
+Config.CraftingSkillLabel = 'Crafting Skill' -- Default name for the crafting skill
+Config.HideRecipeIfSkillNotMet = true -- if this is enabled then players wont see recipes they dont have skill enough to see
 Config.UseLevelsInsteadOfSkill = false -- If true then cw-rep will use level instead of pure xp 
 Config.DefaultMaxCraft = 10 -- Default max amount a player can craft at a time
 
@@ -45,7 +46,7 @@ Config.Blueprints = { -- rarity is 1-5, chance is 0.0-1.0 with lower numbers low
 	['radioscanner'] = { rarity = 3, type='illegal' },
 	['gatecrack'] = { rarity = 4,  type='illegal' },
 	['armor'] = { rarity = 5, type='illegal'},
-	['Ap Pistol'] = { rarity = 5, type='illegal' },
+	['ap_pistol'] = { label="Ap Pistol", rarity = 5, type='illegal' },
 }
 
 Config.DefaultFailChance = 80
@@ -93,7 +94,7 @@ Config.Recipes = {
 		blueprint = 'Ap Pistol',
 		craftingSkill= 200,
 		skillName = 'gun_crafting', -- optional. If set, will override what skill is required. ONLY WORKS WITH CW-REP!!!
-		metadata = { registered= false } -- If set, will write info/metadata on all items in toItems
+		metadata = { registered= false, serial = ''} -- If set, will write info/metadata on item
 	},
 }
 

@@ -64,5 +64,6 @@ const filteredRecipes = computed(() => {
   align-content: flex-start;
   overflow-y: auto;
   height: 100%;
+  width: 30%;
 }
 </style>
