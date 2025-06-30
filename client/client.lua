@@ -303,8 +303,15 @@ local function handleAddRecipeToCurrentList(recipe, item)
         end
         return
     end
-    
-    local hasSkill = item.craftingSkill <= currentSkill
+
+    local hasSkill = true
+    if item.craftingSkill and (item.craftingSkill <= currentSkill) then
+        if useDebug then print('Player has enough skill for', recipe) end
+    else
+        hasSkill = false
+        if useDebug then print('Player does not have enough skill for', recipe) end
+    end
+
     if Config.HideRecipeIfSkillNotMet then 
         if not hasSkill then 
             if useDebug then
