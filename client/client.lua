@@ -311,7 +311,6 @@ local function handleAddRecipeToCurrentList(recipe, item)
         hasSkill = false
         if useDebug then print('Player does not have enough skill for', recipe) end
     end
-
     if Config.HideRecipeIfSkillNotMet then 
         if not hasSkill then 
             if useDebug then

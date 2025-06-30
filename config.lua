@@ -131,8 +131,6 @@ Config.CraftingTables = {
 	},
 }
 
-Config.UseSundownUtils = false
-
 Config.BlueprintDudes = { -- SET THIS TO Config.BlueprintDudes = nil TO DISABLE
 	{
 		model = 'cs_nigel',
